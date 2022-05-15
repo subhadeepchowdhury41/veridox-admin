@@ -1,7 +1,7 @@
 import './App.css';
 import HomePage from './Pages/HomePage/HomePage';
 
-function App() {
+const App = () => {
   return (
     <div className="App">
       <HomePage/>
