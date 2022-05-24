@@ -5,7 +5,7 @@ const SolidButton = (props) => {
     return (
         <div style={{
             display: props.display ?? 'block',
-            margin: '40px'
+            margin: '20px'
         }}>
             <Button variant={props.variant ?? "contained"} size={props.size}
               onClick={props.onPress}
