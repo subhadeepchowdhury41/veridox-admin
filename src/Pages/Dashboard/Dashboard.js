@@ -90,9 +90,6 @@ const Dashboard = () => {
   const theme = useTheme();
   const { user } = useAuthContext();
 
-  const init  = async () => {
-    console.log(user);
-  }
   const [open, setOpen] = React.useState(false);
   const [openDocs1, setOpenDocs1] = React.useState(false);
   const [openDocs2, setOpenDocs2] = React.useState(false);
