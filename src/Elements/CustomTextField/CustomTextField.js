@@ -15,8 +15,6 @@ const CustomTextField = (props) => {
                 borderWidth: "9px",
                 width: '80%',
               }}
-              required={props.required}
-              id={props.id}
               variant={props.variant ?? "outlined"}
               type={props.type}
               label={props.label}

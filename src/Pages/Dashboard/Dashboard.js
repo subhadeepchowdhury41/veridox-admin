@@ -14,8 +14,9 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ListItem from '@mui/material/ListItem';
 import { Collapse, Grid, Paper } from '@mui/material';
-import { ExpandLess, ExpandMore } from '@mui/icons-material';
+import { ExpandLess, ExpandMore, Logout } from '@mui/icons-material';
 import ListItemText from '@mui/material/ListItemText';
+import {useAuthContext} from '../../Providers/AuthProvider';
 
 const drawerWidth = 240;
 
@@ -85,7 +86,9 @@ const GridItem = ({children}) => {
 }
 
 const Dashboard = () => {
+  
   const theme = useTheme();
+  const { user } = useAuthContext();
 
   const [open, setOpen] = React.useState(false);
   const [openDocs1, setOpenDocs1] = React.useState(false);
@@ -103,7 +106,7 @@ const Dashboard = () => {
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
-      <AppBar position="fixed" open={open}>
+      <AppBar position="fixed" open={open} >
         <Toolbar>
           <IconButton color="inherit" aria-label="open drawer" onClick={handleDrawerOpen} edge="start" sx={{ mr: 2, ...(open && { display: 'none' })}}>
             <MenuIcon />
@@ -112,6 +115,12 @@ const Dashboard = () => {
             Veridox
           </Typography>
         </Toolbar>
+        <IconButton color='inherit' edge="end" sx={{
+          }} onClick={() => {
+            console.log(user);
+          }}>
+            <Logout/>
+          </IconButton>
       </AppBar>
       <Drawer
         sx={{
