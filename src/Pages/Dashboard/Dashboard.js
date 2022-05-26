@@ -17,6 +17,7 @@ import { Collapse, Grid, Paper } from '@mui/material';
 import { ExpandLess, ExpandMore, Logout } from '@mui/icons-material';
 import ListItemText from '@mui/material/ListItemText';
 import {useAuthContext} from '../../Providers/AuthProvider';
+import { useNavigate } from 'react-router-dom';
 
 const drawerWidth = 240;
 
@@ -88,7 +89,7 @@ const GridItem = ({children}) => {
 const Dashboard = () => {
   
   const theme = useTheme();
-  const { user } = useAuthContext();
+  const { user, logOut } = useAuthContext();
 
   const [open, setOpen] = React.useState(false);
   const [openDocs1, setOpenDocs1] = React.useState(false);
@@ -99,6 +100,8 @@ const Dashboard = () => {
     setOpen(true);
   };
 
+  const navigate = useNavigate();
+
   const handleDrawerClose = () => {
     setOpen(false);
   };
@@ -107,20 +110,21 @@ const Dashboard = () => {
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
       <AppBar position="fixed" open={open} >
-        <Toolbar>
+        <Toolbar style={{
+          justifyContent: "space-between"}}>
           <IconButton color="inherit" aria-label="open drawer" onClick={handleDrawerOpen} edge="start" sx={{ mr: 2, ...(open && { display: 'none' })}}>
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div" sx={{fontWeight: "400"}}>
             Veridox
           </Typography>
-        </Toolbar>
-        <IconButton color='inherit' edge="end" sx={{
-          }} onClick={() => {
-            console.log(user);
+          <IconButton style={{color: "white"}} onClick={() => {
+            logOut();
           }}>
             <Logout/>
           </IconButton>
+        </Toolbar>
+        
       </AppBar>
       <Drawer
         sx={{
@@ -180,7 +184,9 @@ const Dashboard = () => {
             <Collapse in={openDocs2} timeout="auto" unmountOnExit>
               <List component="div" disablePadding>
                 <ListItem button sx={{ pl: 6 }}>
-                  <ListItemText primary="List" />
+                  <ListItemText primary="List" onClick={() => {
+                    navigate("/fieldVerifierPage");
+                  }}/>
                 </ListItem>
                 <ListItem button sx={{ pl: 6 }}>
                   <ListItemText primary="Add" />
