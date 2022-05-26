@@ -89,7 +89,7 @@ const GridItem = ({children}) => {
 const Dashboard = () => {
   
   const theme = useTheme();
-  const { user, logOut } = useAuthContext();
+  const { logOut } = useAuthContext();
 
   const [open, setOpen] = React.useState(false);
   const [openDocs1, setOpenDocs1] = React.useState(false);

@@ -4,7 +4,7 @@ import { collection, getDocs } from 'firebase/firestore';
 
 
 const FieldVerifierPage= () => {
-    const [docs, setDocs] = useState([]);
+    const [docs, setDocs] = useState();
 
     const fetchDocuments = async () => {
         console.log("....");
