@@ -1,30 +1,26 @@
-import React, { useEffect, useState } from 'react';
-import { database } from '../../Firebase/Firebase';
-import { collection, getDocs } from 'firebase/firestore';
+import React from 'react';
+import { useFieldVerifiersContext } from '../../Providers/FieldVerifiersProvider';
+import FieldVerifierCard from '../../Elements/FieldVerifierCard/FieldVerifierCard';
 
 
-const FieldVerifierPage= () => {
-    const [docs, setDocs] = useState();
+const FieldVerifierPage = () => {
+    
+  const {fvs} = useFieldVerifiersContext();
 
-    const fetchDocuments = async () => {
-        console.log("....");
-        const querySnapshots = await getDocs(collection(database, "field-verifier"));
-        querySnapshots.forEach((doc) => {
-            console.log(doc.id);
-            setDocs(data => ([...data, doc.id]));
-        })
-    }
+  console.log(fvs);
 
-    useEffect(() => {
-        fetchDocuments();
-    }, [])
-
-    return (
-        
-        <>
-          {docs.map((val) => (<div>{val}</div>))}
-        </>
-    );
+  return (
+      <div>
+        {fvs.map((element, index) => (
+          <div key={index}>
+            <FieldVerifierCard name={element.name}
+              uid={element.uid}
+              number={element.number}
+              select={0}/>
+          </div>
+        ))}
+      </div>
+  );
 }
 
 export default FieldVerifierPage;
