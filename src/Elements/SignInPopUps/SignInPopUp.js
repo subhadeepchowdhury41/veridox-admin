@@ -7,7 +7,8 @@ import { useOtpContext } from '../../Providers/OtpProvider';
 
 const SignInPopUp = () => {
 
-    const  { phoneNo, setPhoneNo, getOtp } = useOtpContext();
+    const  { phoneNo, id, setPhoneNo, setId, getOtp } = useOtpContext();
+    
     const [helperPhone, setHelperPhone] = useState("");
 
     // const [errorDialog, setErrorDialog] = useState("1");
@@ -44,12 +45,12 @@ const SignInPopUp = () => {
           label = "Phone No"
           variant = "outlined" />
 
-        {/* <CustomTextField value = { password }
-          onChange = { (e) => setPassword(e.target.value) }
+        <CustomTextField value = { id }
+          onChange = { (e) => setId(e.target.value) }
           key = "password"
           label = "Password"
           type = "password"
-          variant = "outlined" /> */}
+          variant = "outlined" />
           
             <div style={{alignItems: "center", margin: '30px'}}>
                 <div style={{marginLeft: "55px"}} id = "recaptcha-container" ></div>

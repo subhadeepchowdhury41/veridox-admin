@@ -6,6 +6,7 @@ const OtpContext = createContext();
 export const OtpProvider = ({children}) => {
 
     const [phoneNo, setPhoneNo] = useState();
+    const [id, setId] = useState("");
     const [confirmObj, setConfirmObj] = useState();
     const [otp, setOtp] = useState();
     const [popUp, setPopUp] = useState("1");
@@ -33,7 +34,7 @@ export const OtpProvider = ({children}) => {
 
     return (
         <OtpContext.Provider value={{getOtp, verifyOtp, phoneNo, setPhoneNo,
-         otp, setOtp, popUp, setPopUp}}>
+         otp, setOtp, popUp, setPopUp, id, setId}}>
           {children}
         </OtpContext.Provider>
     );

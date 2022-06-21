@@ -13,11 +13,11 @@ import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ListItem from '@mui/material/ListItem';
-import { Collapse, Grid, Paper } from '@mui/material';
+import { Collapse } from '@mui/material';
 import { ExpandLess, ExpandMore, Logout } from '@mui/icons-material';
 import ListItemText from '@mui/material/ListItemText';
 import {useAuthContext} from '../../Providers/AuthProvider';
-import { useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 
 const drawerWidth = 240;
 
@@ -68,23 +68,6 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   height: '50px',
   justifyContent: 'flex-end',
 }));
-
-const GridItem = ({children}) => {
-  return (
-    <div style={{
-      
-    }}>
-      <Paper elevation={10} sx={{
-        margin: 'auto',
-        textAlign: 'center',
-        height: '230px',
-        width: '90%',
-        maxWidth: '500px',
-        minWidth: '400px'
-      }}>{children}</Paper>
-    </div>
-  );
-}
 
 const Dashboard = () => {
   
@@ -150,6 +133,11 @@ const Dashboard = () => {
         <Divider />
         <List>
             <ListItem button onClick={() => {
+              navigate("/dashboard/summary");
+            }}>
+              <ListItemText primary="Summary" />
+            </ListItem>
+            <ListItem button onClick={() => {
               setOpenDocs1(!openDocs1);
             }}>
               <ListItemText primary="Documents" />
@@ -185,7 +173,7 @@ const Dashboard = () => {
               <List component="div" disablePadding>
                 <ListItem button sx={{ pl: 6 }}>
                   <ListItemText primary="List" onClick={() => {
-                    navigate("/fieldVerifierPage");
+                    navigate("/dashboard/fieldVerifierPage", {state: {mode: "view"}});
                   }}/>
                 </ListItem>
                 <ListItem button sx={{ pl: 6 }}>
@@ -218,22 +206,7 @@ const Dashboard = () => {
         <div style={{
           marginTop: '65px'
         }}></div>
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={6}>
-            <GridItem>Assignments</GridItem>
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <GridItem>Verifications</GridItem></Grid>
-          <Grid item xs={12} md={6}>
-            <GridItem>
-              Document Status
-            </GridItem></Grid>
-          <Grid item xs={12} md={6}>
-            <GridItem>
-              Field Verifiers
-              </GridItem>
-              </Grid>
-        </Grid>
+        <Outlet/>
       </Main>
     </Box>
   );

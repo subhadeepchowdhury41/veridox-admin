@@ -5,6 +5,7 @@ import { AuthProvider } from './Providers/AuthProvider';
 import Dashboard from './Pages/Dashboard/Dashboard';
 import FieldVerifierPage from './Pages/FieldVerifierPage/FieldVerifierPage';
 import { FieldVerifiersProvider } from './Providers/FieldVerifiersProvider';
+import SummaryPage from './Pages/SummaryPage/SummaryPage';
 
 const App = () => {
   return (
@@ -14,8 +15,11 @@ const App = () => {
           <Router>
             <Routes>
               <Route exact path="/" element={<HomePage/>}/>
-              <Route path="/dashboard" element={<Dashboard/>}/>
-              <Route path="/fieldVerifierPage" element={<FieldVerifierPage/>}/>
+              <Route path="/dashboard" element={<Dashboard/>}>
+                  <Route index element={<SummaryPage/>}/>
+                  <Route path="summary" element={<SummaryPage/>}/>
+                  <Route path="fieldVerifierPage" element={<FieldVerifierPage/>}/>
+              </Route>
             </Routes>
           </Router>
         </div>
