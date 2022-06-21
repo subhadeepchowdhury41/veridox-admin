@@ -12,11 +12,8 @@ const SolidButton = (props) => {
               sx={{
                   borderWidth: '2px',
                   '&:hover': {
-                      backgroundColor: props.onHover ?? 'white',
                       borderWidth: '2px'
                   },
-                  backgroundColor: props.background ?? 'green',
-                  color: props.color ?? 'white'
                   }}
               id={props.id ?? ''}
             >{props.label}</Button>

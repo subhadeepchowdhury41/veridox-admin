@@ -47,8 +47,8 @@ const SignInPopUp = () => {
 
         <CustomTextField value = { id }
           onChange = { (e) => setId(e.target.value) }
-          key = "password"
-          label = "Password"
+          key = "agency-id"
+          label = "Agency ID"
           type = "password"
           variant = "outlined" />
           
