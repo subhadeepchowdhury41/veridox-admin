@@ -177,7 +177,9 @@ const Dashboard = () => {
                   }}/>
                 </ListItem>
                 <ListItem button sx={{ pl: 6 }}>
-                  <ListItemText primary="Add" />
+                  <ListItemText primary="Add" onClick={() => {
+                    navigate("/dashboard/addFieldVerifierPage");
+                  }}/>
                 </ListItem>
               </List>
 
@@ -204,7 +206,7 @@ const Dashboard = () => {
       </Drawer>
       <Main open={open}>
         <div style={{
-          marginTop: '65px'
+          marginTop: '4em'
         }}></div>
         <Outlet/>
       </Main>
