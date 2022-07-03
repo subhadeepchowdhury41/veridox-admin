@@ -5,17 +5,17 @@ import PopUpBox from '../PopUpBox/PopUpBox';
 import OtpInput from 'react-otp-input-rc-17';
 import { useOtpContext } from '../../Providers/OtpProvider';
 import { useNavigate } from 'react-router-dom';
+import AlertBox from '../AlertBox/AlertBox';
 
 
 const OtpPopUp = () => {
 
     const navigate = useNavigate();
-    const {otp, phoneNo, setPopUp, setOtp, verifyOtp } = useOtpContext();
+    const {otp, phoneNo, setPopUp, errorMsg, setOtp, verifyOtp } = useOtpContext();
 
     return (<PopUpBox >
         <Paper variant = "outlined"
-        sx = {{ width: "98%", height: "480px" }}
-        elevation = "5" >
+        sx = {{ width: "98%", height: "480px" }}>
         <div style = {
             {
                 width: '100%',
@@ -28,6 +28,8 @@ const OtpPopUp = () => {
               <Typography variant='h5'> Enter the OTP sent to</Typography>
               <Typography variant='h5'>{'+91 ' + phoneNo} </Typography>
             </div>
+
+            {errorMsg.length === 0 ? null : <AlertBox severity="error" text={errorMsg}/>}
 
             <div style={{textAlign: 'center', paddingLeft: '8.3em', paddingTop: '2em', paddingBottom: '4em'}}>
               <OtpInput className="OtpInput"
@@ -43,7 +45,7 @@ const OtpPopUp = () => {
               background = "white"
               color = "green"
               onPress = { () => {
-                setPopUp("2");
+                setPopUp("1");
               }} />
             
             <SolidButton 

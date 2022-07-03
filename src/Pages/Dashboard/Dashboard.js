@@ -102,7 +102,11 @@ const Dashboard = () => {
             Veridox
           </Typography>
           <IconButton style={{color: "white"}} onClick={() => {
-            logOut();
+            logOut(
+              () => {
+                navigate("/");
+              }
+            );
           }}>
             <Logout/>
           </IconButton>

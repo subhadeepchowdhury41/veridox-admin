@@ -4,14 +4,13 @@ import { Paper  } from '@mui/material';
 import CustomTextField from '../CustomTextField/CustomTextField';
 import SolidButton from '../SolidButton/SolidButton';
 import { useOtpContext } from '../../Providers/OtpProvider';
+import AlertBox from '../AlertBox/AlertBox';
 
 const SignInPopUp = () => {
 
-    const  { phoneNo, id, setPhoneNo, setId, getOtp } = useOtpContext();
+    const  { phoneNo, id, setPhoneNo, errorMsg, loading, setId, getOtp } = useOtpContext();
     
     const [helperPhone, setHelperPhone] = useState("");
-
-    // const [errorDialog, setErrorDialog] = useState("1");
 
     const isValidPhoneNumber = (number) => {
         var str = "Enter a valid phone number";
@@ -31,14 +30,14 @@ const SignInPopUp = () => {
     return (
       <PopUpBox >
         <Paper variant = "outlined"
-        sx = {{ width: "98%", height: "480px" }}
-        elevation = {5} >
-        <div style = {
-            {
+        sx = {{ width: "98%", height: "480px" }}>
+        <div style = {{
                 width: '100%',
                 textAlign: 'center',
             }
         }>
+        {errorMsg.length === 0 ? null : <AlertBox severity="error" text={errorMsg}/>}
+        
         <CustomTextField value = { phoneNo }
           onChange = { handlePhone }
           helperText = { helperPhone }
@@ -52,12 +51,14 @@ const SignInPopUp = () => {
           type = "password"
           variant = "outlined" />
           
-            <div style={{alignItems: "center", margin: '30px'}}>
-                <div style={{marginLeft: "55px"}} id = "recaptcha-container" ></div>
+            <div style={{alignItems: "center", margin: '30px', display: 'inline-flex'}}>
+                <div id = "recaptcha-container" ></div>
             </div>
 
+            
             <SolidButton
-              display = "inline"
+              disabled = {loading}
+              display = "block"
               label = "Get Otp"
               size = "large"
               onHover = "#398139"

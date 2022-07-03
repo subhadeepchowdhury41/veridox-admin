@@ -6,13 +6,14 @@ import './AddRequestItem.css';
 
 const AddRequestItem = (props) => {
     return (
-        <div key={props.key} style={{
+        <div key={props.index} style={{
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             padding: "0.6em"
         }}>
            <Paper elevation={0} variant="outlined" sx={{
+                cursor: 'pointer',
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
@@ -33,8 +34,6 @@ const AddRequestItem = (props) => {
               <Box className="OverflowTextContainer" sx={{width: "20%"}}>
                 +91-{props.number ?? 8768715527}
               </Box>
-              
-              {/* className="OverflowTextContainer"  */}
 
               <Box sx={{width: '15%'}}>
                <IconButton sx={{color: 'red',

@@ -12,8 +12,8 @@ export const AddRequestProvider = ({children}) => {
         const unsubscribe = onSnapshot(collection(database, 'agency/e277WEBvF8YHSl32PONlPlvEjYo1/add_requests'), 
             (snapshot) => {
                 let data = [];
-                snapshot.docs.forEach((element, index) => {
-                    data.push({...element.data(), id: element.id, key: index });
+                snapshot.docs.forEach((element) => {
+                    data.push({...element.data(), id: element.id});
                 });
                 setAddReq(data);
             });

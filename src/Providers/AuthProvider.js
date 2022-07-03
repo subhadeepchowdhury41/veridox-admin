@@ -8,8 +8,13 @@ export const AuthProvider = ({children}) => {
 
     const [user, setUser] = useState();
 
-    const logOut = () => {
-        authentication.signOut();
+    const logOut = (onSuccess) => {
+        try {
+            authentication.signOut();
+            onSuccess();
+        } catch (err) {
+            alert('There was some problem logging out');
+        }
     }
 
     useEffect(() => {

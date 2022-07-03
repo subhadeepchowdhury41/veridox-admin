@@ -9,31 +9,45 @@ export const OtpProvider = ({children}) => {
     const [id, setId] = useState("");
     const [confirmObj, setConfirmObj] = useState();
     const [otp, setOtp] = useState();
+    const [loading, setLoading] = useState(false);
     const [popUp, setPopUp] = useState("1");
+    const [errorMsg, setErrorMsg] = useState("");
 
     const getOtp = async (e) => {
         e.preventDefault();
-        try {
-            var res = await setUpRecaptcha('recaptcha-container', phoneNo);
-            setConfirmObj(res);
-            setPopUp("2");
-        } catch (err) {
-            console.log(err);
-        }
+        setLoading(true);
+        await setUpRecaptcha('recaptcha-container', phoneNo).then(
+            (confirmationResult) => {
+                setConfirmObj(confirmationResult);
+                setErrorMsg("");
+                setLoading(false);
+                setPopUp("2");
+            }
+            
+        ).catch((error) => {
+            setErrorMsg(error);
+            setLoading(false);
+        });
+        
     }
 
     const verifyOtp = async (onSuccess) => {
+        setLoading(true);
         try {
-            var res = await confirmObj.confirm(otp);
-            console.log(res);
+            await confirmObj.confirm(otp);
+            setErrorMsg("");
+            setLoading(false);
             onSuccess();
         } catch (err) {
+            setErrorMsg(err.code);
+            setLoading(false);
             console.log(err);
         }
+        
     }
 
     return (
-        <OtpContext.Provider value={{getOtp, verifyOtp, phoneNo, setPhoneNo,
+        <OtpContext.Provider value={{getOtp, verifyOtp, loading, errorMsg, phoneNo, setPhoneNo,
          otp, setOtp, popUp, setPopUp, id, setId}}>
           {children}
         </OtpContext.Provider>
