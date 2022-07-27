@@ -141,6 +141,12 @@ const Dashboard = () => {
             }}>
               <ListItemText primary="Summary" />
             </ListItem>
+
+            <ListItem button onClick={() => {
+              navigate("/dashboard/formBuilderPage");
+            }}>
+              <ListItemText primary="Form Builder" />
+            </ListItem>
             <ListItem button onClick={() => {
               setOpenDocs1(!openDocs1);
             }}>
@@ -205,7 +211,6 @@ const Dashboard = () => {
                 </ListItem>
               </List>
             </Collapse>
-
         </List>
       </Drawer>
       <Main open={open}>
