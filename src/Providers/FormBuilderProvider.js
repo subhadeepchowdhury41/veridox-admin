@@ -4,14 +4,14 @@ import Form from "../Models/FormModel";
 import Field from "../Models/FieldModel";
 import { realtimeDB } from "../Firebase/Firebase";
 import { ref, set } from "firebase/database";
-import { useAuthContext } from "./AuthProvider";
+// import { useAuthContext } from "./AuthProvider";
 
 const FormBuilderContext = createContext();
 const form = new Form("new form", {name: "new form", pages: []});
 
 export const FormBuilderProvider = ({children}) => {
 
-    const {user} = useAuthContext();
+    // const {user} = useAuthContext();
     
     let initialState = form.getState();
 
