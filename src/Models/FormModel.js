@@ -22,7 +22,6 @@ export default class Form {
         let page = new Page("new page", {name: "new page", fields: []});
         this.pages.push(page);
         this.updatePageIds();
-
         return this.getState();
     }
 
@@ -35,10 +34,10 @@ export default class Form {
     }
 
     getState() {
-        console.log({
-            name: this.name,
-            pages: this.pages.map((page) => ({name: page.name ?? 'new page', fields: page.fields ?? [], id: page.id}))
-        });
+        // console.log({
+        //     name: this.name,
+        //     pages: this.pages.map((page) => ({name: page.name ?? 'new page', fields: page.fields ?? [], id: page.id}))
+        // });
         return {
             'name': this.name,
             'pages': this.pages.map((page) => ({'name': page.name ?? 'new page', 'fields': page.fields ?? [], 'id': page.id}))

@@ -1,12 +1,12 @@
 import { Paper } from '@mui/material';
 import React from 'react';
 
-const FieldItem = ({children}) => {
+const FieldItem = (props) => {
 
     return (
         <Paper elevation={0} variant="outlined" sx={{
             margin: '1em',
-            height: '60px',
+            padding: '0.5em',
             width: '100%'
         }}>
           <div style={{
@@ -16,7 +16,7 @@ const FieldItem = ({children}) => {
             justifyContent: "space-around",
             alignItems: "center"
           }}>
-            {children}
+            {props.children}
           </div>
           
         </Paper>
