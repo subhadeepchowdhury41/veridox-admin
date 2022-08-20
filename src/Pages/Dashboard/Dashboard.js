@@ -143,6 +143,12 @@ const Dashboard = () => {
             </ListItem>
 
             <ListItem button onClick={() => {
+              navigate("/dashboard/forms");
+            }}>
+              <ListItemText primary="Forms" />
+            </ListItem>
+
+            <ListItem button onClick={() => {
               navigate("/dashboard/formBuilderPage");
             }}>
               <ListItemText primary="Form Builder" />

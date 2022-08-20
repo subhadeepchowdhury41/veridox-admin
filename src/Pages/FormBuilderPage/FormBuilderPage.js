@@ -1,5 +1,5 @@
-import { Add, Edit } from '@mui/icons-material';
-import { IconButton, Paper, TextField } from '@mui/material';
+import { Add } from '@mui/icons-material';
+import { Button, Paper, TextField } from '@mui/material';
 import React from 'react';
 import { useFormBuilderContext } from '../../Providers/FormBuilderProvider';
 import PageItem from './PageItem/PageItem';
@@ -7,27 +7,27 @@ import PageItem from './PageItem/PageItem';
 const FormBuilderPage = () => {
 
     const {state, dispatch} = useFormBuilderContext();
-    
+     
     return (
         <div>
+
             <div style={{
                 margin: '1.6em',
                 width: '100%',
-                display: 'flex',
+                display: 'inline-flex',
                 alignItems: 'center',
-                justifyContent: 'center'
+                justifyContent: 'space-evenly'
             }}>
                 <TextField id='formName' size='small' sx={{margin: '0 0.3em'}} value={state.name} onChange={(event) => {
                     dispatch({type: 'changeFormName', payload: {name: event.target.value}});
                 }}/>
 
-                <IconButton  onClick={() => {
-                    let disabled = document.getElementById("formName").disabled;
-                    document.getElementById("formName").disabled = !disabled;
-                }}>
-                    <Edit/>
-                </IconButton>
+                <Button variant='text'>
+                    Save Form
+                </Button>
+
             </div>
+
             
 
             <div style={{
