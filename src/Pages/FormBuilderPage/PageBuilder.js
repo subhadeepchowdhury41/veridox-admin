@@ -9,6 +9,7 @@ import { Box } from '@mui/system';
 import RequiredCheckBox from './RequiredCheckBox';
 import WordCounter from './WordCounter';
 import MultiLined from './MultiLined';
+import TableMaker from './TableMaker';
 
 
 const PageBuilder = (props) => {
@@ -83,6 +84,8 @@ const PageBuilder = (props) => {
                           
                         </Box>
 
+                        {state.pages[id].fields[index].widget === 'table' ? <TableMaker 
+                          page_id={id} field_id={index} /> : null}
                         <Box>
 
                           {state.pages[id].fields[index].widget === 'dropdown' ? <Button sx={{margin: '0.7em 0 0 0'}}

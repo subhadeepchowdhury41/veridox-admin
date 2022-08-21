@@ -7,7 +7,7 @@ const WidgetTypeContext = createContext();
 export const WidgetTypeProvider = ({children}) => {
 
     const [widgets, setWidgets] = useState([]);
-    
+    const [tableWidgets, setTableWidgets] = useState([]);
 
     useEffect(() => {
         const unsubscribe = onSnapshot(collection(database, "form_widgets"),
@@ -17,6 +17,7 @@ export const WidgetTypeProvider = ({children}) => {
                 data.push({...doc.data(), value: index});
             });
             setWidgets(data);
+            setTableWidgets(["date-time", "text-input", "toggle-button", "address", "file"]);
           }
         );
         return () => {
@@ -24,7 +25,7 @@ export const WidgetTypeProvider = ({children}) => {
         }
     }, []);
     
-    return (<WidgetTypeContext.Provider value={{widgets}}>
+    return (<WidgetTypeContext.Provider value={{widgets, tableWidgets}}>
       {children}
     </WidgetTypeContext.Provider>);
 };

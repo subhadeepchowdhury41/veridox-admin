@@ -158,6 +158,80 @@ export const FormBuilderProvider = ({children}) => {
         return form.getState();
     }
 
+    const changeTableRows = (payload) => {
+        if (form.pages[payload.page_id].fields[payload.field_id].rows === undefined || 
+            form.pages[payload.page_id].fields[payload.field_id].rows === null) {
+                form.pages[payload.page_id].fields[payload.field_id].rows = [{label: payload.label, id: 0}];
+        } else {
+            form.pages[payload.page_id].fields[payload.field_id].rows.push({label: payload.label});
+            form.pages[payload.page_id].fields[payload.field_id].rows.forEach((row, index) => (row.id = index));
+        }
+
+        form.pages[payload.page_id].fields.forEach((field, index) => (field.id = index));
+        notifyDatabase();
+        return form.getState();
+    }
+
+    const changeTableColumns = (payload) => {
+        if (form.pages[payload.page_id].fields[payload.field_id].columns === undefined || 
+            form.pages[payload.page_id].fields[payload.field_id].columns === null) {
+                form.pages[payload.page_id].fields[payload.field_id].columns = [{label: payload.label, id: 0}];
+        } else {
+            form.pages[payload.page_id].fields[payload.field_id].columns.push({label: payload.label});
+            form.pages[payload.page_id].fields[payload.field_id].columns.forEach((column, index) => (column.id = index));
+        }
+
+        form.pages[payload.page_id].fields.forEach((field, index) => (field.id = index));
+        notifyDatabase();
+        return form.getState();
+    }
+
+    const deleteTableRow = (payload) => {
+        form.pages[payload.page_id].fields[payload.field_id].rows = 
+          form.pages[payload.page_id].fields[payload.field_id].rows.filter((row) => (row.id !== payload.row_id));
+        form.pages[payload.page_id].fields[payload.field_id].rows.forEach((row, index) => (row.id = index));
+        notifyDatabase();
+        return form.getState();
+    }
+
+    const deleteTableColumn = (payload) => {
+        form.pages[payload.page_id].fields[payload.field_id].columns = 
+          form.pages[payload.page_id].fields[payload.field_id].columns.filter((column) => (column.id !== payload.column_id));
+        form.pages[payload.page_id].fields[payload.field_id].columns.forEach((column, index) => (column.id = index));
+        notifyDatabase();
+        return form.getState();
+    }
+
+    const changeTableColumnLabel = (payload) => {
+        form.pages[payload.page_id].fields[payload.field_id].columns.forEach((column) => {
+            if (column.id === payload.column_id) {
+                column.label = payload.label;
+            }
+        });
+        notifyDatabase();
+        return form.getState();
+    }
+
+    const changeTableRowLabel = (payload) => {
+        form.pages[payload.page_id].fields[payload.field_id].rows.forEach((row) => {
+            if (row.id === payload.row_id) {
+                row.label = payload.label;
+            }
+        });
+        notifyDatabase();
+        return form.getState();
+    }
+
+    const changeTableRowWidget = (payload) => {
+        form.pages[payload.page_id].fields[payload.field_id].rows.forEach((row) => {
+            if (row.id === payload.row_id) {
+                row.widget = payload.widget;
+            }
+        });
+        notifyDatabase();
+        return form.getState();
+    }
+
     const reducer = async (state, action) => {
         switch (action.type) {
             case 'changeFormName':
@@ -192,6 +266,20 @@ export const FormBuilderProvider = ({children}) => {
                 return deleteFileExtension(action.payload);
             case 'changeExtensionName':
                 return changeExtensionName(action.payload);
+            case 'deleteTableColumn':
+                return deleteTableColumn(action.payload);
+            case 'deleteTableRow':
+                return deleteTableRow(action.payload);
+            case 'changeTableRows':
+                return changeTableRows(action.payload);
+            case 'changeTableColumns':
+                return changeTableColumns(action.payload);
+            case 'changeTableColumnLabel':
+                return changeTableColumnLabel(action.payload);
+            case 'changeTableRowLabel':
+                return changeTableRowLabel(action.payload);
+            case 'changeTableRowWidget':
+                return changeTableRowWidget(action.payload);
             default:
                 throw Error;
         }

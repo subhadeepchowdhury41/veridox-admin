@@ -1,8 +1,10 @@
 import { Add } from '@mui/icons-material';
-import { Button, Paper, TextField } from '@mui/material';
+import { Box, Button, IconButton, Paper, TextField, Tooltip, Typography } from '@mui/material';
 import React from 'react';
 import { useFormBuilderContext } from '../../Providers/FormBuilderProvider';
 import PageItem from './PageItem/PageItem';
+import SaveIcon from '@mui/icons-material/Save';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 const FormBuilderPage = () => {
 
@@ -16,15 +18,37 @@ const FormBuilderPage = () => {
                 width: '100%',
                 display: 'inline-flex',
                 alignItems: 'center',
-                justifyContent: 'space-evenly'
+                justifyContent: 'space-between'
             }}>
-                <TextField id='formName' size='small' sx={{margin: '0 0.3em'}} value={state.name} onChange={(event) => {
-                    dispatch({type: 'changeFormName', payload: {name: event.target.value}});
-                }}/>
+                <Box sx={{width: '30%', display: 'inline'}}>
+                    <IconButton>
+                        <MoreVertIcon/>
+                    </IconButton>
+                    <Button variant='contained'>
+                        Import
+                    </Button>
+                </Box>
+                <Box sx={{width: '30%'}}>
+                    
+                    <TextField id='formName' size='small' label="Form Name" sx={{margin: '0 0.3em'}} value={state.name} onChange={(event) => {
+                        dispatch({type: 'changeFormName', payload: {name: event.target.value}});
+                    }}/>
+                </Box>
+                
 
-                <Button variant='text'>
-                    Save Form
-                </Button>
+                <Box sx={{width: '16%'}}>
+                    <Tooltip title="Save Form" arrow>
+                    
+                        <Button size='small' variant='contained'>
+                            <SaveIcon/>
+                            <Typography variant='overline' sx={{paddingLeft: '0.4em'}}>Save</Typography>
+                        </Button>
+                    </Tooltip>
+                </Box>
+
+                
+                
+                
 
             </div>
 
@@ -39,7 +63,8 @@ const FormBuilderPage = () => {
                 display: 'inline-flex',
                 
             }}>
-                <Paper onClick={() => dispatch({type: 'addPage'})} variant='outlined' sx={{
+                <Tooltip title="Add page">
+                    <Paper onClick={() => dispatch({type: 'addPage'})} variant='outlined' sx={{
                     width: '16em',
                     height: '9em',
                     '&:hover': {
@@ -57,6 +82,8 @@ const FormBuilderPage = () => {
                     </div>
 
                 </Paper>
+                </Tooltip>
+                
             </div>
             </div>
         </div>

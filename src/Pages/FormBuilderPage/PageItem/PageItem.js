@@ -1,5 +1,5 @@
 import { Delete, Edit } from '@mui/icons-material';
-import { IconButton, Paper } from '@mui/material';
+import { IconButton, Paper, Tooltip } from '@mui/material';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useFormBuilderContext } from '../../../Providers/FormBuilderProvider';
@@ -31,14 +31,20 @@ const FormItem = (props) => {
               Page {parseInt(props.page.id) + 1}
             </div>
             <div>
-                <IconButton onClick={() => (dispatch({type: 'deletePage', payload: {page_id: props.page.id}}))}>
-                    <Delete/>
-                </IconButton>
-                <IconButton onClick={() => {
-                  navigate('/dashboard/pageBuilder/' + props.page.id);
-                }}>
-                    <Edit/>
-                </IconButton>
+                <Tooltip title="Delete Page" arrow>
+                    <IconButton onClick={() => (dispatch({type: 'deletePage', payload: {page_id: props.page.id}}))}>
+                        <Delete/>
+                    </IconButton>
+                </Tooltip>
+                
+                <Tooltip title='Edit Page' arrow>
+                    <IconButton onClick={() => {
+                      navigate('/dashboard/pageBuilder/' + props.page.id);
+                    }}>
+                        <Edit/>
+                    </IconButton>
+                </Tooltip>
+                
             </div>
         </Paper>
     </div>);
