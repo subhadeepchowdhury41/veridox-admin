@@ -9,8 +9,6 @@ const FormItem = (props) => {
     const navigate = useNavigate();
 
     const {dispatch} = useFormBuilderContext();
-
-    console.log(props.page);
     return (
     <div style={{
         margin: '0.3em',

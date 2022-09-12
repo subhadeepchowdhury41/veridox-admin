@@ -1,4 +1,4 @@
-import { Add } from '@mui/icons-material';
+import { Add, Visibility, VisibilityOff } from '@mui/icons-material';
 import { Box, Button, IconButton, Paper, TextField, Tooltip, Typography } from '@mui/material';
 import React from 'react';
 import { useFormBuilderContext } from '../../Providers/FormBuilderProvider';
@@ -8,7 +8,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 const FormBuilderPage = () => {
 
-    const {state, dispatch} = useFormBuilderContext();
+    const {state, dispatch, preview, setPreview} = useFormBuilderContext();
      
     return (
         <div>
@@ -36,23 +36,25 @@ const FormBuilderPage = () => {
                 </Box>
                 
 
-                <Box sx={{width: '16%'}}>
-                    <Tooltip title="Save Form" arrow>
+                <Box sx={{width: '16%', display: 'inline-flex', }}>
+                    <Tooltip sx={{margin: '0 0.4em'}} title={preview ? 'Hide Preview' : 'Show Preview'}>
+                        <IconButton onClick={() => {
+                           setPreview(data => !data);
+                        }}>
+                           {preview ? <VisibilityOff/> : <Visibility/> }
+                        </IconButton>
+                    </Tooltip>
                     
-                        <Button size='small' variant='contained'>
+                    <Tooltip title="Save Form" arrow>
+                        <Button size='small' variant='contained' onClick={async () => {
+                            dispatch({type: 'saveForm'});
+                        }}>
                             <SaveIcon/>
                             <Typography variant='overline' sx={{paddingLeft: '0.4em'}}>Save</Typography>
                         </Button>
                     </Tooltip>
                 </Box>
-
-                
-                
-                
-
             </div>
-
-            
 
             <div style={{
                 textAlign: "center"

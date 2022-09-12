@@ -1,5 +1,5 @@
 import { Add, ArrowBackIosNew, Clear, Delete } from '@mui/icons-material';
-import { Button, IconButton, MenuItem, Select, TextField, Typography } from '@mui/material';
+import { Button, Grid, IconButton, MenuItem, Select, TextField, Typography } from '@mui/material';
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useFormBuilderContext } from '../../Providers/FormBuilderProvider';
@@ -10,6 +10,7 @@ import RequiredCheckBox from './RequiredCheckBox';
 import WordCounter from './WordCounter';
 import MultiLined from './MultiLined';
 import TableMaker from './TableMaker';
+import {StartDatePickerWidget, EndDatePickerWidget} from './DatePickerWidget';
 
 
 const PageBuilder = (props) => {
@@ -62,7 +63,7 @@ const PageBuilder = (props) => {
                             width: '90%',
                         }}>
                             <Box sx={{width: '40%'}}>
-                                <TextField size='small' label="Label" value={state.pages[id].fields[index].label} onChange={(event) => {
+                                <TextField multiline size='small' label="Label" value={state.pages[id].fields[index].label} onChange={(event) => {
                                   dispatch({type: "changeLabel", payload: {page_id: id, field_id: index, label: event.target.value}});
                                 }}/>
                             </Box>
@@ -135,6 +136,20 @@ const PageBuilder = (props) => {
                                   </IconButton>
                                 </div>);
                           }) : null}
+
+                          {state.pages[id].fields[index].widget === 'date-time' ?
+                            <div style={{width: '100%', margin: '0.6em 0'}}>
+                              <Grid container sx={{width: '100%'}}>
+                              <Grid item md={6}>
+                                <StartDatePickerWidget label='Start Date' page_id={id} field_id={index}/>
+                              </Grid>
+                              <Grid item md={6}>
+                                <EndDatePickerWidget label='End Date' page_id={id} field_id={index}/>
+                              </Grid>
+                            </Grid>
+                            </div>
+                            
+                           : null}
 
                           {state.pages[id].fields[index].options !== undefined ? state.pages[id].fields[index].options.map((option, ind) => {
                             return (<div key={ind} style={{
