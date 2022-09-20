@@ -12,10 +12,10 @@ const ChooseTemplatePage = () => {
     const navigate = useNavigate();
 
     const changeScreen = async (template) => {
-        sessionStorage.setItem("form", {
+        sessionStorage.setItem("form", JSON.stringify({
             name: template.name,
             pages: template.data
-        });
+        }));
         navigate('/dashboard/formBuilderPage');
        
     }
