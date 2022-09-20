@@ -16,7 +16,8 @@ const Forms = () => {
       <FormItem key={index} id={form.id} name={form.name}/>))}
       <Tooltip title="Create new Form" arrow>
         <IconButton sx={{
-          border: '1px solid grey'
+          border: '1px solid grey',
+          margin: '0.3em'
         }} onClick={() => {
           navigate('/dashboard/chooseTemplate');
         }}>

@@ -1,4 +1,4 @@
-import { createContext, useContext, useState} from "react";
+import { createContext, useContext, useEffect, useState} from "react";
 import {useAsyncReducer} from "./../Utils/CustomHooks";
 import Form from "../Models/FormModel";
 import Field from "../Models/FieldModel";
@@ -42,6 +42,24 @@ export const FormBuilderProvider = ({children}) => {
         return form.getState();
     }
 
+    const alertUser = (e) => {
+        e.preventDefault();
+        e.returnValue = null
+    }
+
+    useEffect(() => {
+        window.removeEventListener('beforeunload', alertUser)
+        window.addEventListener('unload', () => {
+            alert('Why are you running?');
+        });
+        return () => {
+            window.removeEventListener('beforeunload', alertUser)
+            window.removeEventListener('unload', () => {
+                alert('Why are you running?');
+            });
+        }
+    })
+
     const updateForm = async () => {
         await axios.put('http://veridocs.pythonanywhere.com/api/form/update/' + formId, {
                 'name': form.name,
@@ -61,6 +79,7 @@ export const FormBuilderProvider = ({children}) => {
     }
 
     const notifyDatabase = () => {
+        sessionStorage.setItem("form", JSON.stringify(form.getState()));
         if (preview) {
            set(ref(realtimeDB, 'forms/' + user.uid), form.getState()).then(() => {
            }).catch((err) => {

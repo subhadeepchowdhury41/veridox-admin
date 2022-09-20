@@ -2,7 +2,6 @@ import { Grid } from "@mui/material";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useFormBuilderContext } from "../../Providers/FormBuilderProvider";
 import TemplateItem from "./TemplateItem";
 
 
@@ -10,8 +9,16 @@ import TemplateItem from "./TemplateItem";
 const ChooseTemplatePage = () => {
     const [templates, setTemplates] = useState([]);
 
-    const {dispatch} = useFormBuilderContext();
     const navigate = useNavigate();
+
+    const changeScreen = async (template) => {
+        sessionStorage.setItem("form", {
+            name: template.name,
+            pages: template.data
+        });
+        navigate('/dashboard/formBuilderPage');
+       
+    }
 
     const getData = async () => {
         let data = [];
@@ -48,8 +55,7 @@ const ChooseTemplatePage = () => {
                         maxWidth: '200px'
                     }}>
                         <div onClick={() => {
-                            dispatch({type: 'newForm', payload: template})
-                            navigate('/dashboard/formBuilderPage');
+                            changeScreen(template);
                         }}>
                             <TemplateItem temp={template} />
                         </div>
