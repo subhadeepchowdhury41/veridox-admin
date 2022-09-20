@@ -21,7 +21,7 @@ export const FormBuilderProvider = ({children}) => {
     const saveForm = async () => {
         console.log(formId);
         if (formId === null || formId === undefined) {
-            await axios.post('http://veridocs.pythonanywhere.com/api/form/create', {
+            await axios.post('https://veridocs.pythonanywhere.com/api/form/create', {
                 'name': form.name,
                 'data': state.pages,
                 'createdBy': user.uid
@@ -61,7 +61,7 @@ export const FormBuilderProvider = ({children}) => {
     })
 
     const updateForm = async () => {
-        await axios.put('http://veridocs.pythonanywhere.com/api/form/update/' + formId, {
+        await axios.put('https://veridocs.pythonanywhere.com/api/form/update/' + formId, {
                 'name': form.name,
                 'data': state.pages,
                 'createdBy': user.uid
