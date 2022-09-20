@@ -34,10 +34,6 @@ export default class Form {
     }
 
     getState() {
-        // console.log({
-        //     name: this.name,
-        //     pages: this.pages.map((page) => ({name: page.name ?? 'new page', fields: page.fields ?? [], id: page.id}))
-        // });
         return {
             'name': this.name,
             'pages': this.pages.map((page) => ({'name': page.name ?? 'new page', 'fields': page.fields ?? [], 'id': page.id}))
@@ -47,12 +43,6 @@ export default class Form {
 
     setFormState(state) {
         this.name = state.name;
-        this.pages = [];
-        state.pages.forEach((value, index) => {
-            let page = new Page(value.name, value.fields);
-            page.id = index;
-            page.setPageState(value);
-            this.pages.push(page);
-        });
+        this.pages = state.data ?? [];
     }
 }

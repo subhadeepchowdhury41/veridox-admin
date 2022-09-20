@@ -15,6 +15,7 @@ import { WidgetTypeProvider } from './Providers/WidgetTypeProvider';
 import { FormsProvider } from './Providers/FormsProvider';
 import Forms from './Pages/Forms/Forms';
 import FormPreview from './Pages/FormPreview';
+import ChooseTemplatePage from './Pages/ChooseTempalatePage/ChooseTemplatePage';
 
 const App = () => {
   return (
@@ -36,6 +37,7 @@ const App = () => {
                           <Route path="forms" element={<Forms/>}>
                             <Route path=":id" element={<FormPreview/>}/>
                           </Route>
+                          <Route path="chooseTemplate" element={<ChooseTemplatePage/>}/>
                           <Route path="formBuilderPage" element={<FormBuilderPage/>}/>
                           <Route path="pageBuilder">
                             <Route path=":id" element={<PageBuilder/>}/>
