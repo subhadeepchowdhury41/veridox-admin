@@ -16,6 +16,10 @@ import { FormsProvider } from './Providers/FormsProvider';
 import Forms from './Pages/Forms/Forms';
 import FormPreview from './Pages/FormPreview';
 import ChooseTemplatePage from './Pages/ChooseTempalatePage/ChooseTemplatePage';
+import AssignmentsPage from './Pages/AssignmentsPage/AssignmentsPage';
+import AssignmentDetailsPage from './Pages/AssignmentsPage/AssignmentDetailsPage';
+import CreateAssignmentPage from './Pages/AssignmentsPage/CreateAssignmentPage';
+import { DraftAssignmentProvider } from './Providers/DraftAssignmentProvider';
 
 const App = () => {
   return (
@@ -25,6 +29,7 @@ const App = () => {
           <FormsProvider>
           <FormBuilderProvider>
             <WidgetTypeProvider>
+              <DraftAssignmentProvider>
               <div className="App">
                   <Router>
                     <Routes>
@@ -37,6 +42,11 @@ const App = () => {
                           <Route path="forms" element={<Forms/>}>
                             <Route path=":id" element={<FormPreview/>}/>
                           </Route>
+                          <Route path="assignment">
+                            <Route path=":id" element={<AssignmentDetailsPage/>}/>
+                            <Route path="create" element={<CreateAssignmentPage/>}/>
+                          </Route>
+                          <Route path="assignments" element={<AssignmentsPage/>}/>
                           <Route path="chooseTemplate" element={<ChooseTemplatePage/>}/>
                           <Route path="formBuilderPage" element={<FormBuilderPage/>}/>
                           <Route path="pageBuilder">
@@ -46,6 +56,7 @@ const App = () => {
                     </Routes>
                   </Router>
               </div>
+              </DraftAssignmentProvider>
             </WidgetTypeProvider>
           </FormBuilderProvider>
           </FormsProvider>

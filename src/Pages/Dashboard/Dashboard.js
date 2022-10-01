@@ -99,7 +99,7 @@ const Dashboard = () => {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div" sx={{fontWeight: "400"}}>
-            Veridox
+            VeriDocs
           </Typography>
           <IconButton style={{color: "white"}} onClick={() => {
             logOut(
@@ -143,9 +143,15 @@ const Dashboard = () => {
             </ListItem>
 
             <ListItem button onClick={() => {
-              navigate("/dashboard/forms");
+              navigate("/dashboard/forms", {state: {mode: 'create'}});
             }}>
               <ListItemText primary="Forms" />
+            </ListItem>
+
+            <ListItem button onClick={() => {
+              navigate("/dashboard/assignments");
+            }}>
+              <ListItemText primary="Assignments" />
             </ListItem>
 
             <ListItem button onClick={() => {
@@ -161,7 +167,9 @@ const Dashboard = () => {
             </ListItem>
             <Collapse in={openDocs1} timeout="auto" unmountOnExit>
               <List component="div" disablePadding>
-                <ListItem button sx={{ pl: 6 }}>
+                <ListItem button sx={{ pl: 6 }} onClick={() => {
+                  navigate("/dashboard/assignment/create")
+                }}>
                   <ListItemText primary="Assign" />
                 </ListItem>
                 <ListItem button sx={{ pl: 6 }}>

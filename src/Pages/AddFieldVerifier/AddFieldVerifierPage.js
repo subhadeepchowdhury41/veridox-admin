@@ -1,11 +1,11 @@
 import { PersonAdd } from '@mui/icons-material';
 import { Divider, Typography } from '@mui/material';
-import React from 'react';
 import AddRequestItem from '../../Elements/AddRequestItem/AddRequestItem';
 import { useAddRequestContext } from '../../Providers/AddRequestProvider';
 
 const AddFieldVerifierPage = () => {
     const {addReq} = useAddRequestContext();
+
     return (
         <div>
         <div style={{display: 'inline-flex', padding: "0 0.5em 0.5em 0"}}>

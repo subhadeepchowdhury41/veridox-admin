@@ -2,10 +2,11 @@ import { createContext, useContext, useEffect, useState} from "react";
 import {useAsyncReducer} from "./../Utils/CustomHooks";
 import Form from "../Models/FormModel";
 import Field from "../Models/FieldModel";
-import { realtimeDB } from "../Firebase/Firebase";
+import { database, realtimeDB } from "../Firebase/Firebase";
 import { ref, set } from "firebase/database";
 import { useAuthContext } from "./AuthProvider";
 import axios from "axios";
+import { doc, setDoc, updateDoc } from "firebase/firestore";
 
 const FormBuilderContext = createContext();
 const form = new Form("new form", {name: "new form", pages: []});
@@ -14,6 +15,7 @@ export const FormBuilderProvider = ({children}) => {
 
     const {user} = useAuthContext();
     const [formId, setFormId] = useState();
+    const [mode, setMode] = useState('view');
     const [preview, setPreview] = useState(false);
     
     let initialState = form.getState();
@@ -24,17 +26,21 @@ export const FormBuilderProvider = ({children}) => {
             await axios.post('https://veridocs.pythonanywhere.com/api/form/create', {
                 'name': form.name,
                 'data': state.pages,
-                'createdBy': user.uid
+                'createdBy': "e277WEBvF8YHSl32PONlPlvEjYo1"
             }, {
                 headers: {
                     "Content-type": "application/json",
                 }
-            }).then(res => {
+            }).then(async res => {
                 console.log(res.data);
                 setFormId(res.data.id);
+                await setDoc(doc(database, "agency/e277WEBvF8YHSl32PONlPlvEjYo1", "forms/" + res.data.id), {
+                    name: form.name,
+                    data: form.pages
+                });
             }).catch(err => {
                 console.log(err)
-            })
+            });
         } else {
             updateForm();
         }
@@ -64,17 +70,34 @@ export const FormBuilderProvider = ({children}) => {
         await axios.put('https://veridocs.pythonanywhere.com/api/form/update/' + formId, {
                 'name': form.name,
                 'data': state.pages,
-                'createdBy': user.uid
+                'createdBy': "e277WEBvF8YHSl32PONlPlvEjYo1"
             }, {
                 headers: {
                     "Content-type": "application/json",
                 }
             }
-        ).then(res => {
+        ).then(async res => {
             console.log(res.data);
+            await updateDoc(doc(database, "agency/e277WEBvF8YHSl32PONlPlvEjYo1", "forms/" + res.data.id), {
+                name: form.name,
+                data: form.pages
+            });
         }).catch(err => {
             console.log(err)
         })
+        return form.getState();
+    }
+
+    const loadForm = (template) => {
+        console.log(template);
+        if (template.id !== null && template.id !== undefined) {
+            setFormId(template.id);
+        }
+        sessionStorage.setItem("form", JSON.stringify({
+            name: template.name,
+            pages: template.data ?? []
+        }));
+        form.setFormState(template);
         return form.getState();
     }
 
@@ -84,7 +107,7 @@ export const FormBuilderProvider = ({children}) => {
            set(ref(realtimeDB, 'forms/' + user.uid), form.getState()).then(() => {
            }).catch((err) => {
                console.log(err);
-           }); 
+           });
         }
     }
 
@@ -306,7 +329,6 @@ export const FormBuilderProvider = ({children}) => {
     }
 
     const addEndDate = (payload) => {
-
         form.pages[payload.page_id].fields[payload.field_id].end_date = payload.end_date;
         notifyDatabase();
         return form.getState();
@@ -366,6 +388,8 @@ export const FormBuilderProvider = ({children}) => {
                 return addEndDate(action.payload);
             case 'saveForm':
                 return saveForm();
+            case 'loadForm':
+                return loadForm(action.payload);
             default:
                 throw Error;
         }
@@ -374,7 +398,8 @@ export const FormBuilderProvider = ({children}) => {
 
     const [state, dispatch] = useAsyncReducer(reducer, initialState);
 
-    return (<FormBuilderContext.Provider value={{state, dispatch, preview, setPreview}}>
+    return (<FormBuilderContext.Provider value={{state, dispatch, preview, setPreview,
+        saveForm, formId, mode, setMode}}>
         {children}
     </FormBuilderContext.Provider>);
 }

@@ -1,10 +1,21 @@
 import { Box, IconButton, Paper } from '@mui/material';
 import React from 'react';
-import {PersonAdd, ClearTwoTone} from '@mui/icons-material';
+import { ClearTwoTone, Add} from '@mui/icons-material';
 import './AddRequestItem.css';
+import { deleteDoc, doc, setDoc } from 'firebase/firestore';
+import { database } from '../../Firebase/Firebase';
+// import { useAuthContext } from '../../Providers/AuthProvider';
 
 
 const AddRequestItem = (props) => {
+
+    // const {user} = useAuthContext();
+
+    const addFv = async (uid, data) => {
+        await deleteDoc(doc(database, "agency/e277WEBvF8YHSl32PONlPlvEjYo1/add_requests", uid));
+        await setDoc(doc(database, "field_verifier", uid), data);
+    }
+
     return (
         <div key={props.index} style={{
             display: "flex",
@@ -41,11 +52,13 @@ const AddRequestItem = (props) => {
                }}>
                 <ClearTwoTone/>
               </IconButton>
-              <IconButton sx={{
+              <IconButton onClick={() => {
+                addFv(props.id, props);
+              }} sx={{
                 color: 'lightGreen',
                 border: '0.5px solid lightGreen'
                 }}>
-                <PersonAdd/>
+                <Add/>
               </IconButton>
               </Box>
               

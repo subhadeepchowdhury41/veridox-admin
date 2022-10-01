@@ -69,7 +69,9 @@ const PageBuilder = (props) => {
                             </Box>
                             
                             <Box sx={{width: '40%'}}>
-                              <Select size='small' label="Widget" value={state.pages[id].fields[index].widget ?? "select widget type"}
+                              <Select size='small' label="Widget" sx={{
+                                minWidth: '140px'
+                              }} value={state.pages[id].fields[index].widget ?? "select widget type"}
                                 onChange={(event) => {
                                   dispatch({type: 'changeWidget', payload: {page_id: id, field_id: index, widget: event.target.value}})
                                 }}>

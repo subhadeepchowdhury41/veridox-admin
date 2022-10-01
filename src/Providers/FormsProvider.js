@@ -19,8 +19,8 @@ export const FormsProvider = ({children}) => {
         const unsubscribe = onSnapshot(collection(database, "agency/e277WEBvF8YHSl32PONlPlvEjYo1/forms"), 
         (snapshot) => {
             let data = [];
-            snapshot.docs.forEach((doc, index) => {
-                data.push({...doc.data(), id: index});
+            snapshot.docs.forEach((doc) => {
+                data.push({...doc.data()});
             });
             setForms(data);
         });

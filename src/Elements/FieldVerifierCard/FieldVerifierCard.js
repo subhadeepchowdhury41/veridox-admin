@@ -1,7 +1,13 @@
 import { Box, Button, Paper } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { useDraftAssignmentContext } from "../../Providers/DraftAssignmentProvider";
 import "./FieldVerifierCard.css";
 
 const FieldVerifierCard = (props) => {
+
+  const navigate = useNavigate();
+  const {getFv} = useDraftAssignmentContext();
+
     return (
         <div key={props.key} style={{
             display: "flex",
@@ -30,8 +36,11 @@ const FieldVerifierCard = (props) => {
               <Box className="OverflowTextContainer" sx={{width: "20%"}}>
                 +91-{props.number ?? 8768715527}
               </Box>
-              <Button size="small" variant="outlined">View</Button>
-              {props.select === 1 ? <Button size="small" variant="contained">Choose</Button> : null}
+              <Button size="small" variant="outlined" >View</Button>
+              {props.select === 1 ? <Button size="small" onClick={() => {
+                getFv(props.uid);
+                navigate("/dashboard/assignment/create");
+              }} variant="contained">Choose</Button> : null}
             </Paper>
         </div>
     );

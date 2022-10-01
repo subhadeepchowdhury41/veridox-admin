@@ -11,8 +11,6 @@ const FieldVerifierPage = () => {
 
   const {mode} = state;
 
-  console.log(fvs);
-
   return (
       <div>
         {fvs.map((element, index) => (

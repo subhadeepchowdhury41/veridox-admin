@@ -2,6 +2,7 @@ import Page from "./PageModel";
 
 export default class Form {
     constructor(name, initialState) {
+        console.log(".......");
         const prev = JSON.parse(sessionStorage.getItem("form"));
         if (prev !== null) {
             this.setFormState({
@@ -50,6 +51,5 @@ export default class Form {
     setFormState(state) {
         this.name = state.name;
         this.pages = state.data ?? [];
-        console.log(this.getState());
     }
 }
