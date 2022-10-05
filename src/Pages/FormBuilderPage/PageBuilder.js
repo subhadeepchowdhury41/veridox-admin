@@ -1,5 +1,5 @@
 import { Add, ArrowBackIosNew, Clear, Delete } from '@mui/icons-material';
-import { Button, Grid, IconButton, MenuItem, Select, TextField, Typography } from '@mui/material';
+import { Button, Grid, IconButton, MenuItem, TextField, Typography } from '@mui/material';
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useFormBuilderContext } from '../../Providers/FormBuilderProvider';
@@ -69,7 +69,7 @@ const PageBuilder = (props) => {
                             </Box>
                             
                             <Box sx={{width: '40%'}}>
-                              <Select size='small' label="Widget" sx={{
+                              <TextField select size='small' label="Widget" sx={{
                                 minWidth: '140px'
                               }} value={state.pages[id].fields[index].widget ?? "select widget type"}
                                 onChange={(event) => {
@@ -80,7 +80,7 @@ const PageBuilder = (props) => {
                                       {widget.name}
                                   </MenuItem>
                                ))}
-                              </Select>
+                              </TextField>
                             </Box>
                             <RequiredCheckBox page_id={id} field_id={index}/>
                           

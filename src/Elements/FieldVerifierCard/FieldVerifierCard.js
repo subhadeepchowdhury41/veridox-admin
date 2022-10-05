@@ -1,12 +1,26 @@
 import { Box, Button, Paper } from "@mui/material";
+import { doc, getDoc } from "firebase/firestore";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { database } from "../../Firebase/Firebase";
 import { useDraftAssignmentContext } from "../../Providers/DraftAssignmentProvider";
 import "./FieldVerifierCard.css";
 
 const FieldVerifierCard = (props) => {
-
+  
+  const [fv, setFv] = useState({});
   const navigate = useNavigate();
   const {getFv} = useDraftAssignmentContext();
+
+  const getFvData = async () => {
+    await getDoc(doc(database, "field_verifier", props.uid)).then((snapshot) => {
+      setFv(snapshot.data() ?? {});
+    });
+  }
+
+  useEffect(() => {
+    getFvData();
+  });
 
     return (
         <div key={props.key} style={{
@@ -30,11 +44,11 @@ const FieldVerifierCard = (props) => {
               </Box>
 
               <Box className="OverflowTextContainer" sx={{width: "30%"}}>
-                {props.name}
+                {fv.name ?? ''}
               </Box>
               
               <Box className="OverflowTextContainer" sx={{width: "20%"}}>
-                +91-{props.number ?? 8768715527}
+                {fv.phone ?? 8768715527}
               </Box>
               <Button size="small" variant="outlined" >View</Button>
               {props.select === 1 ? <Button size="small" onClick={() => {

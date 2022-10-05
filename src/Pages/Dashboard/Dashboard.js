@@ -18,6 +18,7 @@ import { ExpandLess, ExpandMore, Logout } from '@mui/icons-material';
 import ListItemText from '@mui/material/ListItemText';
 import {useAuthContext} from '../../Providers/AuthProvider';
 import { Outlet, useNavigate } from 'react-router-dom';
+import { useFormBuilderContext } from '../../Providers/FormBuilderProvider';
 
 const drawerWidth = 240;
 
@@ -70,7 +71,8 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 }));
 
 const Dashboard = () => {
-  
+  const {setMode} = useFormBuilderContext();
+
   const theme = useTheme();
   const { logOut } = useAuthContext();
 
@@ -155,7 +157,8 @@ const Dashboard = () => {
             </ListItem>
 
             <ListItem button onClick={() => {
-              navigate("/dashboard/formBuilderPage");
+              setMode('create');
+              navigate("/dashboard/formBuilderPage", {state: {mode: 'create'}});
             }}>
               <ListItemText primary="Form Builder" />
             </ListItem>

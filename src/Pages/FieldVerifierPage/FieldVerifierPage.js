@@ -15,9 +15,8 @@ const FieldVerifierPage = () => {
       <div>
         {fvs.map((element, index) => (
           <div key={index}>
-            <FieldVerifierCard name={element.name}
-              uid={element.uid}
-              number={element.number}
+            <FieldVerifierCard
+              uid={element}
               select={mode === "select" ? 1 : 0}/>
           </div>
         ))}

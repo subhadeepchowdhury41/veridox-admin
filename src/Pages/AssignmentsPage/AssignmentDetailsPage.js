@@ -93,7 +93,6 @@ const AssignmentDetailsPage = () => {
           <div style={{justifyContent: 'center', display: 'flex', margin: '0.5em', width: '100%'}}>
             {assignment.assigned_at}
           </div>
-          
         </Grid>
         <Grid item lg={6} md={12} style={{display: 'flex', borderBottom: '1px solid grey', width: '100%'}}>
           <div style={{color: 'grey', height: '100%', backgroundColor: 'whitesmoke',

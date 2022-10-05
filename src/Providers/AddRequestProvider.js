@@ -1,6 +1,7 @@
 import { collection, onSnapshot } from "firebase/firestore";
 import { createContext, useContext, useEffect, useState } from "react";
 import { database } from "../Firebase/Firebase";
+import { useAuthContext } from "./AuthProvider";
 
 
 const AddRequestContext = createContext();
@@ -8,8 +9,12 @@ const AddRequestContext = createContext();
 export const AddRequestProvider = ({children}) => {
     const [addReq, setAddReq] = useState([]);
 
+    const {user} = useAuthContext();
+
     useEffect(() => {
-        const unsubscribe = onSnapshot(collection(database, 'agency/e277WEBvF8YHSl32PONlPlvEjYo1/add_requests'), 
+        let unsubscribe = () => {};
+        if (user.uid !== null && user.uid !== undefined) {
+            unsubscribe = onSnapshot(collection(database, `agency/${user.uid}/add_requests`), 
             (snapshot) => {
                 let data = [];
                 snapshot.docs.forEach((element) => {
@@ -17,10 +22,11 @@ export const AddRequestProvider = ({children}) => {
                 });
                 setAddReq(data);
             });
+        }
         return () => {
             unsubscribe();
         }
-    }, []);
+    }, [user.uid]);
 
     return (<AddRequestContext.Provider value={{addReq}}>
       {children}

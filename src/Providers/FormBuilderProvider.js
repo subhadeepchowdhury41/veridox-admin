@@ -21,12 +21,11 @@ export const FormBuilderProvider = ({children}) => {
     let initialState = form.getState();
 
     const saveForm = async () => {
-        console.log(formId);
         if (formId === null || formId === undefined) {
             await axios.post('https://veridocs.pythonanywhere.com/api/form/create', {
                 'name': form.name,
                 'data': state.pages,
-                'createdBy': "e277WEBvF8YHSl32PONlPlvEjYo1"
+                'createdBy': user.uid
             }, {
                 headers: {
                     "Content-type": "application/json",
@@ -34,7 +33,7 @@ export const FormBuilderProvider = ({children}) => {
             }).then(async res => {
                 console.log(res.data);
                 setFormId(res.data.id);
-                await setDoc(doc(database, "agency/e277WEBvF8YHSl32PONlPlvEjYo1", "forms/" + res.data.id), {
+                await setDoc(doc(database, "agency/" + user.uid, "forms/" + res.data.id), {
                     name: form.name,
                     data: form.pages
                 });
@@ -70,15 +69,14 @@ export const FormBuilderProvider = ({children}) => {
         await axios.put('https://veridocs.pythonanywhere.com/api/form/update/' + formId, {
                 'name': form.name,
                 'data': state.pages,
-                'createdBy': "e277WEBvF8YHSl32PONlPlvEjYo1"
+                'createdBy': user.uid
             }, {
                 headers: {
                     "Content-type": "application/json",
                 }
             }
         ).then(async res => {
-            console.log(res.data);
-            await updateDoc(doc(database, "agency/e277WEBvF8YHSl32PONlPlvEjYo1", "forms/" + res.data.id), {
+            await updateDoc(doc(database, "agency/" + user.uid, "forms/" + res.data.id), {
                 name: form.name,
                 data: form.pages
             });

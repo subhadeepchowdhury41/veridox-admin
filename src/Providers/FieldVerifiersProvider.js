@@ -1,6 +1,7 @@
-import { collection, onSnapshot } from "firebase/firestore";
+import { doc, onSnapshot } from "firebase/firestore";
 import { createContext, useContext, useEffect, useState } from "react";
 import { database } from "../Firebase/Firebase";
+import { useAuthContext } from "./AuthProvider";
 
 const FieldVerifiersContext = createContext();
 
@@ -8,19 +9,24 @@ export const FieldVerifiersProvider = ({children}) => {
 
     const [fvs, setFvs] = useState([]);
 
+    const {user } = useAuthContext();
+
     useEffect(() => {
-        const unsubscribe = onSnapshot(collection(database, "field_verifier"),
+        let unsubscribe = () => {};
+        if (user.uid !== null && user.uid !== undefined) {
+          unsubscribe = onSnapshot(doc(database, "agency", user.uid),
           (snapshot) => {
             let data = [];
-            snapshot.docs.forEach((doc, index) => {
-                data.push({...doc.data(), key: index, uid: doc.id});
-            })
+            snapshot.data().field_verifiers.forEach((fv) => {
+                data.push(fv);
+            });
             setFvs(data);
           });
+        }
         return () => {
             unsubscribe();
         };
-    }, []);
+    });
 
     return (
         <FieldVerifiersContext.Provider value={{fvs}}>

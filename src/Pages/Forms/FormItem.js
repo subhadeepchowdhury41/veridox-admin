@@ -36,10 +36,17 @@ const FormItem = (props) => {
                 <Button variant="contained" size='small' onClick={() => {
                     setForm(props.form);
                     navigate("/dashboard/assignment/create");
-                }}>Choose</Button> : <Button variant="contained" size='small' onClick={() => {
+                }}>Choose</Button> : (<div><Button variant="contained" size='small' onClick={() => {
                     dispatch({type: 'loadForm', payload: props.form});
                     navigate('/dashboard/formBuilderPage', {state: {mode: 'edit'}})
-                }}>Edit</Button>}
+                }}>Edit</Button>
+                  <Button variant='contained' size='small'
+                    sx={{backgroundColor: 'red',
+                      '&:hover': {
+                        backgroundColor: 'darkred'
+                      }
+                    }}>Delete</Button>
+                </div>)}
             </Box>
         </Paper>
     </div>);

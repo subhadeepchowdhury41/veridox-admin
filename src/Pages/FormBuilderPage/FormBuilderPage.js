@@ -28,7 +28,7 @@ const FormBuilderPage = () => {
                     <IconButton>
                         <MoreVertIcon/>
                     </IconButton>
-                    <Button variant='contained'>
+                    <Button variant='contained' size='small'>
                         Import
                     </Button>
                 </Box>

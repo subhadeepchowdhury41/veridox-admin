@@ -6,7 +6,7 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({children}) => {
 
-    const [user, setUser] = useState();
+    const [user, setUser] = useState({});
 
     const logOut = (onSuccess) => {
         try {
@@ -20,7 +20,7 @@ export const AuthProvider = ({children}) => {
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(authentication, (currentUser) => {
             setUser(currentUser);
-            console.log(user);
+            console.log(user.uid);
         })
         return () => {
             unsubscribe();

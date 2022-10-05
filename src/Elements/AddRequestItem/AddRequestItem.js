@@ -2,17 +2,25 @@ import { Box, IconButton, Paper } from '@mui/material';
 import React from 'react';
 import { ClearTwoTone, Add} from '@mui/icons-material';
 import './AddRequestItem.css';
-import { deleteDoc, doc, setDoc } from 'firebase/firestore';
+import { deleteDoc, doc, setDoc, updateDoc } from 'firebase/firestore';
 import { database } from '../../Firebase/Firebase';
-// import { useAuthContext } from '../../Providers/AuthProvider';
+import { useAuthContext } from '../../Providers/AuthProvider';
+import { useFieldVerifiersContext } from '../../Providers/FieldVerifiersProvider';
 
 
 const AddRequestItem = (props) => {
 
-    // const {user} = useAuthContext();
+    const {user} = useAuthContext();
+    const {fvs} = useFieldVerifiersContext();
 
     const addFv = async (uid, data) => {
-        await deleteDoc(doc(database, "agency/e277WEBvF8YHSl32PONlPlvEjYo1/add_requests", uid));
+        await deleteDoc(doc(database, `agency/${user.uid}/add_requests`, uid));
+        await updateDoc(doc(database, "agency", user.uid), {
+          field_verifiers: [...fvs, uid]
+        });
+        await updateDoc(doc(database, "add_requests", uid), {
+          status: 'accepted'
+        })
         await setDoc(doc(database, "field_verifier", uid), data);
     }
 
@@ -43,7 +51,7 @@ const AddRequestItem = (props) => {
               </Box>
               
               <Box className="OverflowTextContainer" sx={{width: "20%"}}>
-                +91-{props.number ?? 8768715527}
+                {props.phone}
               </Box>
 
               <Box sx={{width: '15%'}}>
