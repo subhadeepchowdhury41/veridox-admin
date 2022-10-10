@@ -20,7 +20,7 @@ export const FormsProvider = ({children}) => {
         (snapshot) => {
             let data = [];
             snapshot.docs.forEach((doc) => {
-                data.push({...doc.data()});
+                data.push({...doc.data(), id: doc.id});
             });
             setForms(data);
         });

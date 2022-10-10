@@ -50,7 +50,9 @@ const FieldVerifierCard = (props) => {
               <Box className="OverflowTextContainer" sx={{width: "20%"}}>
                 {fv.phone ?? 8768715527}
               </Box>
-              <Button size="small" variant="outlined" >View</Button>
+              <Button size="small" variant="outlined" onClick={() => {
+                navigate('/dashboard/fieldVerifier/' + props.uid);
+              }}>View</Button>
               {props.select === 1 ? <Button size="small" onClick={() => {
                 getFv(props.uid);
                 navigate("/dashboard/assignment/create");

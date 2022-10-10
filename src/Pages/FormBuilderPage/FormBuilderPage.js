@@ -13,7 +13,7 @@ const FormBuilderPage = () => {
     const navigate = useNavigate();
 
     const {state, dispatch, preview, setPreview,
-        setMode, formId, mode} = useFormBuilderContext();
+        setMode, setFormId, formId, mode} = useFormBuilderContext();
     
     return (
         <div>
@@ -55,8 +55,11 @@ const FormBuilderPage = () => {
                         <Button size='small' variant='contained' sx={{
                             margin: '0.4em'
                         }} onClick={() => {
+                            setFormId(null);
                             setForm({name: state.name, data: state.pages});
+                            dispatch({type: 'saveForm'});
                             navigate('/dashboard/assignment/create');
+                            setFormId(null);
                             setMode('view');
                         }}>
                             Assign

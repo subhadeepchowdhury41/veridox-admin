@@ -20,6 +20,7 @@ import AssignmentsPage from './Pages/AssignmentsPage/AssignmentsPage';
 import AssignmentDetailsPage from './Pages/AssignmentsPage/AssignmentDetailsPage';
 import CreateAssignmentPage from './Pages/AssignmentsPage/CreateAssignmentPage';
 import { DraftAssignmentProvider } from './Providers/DraftAssignmentProvider';
+import FieldVerifierDetailsPage from './Pages/FieldVerifierPage/FieldVerifierDetailPage';
 
 const App = () => {
   return (
@@ -39,6 +40,9 @@ const App = () => {
                           <Route path="summary" element={<SummaryPage/>}/>
                           <Route path="fieldVerifierPage" element={<FieldVerifierPage/>}/>
                           <Route path="addFieldVerifierPage" element={<AddFieldVerifierPage/>}/>
+                          <Route path="fieldVerifier">
+                            <Route path=":id" element={<FieldVerifierDetailsPage/>}/>
+                          </Route>
                           <Route path="forms" element={<Forms/>}>
                             <Route path=":id" element={<FormPreview/>}/>
                           </Route>

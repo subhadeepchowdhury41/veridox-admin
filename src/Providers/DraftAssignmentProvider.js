@@ -21,7 +21,6 @@ export const DraftAssignmentProvider = ({children}) => {
     const [form, setForm] = useState({});
 
     const getFv = async (uid) => {
-       console.log(uid);
        setGettingFv(true);
        if (uid !== undefined ) {
             await getDoc(doc(database, "field_verifier", uid)).then((snapshot) => {
@@ -61,6 +60,9 @@ export const DraftAssignmentProvider = ({children}) => {
                 await setDoc(doc(database, "assignments/" + assId, "form_data/data"), {...form}).then(async (snapshot) => {
                     await setDoc(doc(database, "field_verifier/" + assignment.assigned_to, "assignments/" + assId), {
                         agency: user.uid,
+                        applicant_address: assignment.applicant_address,
+                        applicant_name: assignment.applicant_name,
+                        applicant_phone: assignment.applicant_phone,
                         document_type: assignment.document_type,
                         assigned_at: `${date.getDate()}/${date.getMonth()}/${date.getFullYear()}`,
                         status: "assigned"
@@ -84,8 +86,6 @@ export const DraftAssignmentProvider = ({children}) => {
     }
 
     useEffect(() => {
-        console.log(user.uid);
-
         if (user.uid != null && user.uid !== undefined) {
             setIsLoading(true);
             getAssignment();

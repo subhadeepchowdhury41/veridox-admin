@@ -1,6 +1,7 @@
 import { Add } from "@mui/icons-material";
 import { IconButton, Tooltip } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useFormBuilderContext } from "../../Providers/FormBuilderProvider";
 import { useFormsContext } from "../../Providers/FormsProvider";
 import FormItem from "./FormItem";
 
@@ -9,6 +10,7 @@ const Forms = () => {
 
     const navigate = useNavigate();
     const {state } = useLocation();
+    const {setFormId} = useFormBuilderContext();
     
     const {mode} = state;
 
@@ -20,6 +22,7 @@ const Forms = () => {
           border: '1px solid grey',
           margin: '0.3em'
         }} onClick={() => {
+          setFormId(null);
           navigate('/dashboard/chooseTemplate', {state: {mode: mode}});
         }}>
           <Add />
