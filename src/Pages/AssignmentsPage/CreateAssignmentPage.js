@@ -37,40 +37,7 @@ const CreateAssignmentPage = () => {
             }}/>
           </div>
         </Grid>
-        <Grid item lg={6} style={{display: 'flex', borderBottom: '1px solid grey',
-          width: '100%'
-        }}>
-          <div style={{color: 'grey', height: '100%', backgroundColor: 'whitesmoke',
-            alignItems: 'center',
-            display: 'flex',
-            justifyContent: 'center',
-            minWidth: '25%'}}>
-            Address
-          </div>
-          <div style={{width: '100%', justifyContent: 'center', display: 'flex', margin: '0.5em'}}>
-            <TextField value={assignment.applicant_address ?? ""} label="Applicant Address" size="small" onChange={(val) => {
-              setAssignment({...assignment, applicant_address: val.target.value});
-            }}/>
-          </div>
-          
-        </Grid>
-        <Grid item lg={6} md={12} style={{display: 'flex', borderBottom: '1px solid grey',
-          width: '100%'
-        }}>
-          <div style={{color: 'grey', backgroundColor: 'whitesmoke',
-            alignItems: 'center',
-            display: 'flex',
-            justifyContent: 'center',
-            minWidth: '25%'}}>
-            Address
-          </div>
-          <div style={{display: 'flex', justifyContent: 'center', margin: '0.5em', width: '100%'}}>
-            <TextField value={assignment.address ?? ""} label="Address" size="small" onChange={(val) => {
-              setAssignment({...assignment, address: val.target.value});
-            }}/>
-          </div>
-        </Grid>
-        
+
         <Grid item lg={6} style={{display: 'flex', width: '100%', borderBottom: '1px solid grey', }}>
         <div style={{color: 'grey', height: '100%', backgroundColor: 'whitesmoke',
             alignItems: 'center',
@@ -85,10 +52,79 @@ const CreateAssignmentPage = () => {
             }}/>
           </div>
         </Grid>
+
+        <Grid item lg={6} style={{display: 'flex', borderBottom: '1px solid grey',
+          width: '100%'
+        }}>
+          <div style={{color: 'grey', height: '100%', backgroundColor: 'whitesmoke',
+            alignItems: 'center',
+            display: 'flex',
+            justifyContent: 'center',
+            minWidth: '25%'}}>
+            Pincode
+          </div>
+          <div style={{width: '100%', justifyContent: 'center', display: 'flex', margin: '0.5em'}}>
+            <TextField value={assignment.applicant_pincode ?? ""} label="Applicant Pincode" size="small" onChange={(val) => {
+              setAssignment({...assignment, applicant_pincode: val.target.value});
+            }}/>
+          </div>
+        </Grid>
+
+        <Grid item lg={6} md={12} style={{display: 'flex', borderBottom: '1px solid grey',
+          width: '100%'
+        }}>
+          <div style={{color: 'grey', backgroundColor: 'whitesmoke',
+            alignItems: 'center',
+            display: 'flex',
+            justifyContent: 'center',
+            minWidth: '25%'}}>
+            Post Office
+          </div>
+          <div style={{display: 'flex', justifyContent: 'center', margin: '0.5em', width: '100%'}}>
+            <TextField value={assignment.applicant_post_office ?? ""} label="Applicant Post Office" size="small" onChange={(val) => {
+              setAssignment({...assignment, applicant_post_office: val.target.value});
+            }}/>
+          </div>
+        </Grid>
+        
+        <Grid item lg={6} style={{display: 'flex', borderBottom: '1px solid grey',
+          width: '100%'
+        }}>
+          <div style={{color: 'grey', height: '100%', backgroundColor: 'whitesmoke',
+            alignItems: 'center',
+            display: 'flex',
+            justifyContent: 'center',
+            minWidth: '25%'}}>
+            District/City
+          </div>
+          <div style={{width: '100%', justifyContent: 'center', display: 'flex', margin: '0.5em'}}>
+            <TextField value={assignment.applicant_city ?? ""} label="Applicant District/City" size="small" onChange={(val) => {
+              setAssignment({...assignment, applicant_city: val.target.value});
+            }}/>
+          </div>
+          
+        </Grid>
+
+        <Grid item lg={6} style={{display: 'flex', width: '100%', borderBottom: '1px solid grey', }}>
+        <div style={{color: 'grey', height: '100%', backgroundColor: 'whitesmoke',
+            alignItems: 'center',
+            display: 'flex',
+            justifyContent: 'center',
+            minWidth: '25%'}}>
+            State
+          </div>
+          <div style={{justifyContent: 'center', display: 'flex', margin: '0.5em', width: '100%'}}>
+            <TextField value={assignment.applicant_state ?? ""} label="Applicant State" size="small" onChange={(val) => {
+              setAssignment({...assignment, applicant_state: val.target.value});
+            }}/>
+          </div>
+        </Grid>
+        
       </Grid>
       Co-applicant Details
       <hr style={{margin: '0.4em 0 2em 0'}}/>
       <Grid container sx={{
+        marginBottom: '1em',
         borderRadius: '3px',
         border: '1px solid grey',
         borderBottomColor: 'transparent',
@@ -105,46 +141,12 @@ const CreateAssignmentPage = () => {
             Name
           </div>
           <div style={{width: '100%', justifyContent: 'center', display: 'flex', margin: '0.5em'}}>
-            <TextField value={assignment.coapplicant_name ?? ""} label="Co-applicant Name" size="small" onChange={(val) => {
+            <TextField value={assignment.coapplicant_name ?? ""} label="Co-Applicant Name" size="small" onChange={(val) => {
               setAssignment({...assignment, coapplicant_name: val.target.value});
             }}/>
           </div>
-          
         </Grid>
-        <Grid item lg={6} style={{display: 'flex', borderBottom: '1px solid grey',
-          width: '100%'
-        }}>
-          <div style={{color: 'grey', height: '100%', backgroundColor: 'whitesmoke',
-            alignItems: 'center',
-            display: 'flex',
-            justifyContent: 'center',
-            minWidth: '25%'}}>
-              Address
-          </div>
-          <div style={{width: '100%', justifyContent: 'center', display: 'flex', margin: '0.5em'}}>
-            <TextField value={assignment.coapplicant_address ?? ""} label="Co-applicant Address" size="small" onChange={(val) => {
-              setAssignment({...assignment, coapplicant_address: val.target.value});
-            }}/>
-          </div>
-          
-        </Grid>
-        <Grid item lg={6} md={12} style={{display: 'flex', borderBottom: '1px solid grey',
-          width: '100%'
-        }}>
-          <div style={{color: 'grey', backgroundColor: 'whitesmoke',
-            alignItems: 'center',
-            display: 'flex',
-            justifyContent: 'center',
-            minWidth: '25%'}}>
-            Address 
-          </div>
-          <div style={{display: 'flex', justifyContent: 'center', margin: '0.5em', width: '100%'}}>
-            <TextField value={assignment.address ?? ""} label="Address" size="small" onChange={(val) => {
-              setAssignment({...assignment, address: val.target.value});
-            }}/>
-          </div>
-        </Grid>
-        
+
         <Grid item lg={6} style={{display: 'flex', width: '100%', borderBottom: '1px solid grey', }}>
         <div style={{color: 'grey', height: '100%', backgroundColor: 'whitesmoke',
             alignItems: 'center',
@@ -154,8 +156,75 @@ const CreateAssignmentPage = () => {
             Phone
           </div>
           <div style={{justifyContent: 'center', display: 'flex', margin: '0.5em', width: '100%'}}>
-            <TextField value={assignment.coapplicant_phone ?? ""} label="Co-applicant Phone" size="small" onChange={(val) => {
+            <TextField value={assignment.coapplicant_phone ?? ""} label="Co-Applicant Phone" size="small" onChange={(val) => {
               setAssignment({...assignment, coapplicant_phone: val.target.value});
+            }}/>
+          </div>
+        </Grid>
+
+        <Grid item lg={6} style={{display: 'flex', borderBottom: '1px solid grey',
+          width: '100%'
+        }}>
+          <div style={{color: 'grey', height: '100%', backgroundColor: 'whitesmoke',
+            alignItems: 'center',
+            display: 'flex',
+            justifyContent: 'center',
+            minWidth: '25%'}}>
+            Pincode
+          </div>
+          <div style={{width: '100%', justifyContent: 'center', display: 'flex', margin: '0.5em'}}>
+            <TextField value={assignment.coapplicant_pincode ?? ""} label="Co-Applicant Pincode" size="small" onChange={(val) => {
+              setAssignment({...assignment, coapplicant_pincode: val.target.value});
+            }}/>
+          </div>
+        </Grid>
+
+        <Grid item lg={6} md={12} style={{display: 'flex', borderBottom: '1px solid grey',
+          width: '100%'
+        }}>
+          <div style={{color: 'grey', backgroundColor: 'whitesmoke',
+            alignItems: 'center',
+            display: 'flex',
+            justifyContent: 'center',
+            minWidth: '25%'}}>
+            Post Office
+          </div>
+          <div style={{display: 'flex', justifyContent: 'center', margin: '0.5em', width: '100%'}}>
+            <TextField value={assignment.coapplicant_post_office ?? ""} label="Co-Applicant Post Office" size="small" onChange={(val) => {
+              setAssignment({...assignment, coapplicant_post_office: val.target.value});
+            }}/>
+          </div>
+        </Grid>
+        
+        <Grid item lg={6} style={{display: 'flex', borderBottom: '1px solid grey',
+          width: '100%'
+        }}>
+          <div style={{color: 'grey', height: '100%', backgroundColor: 'whitesmoke',
+            alignItems: 'center',
+            display: 'flex',
+            justifyContent: 'center',
+            minWidth: '25%'}}>
+            District/City
+          </div>
+          <div style={{width: '100%', justifyContent: 'center', display: 'flex', margin: '0.5em'}}>
+            <TextField value={assignment.coapplicant_city ?? ""} label="Co-Applicant District/City" size="small" onChange={(val) => {
+              setAssignment({...assignment, coapplicant_city: val.target.value});
+            }}/>
+          </div>
+          
+        </Grid>
+
+        <Grid item lg={6} style={{display: 'flex', width: '100%', borderBottom: '1px solid grey', }}>
+        <div style={{color: 'grey', height: '100%', backgroundColor: 'whitesmoke',
+            alignItems: 'center',
+            display: 'flex',
+            justifyContent: 'center',
+            minWidth: '25%'}}>
+            State
+          </div>
+          <div style={{justifyContent: 'center', display: 'flex', margin: '0.5em', width: '100%'}}>
+            <TextField value={assignment.coapplicant_state ?? ""} label="Co-Applicant State" size="small" onChange={(val) => {
+              setAssignment({...assignment, coapplicant_state: val.target.value});
             }}/>
           </div>
         </Grid>

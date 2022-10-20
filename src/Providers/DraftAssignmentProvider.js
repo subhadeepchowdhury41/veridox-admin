@@ -22,7 +22,7 @@ export const DraftAssignmentProvider = ({children}) => {
 
     const getFv = async (uid) => {
        setGettingFv(true);
-       if (uid !== undefined ) {
+       if (uid !== undefined) {
             await getDoc(doc(database, "field_verifier", uid)).then((snapshot) => {
                setAssignment({...assignment, assigned_to: uid});
                setFvName(snapshot.data().name);
@@ -73,25 +73,29 @@ export const DraftAssignmentProvider = ({children}) => {
         });
     }
 
-    const getAssignment = async () => {
-        await getDoc(doc(database, "agency", user.uid))
-        .then(async (snapshot) => {
-            if (snapshot.data() !== undefined) {
-                await getFv(snapshot.data().draft_assignment.assignment.assigned_to);
-                setAssignment(snapshot.data().draft_assignment.assignment ?? {});
-                setForm(snapshot.data().draft_assignment.form);
-            }
-            setIsLoading(false);
-        })
+    const getAssignment = async (uid) => {
+        if (user !== null && user !== undefined) {
+            await getDoc(doc(database, "agency", uid))
+            .then(async (snapshot) => {
+                if (snapshot.data() !== undefined) {
+                    await getFv(snapshot.data().draft_assignment.assignment.assigned_to);
+                    setAssignment(snapshot.data().draft_assignment.assignment ?? {});
+                    setForm(snapshot.data().draft_assignment.form);
+                }
+                setIsLoading(false);
+            });
+        }
     }
 
     useEffect(() => {
-        if (user.uid != null && user.uid !== undefined) {
-            setIsLoading(true);
-            getAssignment();
+        if (user !== null && user !== undefined) {
+            if (user.uid !== null && user.uid !== undefined) {
+                setIsLoading(true);
+                getAssignment(user.uid);
+            }
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [user.uid]);
+    }, [user]);
 
     return (<DraftAssignmentContext.Provider value={{isLoading, assignment,
         setAssignment, getFv, fvName, saveAssignment, gettingFv, isSaved,

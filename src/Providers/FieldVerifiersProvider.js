@@ -13,20 +13,22 @@ export const FieldVerifiersProvider = ({children}) => {
 
     useEffect(() => {
         let unsubscribe = () => {};
-        if (user.uid !== null && user.uid !== undefined) {
-          unsubscribe = onSnapshot(doc(database, "agency", user.uid),
-          (snapshot) => {
-            let data = [];
-            snapshot.data().field_verifiers.forEach((fv) => {
-                data.push(fv);
-            });
-            setFvs(data);
-          });
+        if (user !== null && user !== undefined) {
+            if (user.uid !== null && user.uid !== undefined) {
+                unsubscribe = onSnapshot(doc(database, "agency", user.uid),
+                (snapshot) => {
+                  let data = [];
+                  snapshot.data().field_verifiers.forEach((fv) => {
+                      data.push(fv);
+                  });
+                  setFvs(data);
+                });
+                return () => {
+                  unsubscribe();
+                };
+            }
         }
-        return () => {
-            unsubscribe();
-        };
-    });
+    }, [user]);
 
     return (
         <FieldVerifiersContext.Provider value={{fvs}}>

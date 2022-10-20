@@ -16,18 +16,22 @@ export const FormsProvider = ({children}) => {
     }
 
     useEffect(() => {
-        const unsubscribe = onSnapshot(collection(database, `agency/${user.uid}/forms`), 
-        (snapshot) => {
-            let data = [];
-            snapshot.docs.forEach((doc) => {
+        var unsubscribe = () => {};
+        if (user !== null && user !== undefined) {
+            unsubscribe = onSnapshot(collection(database, `agency/${user.uid}/forms`), 
+            (snapshot) => {
+                let data = [];
+                snapshot.docs.forEach((doc) => {
                 data.push({...doc.data(), id: doc.id});
             });
-            setForms(data);
-        });
+                setForms(data);
+            });
+        }
+        
         return () => {
             unsubscribe();
         }
-    });
+    }, [user]);
 
     return (
     <FormsContext.Provider value={{forms, addForm}}>

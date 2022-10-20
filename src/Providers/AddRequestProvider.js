@@ -13,7 +13,7 @@ export const AddRequestProvider = ({children}) => {
 
     useEffect(() => {
         let unsubscribe = () => {};
-        if (user.uid !== null && user.uid !== undefined) {
+        if (user !== null && user !== undefined) {
             unsubscribe = onSnapshot(collection(database, `agency/${user.uid}/add_requests`), 
             (snapshot) => {
                 let data = [];
@@ -26,7 +26,7 @@ export const AddRequestProvider = ({children}) => {
         return () => {
             unsubscribe();
         }
-    }, [user.uid]);
+    }, [user]);
 
     return (<AddRequestContext.Provider value={{addReq}}>
       {children}
