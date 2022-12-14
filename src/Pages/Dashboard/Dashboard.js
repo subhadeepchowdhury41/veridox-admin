@@ -71,7 +71,7 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 }));
 
 const Dashboard = () => {
-  const {setMode} = useFormBuilderContext();
+  const {setMode, setFormId} = useFormBuilderContext();
 
   const theme = useTheme();
   const { logOut } = useAuthContext();
@@ -157,6 +157,7 @@ const Dashboard = () => {
             </ListItem>
 
             <ListItem button onClick={() => {
+              setFormId(null);
               setMode('create');
               navigate("/dashboard/formBuilderPage", {state: {mode: 'create'}});
             }}>

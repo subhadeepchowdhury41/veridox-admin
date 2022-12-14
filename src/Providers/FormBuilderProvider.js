@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState} from "react";
-import {useAsyncReducer} from "./../Utils/CustomHooks";
+import {useAsyncReducer, useLocalState} from "./../Utils/CustomHooks";
 import Form from "../Models/FormModel";
 import Field from "../Models/FieldModel";
 import { database, realtimeDB } from "../Firebase/Firebase";
@@ -7,6 +7,7 @@ import { ref, set } from "firebase/database";
 import { useAuthContext } from "./AuthProvider";
 import axios from "axios";
 import { doc, setDoc, updateDoc } from "firebase/firestore";
+import { useToastProvider } from "./ToastProvider";
 
 const FormBuilderContext = createContext();
 const form = new Form("new form", {name: "new form", pages: []});
@@ -14,17 +15,17 @@ const form = new Form("new form", {name: "new form", pages: []});
 export const FormBuilderProvider = ({children}) => {
 
     const {user} = useAuthContext();
-    const [formId, setFormId] = useState();
-    const [mode, setMode] = useState('view');
+    const [formId, setFormId] = useLocalState('id');
+    const [mode, setMode] = useLocalState('mode', 'create');
     const [preview, setPreview] = useState(false);
-    
+    const {showSuccess, showError} = useToastProvider();
     let initialState = form.getState();
 
     const saveForm = async () => {
         if (formId === null || formId === undefined) {
             console.log("Create")
             await axios.post('https://veridocs.pythonanywhere.com/api/form/create', {
-                'name': form.name,
+                'name': state.name,
                 'data': state.pages,
                 'createdBy': user.uid
             }, {
@@ -35,8 +36,12 @@ export const FormBuilderProvider = ({children}) => {
                 console.log(res.data);
                 setFormId(res.data.id);
                 await setDoc(doc(database, "agency/" + user.uid, "forms/" + res.data.id), {
-                    name: form.name,
-                    data: form.pages
+                    name: state.name,
+                    data: state.pages
+                }).then(() => {
+                    showSuccess('Form Saved Successfully');
+                }).catch(err => {
+                    showError();
                 });
             }).catch(err => {
                 console.log(err)
@@ -69,7 +74,7 @@ export const FormBuilderProvider = ({children}) => {
     const updateForm = async () => {
         console.log("Update");
         await axios.put('https://veridocs.pythonanywhere.com/api/form/update/' + formId, {
-                'name': form.name,
+                'name': state.name,
                 'data': state.pages,
                 'createdBy': user.uid
             }, {
@@ -78,9 +83,13 @@ export const FormBuilderProvider = ({children}) => {
                 }
             }
         ).then(async res => {
-            await updateDoc(doc(database, "agency/" + user.uid, "forms/" + res.data.id), {
-                name: form.name,
-                data: form.pages
+            await updateDoc(doc(database, "agency/" + user.uid, "forms/" + formId), {
+                name: state.name,
+                data: state.pages
+            }).then(() => {
+                showSuccess("Form Updated successfully");
+            }).catch(err => {
+                showError();
             });
         }).catch(err => {
             console.log(err)
@@ -334,6 +343,16 @@ export const FormBuilderProvider = ({children}) => {
         return form.getState();
     }
 
+    const reorder = (payload) => {
+        let copy = form.pages[payload.page_id].fields;
+        let item = copy.splice(payload.start, 1);
+        copy.splice(payload.end, 0, item[0]);
+        form.pages[payload.page_id].fields = copy;
+        form.pages[payload.page_id].fields.forEach((field, index) => (field.id = index));
+        notifyDatabase();
+        return form.getState();
+    }
+
     const reducer = async (state, action) => {
         switch (action.type) {
             case 'changeFormName':
@@ -390,6 +409,8 @@ export const FormBuilderProvider = ({children}) => {
                 return saveForm();
             case 'loadForm':
                 return loadForm(action.payload);
+            case 'reorder':
+                return reorder(action.payload);
             default:
                 throw Error;
         }
@@ -399,7 +420,7 @@ export const FormBuilderProvider = ({children}) => {
     const [state, dispatch] = useAsyncReducer(reducer, initialState);
 
     return (<FormBuilderContext.Provider value={{state, dispatch, preview, setPreview, setFormId,
-        saveForm, formId, mode, setMode}}>
+        saveForm, formId, mode, setMode }}>
         {children}
     </FormBuilderContext.Provider>);
 }

@@ -11,8 +11,7 @@ const PopUpBox = (props, {children}) => {
                 width: props.width ?? '80%',
                 minWidth: props.minWidth ?? '300px',
                 maxWidth: props.maxWidth ?? '480px',
-                height: props.height ?? '550px',
-            
+                height: props.height ?? '550px'
             }}>
                 <div style={{
                   width: '100%',

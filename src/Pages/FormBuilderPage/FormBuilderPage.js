@@ -55,12 +55,24 @@ const FormBuilderPage = () => {
                         <Button size='small' variant='contained' sx={{
                             margin: '0.4em'
                         }} onClick={() => {
+                            // erasing id of previously loaded form
                             setFormId(null);
+
+                            // loading the new form
                             setForm({name: state.name, data: state.pages});
+
+                            // telling form provider to save form and save it
+                            // for the agency and backend
                             dispatch({type: 'saveForm'});
+
+                            // navigating back to create assignment page
                             navigate('/dashboard/assignment/create');
+
+                            // erasing the form id
                             setFormId(null);
-                            setMode('view');
+
+                            // opening form builder in create mode
+                            setMode('create');
                         }}>
                             Assign
                         </Button>

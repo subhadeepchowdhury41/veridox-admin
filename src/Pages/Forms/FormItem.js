@@ -1,5 +1,4 @@
-import { Button, Paper } from "@mui/material";
-import { Box } from "@mui/system";
+import { Button, Grid } from "@mui/material";
 import axios from "axios";
 import { deleteDoc, doc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
@@ -7,6 +6,7 @@ import { database } from "../../Firebase/Firebase";
 import { useAuthContext } from "../../Providers/AuthProvider";
 import { useDraftAssignmentContext } from "../../Providers/DraftAssignmentProvider";
 import { useFormBuilderContext } from "../../Providers/FormBuilderProvider";
+import { useToastProvider } from "../../Providers/ToastProvider";
 
 
 const FormItem = (props) => {
@@ -14,61 +14,70 @@ const FormItem = (props) => {
     const navigate = useNavigate();
     const {setForm} = useDraftAssignmentContext();
     const {user} = useAuthContext();
-    const {dispatch} = useFormBuilderContext();
+    const {dispatch, setMode} = useFormBuilderContext();
+    const {showSuccess, showError} = useToastProvider();
 
     const deleteForm = async () => {
-        await deleteDoc(doc(database, "agency/" + user.uid, "forms/"  + props.id));
-        await axios.delete('https://veridocs.pythonanywhere.com/api/form/delete/' + props.id)
-        .then(res => {
-            console.log(res);
+        await deleteDoc(doc(database, "agency/" + user.uid, "forms/"  + props.id)).then(async (res) => {
+            await axios.delete('https://veridocs.pythonanywhere.com/api/form/delete/' + props.id)
+            .then(res => {
+                showSuccess("Successfully Deleted Form " + props.id);
+                console.log(res);
+            }).catch(err => {
+                showError();
+            }).catch(err => {
+                showError();
+            });
         });
     }
 
     return (<div>
-        <Paper variant="outlined" sx={{
-            height: '50px',
-            margin: '0.5em',
+        <div style={{
+            height: '47px',
             width: '100%',
             display: 'inline-flex',
-            cursor: 'pointer',
             alignItems: 'center',
+            fontSize: '14px',
+            color: 'gray',
+            fontFamily: 'Source Serif Pro, serif',
             justifyContent: 'center',
-            '&:hover': {
-                backgroundColor: 'whitesmoke'
-            }
         }}>
-            <Box sx={{dispaly: 'flex', justifyContent: 'center', alignItems: 'center', width: '30%'}}>
-                {props.id}
-            </Box>
-            <Box sx={{width: '40%'}}>
-                {props.name}
-            </Box>
-            <Box sx={{display: 'inline', width: '30%'}}>{
-                props.mode === "select" ?
-                <Button variant="contained" sx={{
-                    display: 'inline'
-                }} size='small' onClick={() => {
-                    setForm(props.form);
-                    navigate("/dashboard/assignment/create");
-                }}>Choose</Button> : (<div style={{display: 'inline'}}><Button variant="contained" size='small' sx={{
-                    display: 'inline',
-                    margin: '0 0.4em',
-                }} onClick={() => {
-                    dispatch({type: 'loadForm', payload: props.form});
-                    navigate('/dashboard/formBuilderPage', {state: {mode: 'edit'}})
-                }}>Edit</Button>
-                    <Button variant='contained' onClick={() => {
-                        deleteForm();
-                    }} size='small' sx={{
-                        margin: '0 0.4em',
-                        backgroundColor: 'red',
+            <Grid container >
+                <Grid item xs={4} sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                    {props.id}
+                </Grid>
+                <Grid item xs={4}  sx={{display: 'flex', justifyContent: 'start', alignItems: 'center'}}>
+                    {props.name}
+                </Grid>
+                <Grid item xs={4}  sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                    {props.mode === "select" ?
+                    <Button variant="contained" sx={{
+                        display: 'inline'
+                    }} size='small' onClick={() => {
+                        setForm(props.form);
+                        navigate("/dashboard/assignment/create");
+                    }}>Choose</Button> : (<div style={{display: 'inline'}}><Button variant="contained" size='small' sx={{
                         display: 'inline',
-                        '&:hover': {
-                          backgroundColor: 'darkred'
-                        }}}>Delete</Button>
-                </div>)}
-            </Box>
-        </Paper>
+                        margin: '0 0.4em',
+                    }} onClick={() => {
+                        setMode('edit');
+                        dispatch({type: 'loadForm', payload: props.form});
+                        navigate('/dashboard/formBuilderPage', {state: {mode: 'edit'}})
+                    }}>Edit</Button>
+                        <Button variant='contained' onClick={() => {
+                            deleteForm();
+                        }} size='small' sx={{
+                            margin: '0 0.4em',
+                            backgroundColor: 'red',
+                            display: 'inline',
+                            '&:hover': {
+                              backgroundColor: 'darkred'
+                            }}}>Delete</Button>
+                    </div>)}
+                </Grid>
+            </Grid>
+        </div>
+        <hr style={{width: '95%', margin: '0 auto', border: '0.6px solid #dedede'}}/>
     </div>);
 }
 

@@ -3,24 +3,29 @@ import { collection, doc, getDoc, onSnapshot } from "firebase/firestore";
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom";
 import { database } from "../../Firebase/Firebase";
+import { useAuthContext } from "../../Providers/AuthProvider";
 
 const AssignmentsPage = () => {
     const navigate = useNavigate();
     const [assignments, setAssignments] = useState([]);
+    const {user} = useAuthContext();
     
     useEffect(() => {
-        const unsubscribe = onSnapshot(collection(database,
-          "assignments"), snapshot => {
-            let data = [];
-            snapshot.docs.forEach((doc) => {
-                data.push({...doc.data(), id: doc.id});
-            })
-            setAssignments(data);
-          })
+        let unsubscribe = () => {};
+        if (user && user.uid !== undefined) {
+            unsubscribe = onSnapshot(collection(database,
+                "agency/" + user.uid, "assignments"), snapshot => {
+                  let data = [];
+                  snapshot.docs.forEach((doc) => {
+                      data.push({...doc.data(), id: doc.id});
+                  });
+                  setAssignments(data);
+                });
+        }
         return () => {
             unsubscribe();
         }
-    }, []);
+    }, [user]);
 
     return (<div>
         {assignments.map((assignment) => {
@@ -28,25 +33,54 @@ const AssignmentsPage = () => {
                 <Paper variant="outlined" sx={{
                     width: "100%",
                     padding: '0.4em',
-                    margin: '1em 0',
+                    margin: '0.3em 0',
+                    fontSize: '14px',
                     display: 'inline-flex',
                     justifyContent: 'center',
                     alignItems: 'center',
                     textAlign: 'center'
                 }}>
                     <Grid container>
-                        <Grid item xs={12} sm={12} lg={4} md={4}>
-                            {assignment.id}
+                        <Grid item xs={12} sm={12} lg={4} md={4} sx={{
+                            display: 'flex', justifyContent: 'center',
+                            alignItems: 'center'
+                        }}>
+                            <div style={{color: 'gray', fontWeight: 'bold'}}>
+                                ID
+                            </div>
+                            <div style={{marginLeft: '1.7em', fontFamily: 'Source Serif Pro, serif'}}>
+                                {assignment.id}
+                            </div>
                         </Grid>
-                        <Grid item xs={12} sm={12} lg={2} md={2}>
-                            {assignment.document_type}
+                        <Grid item xs={12} sm={12} lg={2} md={2} sx={{
+                            display: 'flex', justifyContent: 'center',
+                            alignItems: 'center'
+                        }}>
+                            <div style={{color: 'gray', fontWeight: 'bold'}}>
+                                Type
+                            </div>
+                            <div style={{marginLeft: '1.7em', fontFamily: 'Source Serif Pro, serif'}}>
+                                {assignment.document_type}
+                            </div>
                         </Grid>
 
-                        <Grid item xs={12} sm={12} lg={4} md={4}>
-                            <FvName uid={assignment.assigned_to}/>
+                        <Grid item xs={12} sm={12} lg={4} md={4} sx={{
+                            display: 'flex', justifyContent: 'center',
+                            alignItems: 'center'
+                        }}>
+                            <div style={{color: 'gray', fontWeight: 'bold'}}>
+                                Name
+                            </div>
+                            <div style={{marginLeft: '1.7em', fontFamily: 'Source Serif Pro, serif'}}>
+                                <FvName uid={assignment.assigned_to}/>
+                            </div>
+                            
                         </Grid>
                         
-                        <Grid item xs={12} sm={12} lg={2} md={2}>
+                        <Grid item xs={12} sm={12} lg={2} md={2} sx={{
+                            display: 'flex', justifyContent: 'center',
+                            alignItems: 'center'
+                        }}>
                             <Button size='small' variant="contained" onClick={() => {
                                 navigate('/dashboard/assignment/' + assignment.id);
                             }}>

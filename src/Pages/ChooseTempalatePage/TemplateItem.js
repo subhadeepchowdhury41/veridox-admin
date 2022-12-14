@@ -5,6 +5,7 @@ const TemplateItem = (props) => {
         '&:hover': {
             backgroundColor: 'whitesmoke'
         },
+        padding: '0.5em',
         cursor: 'pointer',
         display: 'flex',
         border: '1px solid grey',
@@ -15,7 +16,7 @@ const TemplateItem = (props) => {
                 <Box sx={{width: '100%', display: 'block', textAlign: 'center'}}>
                     {props.temp.name}
                 </Box>
-                <Box sx={{width: '100%', display: 'block', textAlign: 'center'}}>
+                <Box sx={{width: '100%', display: 'block', textAlign: 'center', fontSize: '0.8em'}}>
                     {props.temp.createdBy}
                 </Box>    
             </Box>

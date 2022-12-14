@@ -22,7 +22,7 @@ const TableMaker = (props) => {
                     {state.pages[props.page_id].fields[props.field_id].rows?.map((row, index) => {
                         return (<div key={index} style={{margin: '0.7em 0',
                          width: '100%', display: 'inline-flex', justifyContent: 'space-between'}}>
-                            <TextField size="small" value={state.pages[props.page_id].fields[props.field_id].rows[index].label ?? ''}
+                            <TextField size="small" defaultValue={state.pages[props.page_id].fields[props.field_id].rows[index].label ?? ''}
                                 onChange={(value) => {
                                     dispatch({type: 'changeTableRowLabel', payload: {
                                         page_id: props.page_id, field_id: props.field_id,
@@ -72,7 +72,7 @@ const TableMaker = (props) => {
                     {state.pages[props.page_id].fields[props.field_id].columns?.map((row, index) => {
                         return (<div key={index} style={{margin: '0.7em 0', 
                           width: '100%', display: 'inline-flex', justifyContent: 'space-between'}}>
-                            <TextField size="small" value={state.pages[props.page_id].fields[props.field_id].columns[index].label ?? ''}
+                            <TextField size="small" defaultValue={state.pages[props.page_id].fields[props.field_id].columns[index].label ?? ''}
                             onChange={(value) => {
                                 dispatch({type: 'changeTableColumnLabel', payload: {
                                     page_id: props.page_id, field_id: props.field_id,

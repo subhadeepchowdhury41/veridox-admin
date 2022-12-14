@@ -28,3 +28,15 @@ export const useAsyncReducer = (reducer, initState) => {
 
     return [state, dispatch];
 }
+
+export const useLocalState = (key,  initVal) => {
+    const [state, setState] = useState();
+
+    const setStateData = (data) => {
+        window.localStorage.setItem(key, JSON.stringify(data));
+        setState(JSON.parse(window.localStorage.getItem(key)) ?? initVal);
+        console.log(state);
+    }
+    
+    return [JSON.parse(window.localStorage.getItem(key)) ?? initVal, setStateData];
+}

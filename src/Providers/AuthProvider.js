@@ -1,31 +1,38 @@
 import React, {createContext, useContext, useEffect, useState} from 'react'
 import {authentication} from '../Firebase/Firebase';
 import { onAuthStateChanged, RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth';
+import { useToastProvider } from './ToastProvider';
 
-const AuthContext = createContext();
+export const AuthContext = createContext();
 
 export const AuthProvider = ({children}) => {
 
+    const {showSuccess} = useToastProvider();
     const [user, setUser] = useState({});
 
     const logOut = (onSuccess) => {
         try {
             authentication.signOut();
             onSuccess();
+            showSuccess("Logged out Successfully");
         } catch (err) {
             alert('There was some problem logging out');
         }
     }
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(authentication, (currentUser) => {
+        const unsubscribe = onAuthStateChanged(authentication, async (currentUser) => {
             setUser(currentUser);
-            console.log(currentUser);
+            window.user = currentUser;
         })
+        if (user !== null && Object.keys(user).length !== 0) {
+            console.log(user);
+            showSuccess("You are successfully logged in");
+        }
         return () => {
             unsubscribe();
         }
-    
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user]);
 
     return (

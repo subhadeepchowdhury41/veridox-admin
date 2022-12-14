@@ -1,7 +1,6 @@
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import './App.css';
 import HomePage from './Pages/HomePage/HomePage';
-import { AuthProvider } from './Providers/AuthProvider';
 import Dashboard from './Pages/Dashboard/Dashboard';
 import FieldVerifierPage from './Pages/FieldVerifierPage/FieldVerifierPage';
 import { FieldVerifiersProvider } from './Providers/FieldVerifiersProvider';
@@ -21,10 +20,13 @@ import AssignmentDetailsPage from './Pages/AssignmentsPage/AssignmentDetailsPage
 import CreateAssignmentPage from './Pages/AssignmentsPage/CreateAssignmentPage';
 import { DraftAssignmentProvider } from './Providers/DraftAssignmentProvider';
 import FieldVerifierDetailsPage from './Pages/FieldVerifierPage/FieldVerifierDetailPage';
+import { useAuthContext } from './Providers/AuthProvider';
 
 const App = () => {
+
+  const {user} = useAuthContext();
+
   return (
-    <AuthProvider>
       <FieldVerifiersProvider>
         <AddRequestProvider>
           <FormsProvider>
@@ -34,8 +36,10 @@ const App = () => {
               <div className="App">
                   <Router>
                     <Routes>
-                      <Route exact path="/" element={<HomePage/>}/>
-                      <Route path="/dashboard" element={<Dashboard/>}>
+                      <Route exact path="/" element={user !== null &&
+                        Object.entries(user).length !== 0 ? <Dashboard/> : <HomePage/>}/>
+                      <Route path="/dashboard" element={user !== null &&
+                        Object.entries(user).length !== 0 ? <Dashboard/> : <HomePage/>}>
                           <Route index element={<SummaryPage/>}/>
                           <Route path="summary" element={<SummaryPage/>}/>
                           <Route path="fieldVerifierPage" element={<FieldVerifierPage/>}/>
@@ -64,13 +68,8 @@ const App = () => {
             </WidgetTypeProvider>
            </FormBuilderProvider>
           </FormsProvider>
-          
-        
          </AddRequestProvider>
-
-      </FieldVerifiersProvider>
-    </AuthProvider>
-  );
+      </FieldVerifiersProvider>)
 }
 
 export default App;

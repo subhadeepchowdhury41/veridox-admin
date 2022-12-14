@@ -1,4 +1,4 @@
-import { Box, Button, Paper } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import { doc, getDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -23,23 +23,18 @@ const FieldVerifierCard = (props) => {
   });
 
     return (
-        <div key={props.key} style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: "0.6em"
-        }}>
-            <Paper elevation={0} variant="outlined" sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                width: "96%",
-                padding: "0.7em",
-                '&:hover': {
-                    backgroundColor: "whitesmoke"
-                }
+        <div>
+            <div style={{
+                height: '47px',
+                width: '100%',
+                display: 'inline-flex',
+                alignItems: 'center',
+                fontSize: '14px',
+                color: 'gray',
+                fontFamily: 'Source Serif Pro, serif',
+                justifyContent: 'center',
             }}>
-              <Box className="OverflowTextContainer" sx={{width: "20%"}}>
+              <Box className="OverflowTextContainer" sx={{width: "30%"}}>
                 {props.uid}
               </Box>
 
@@ -51,14 +46,16 @@ const FieldVerifierCard = (props) => {
                 {fv.phone ?? 8768715527}
               </Box>
               <Button size="small" variant="outlined" onClick={() => {
-                navigate('/dashboard/fieldVerifier/' + props.uid);
+                navigate('/dashboard/fieldVerifier/' + props.uid, {state: {mode: ''}});
               }}>View</Button>
               {props.select === 1 ? <Button size="small" onClick={() => {
                 getFv(props.uid);
                 navigate("/dashboard/assignment/create");
               }} variant="contained">Choose</Button> : null}
-            </Paper>
+            
         </div>
+        <hr style={{margin: '0.1em 0', border: '0.2px solid #ededed'}}/></div>
+
     );
 }
 

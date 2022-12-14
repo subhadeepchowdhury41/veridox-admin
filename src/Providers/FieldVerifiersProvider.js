@@ -18,7 +18,7 @@ export const FieldVerifiersProvider = ({children}) => {
                 unsubscribe = onSnapshot(doc(database, "agency", user.uid),
                 (snapshot) => {
                   let data = [];
-                  snapshot.data().field_verifiers.forEach((fv) => {
+                  snapshot.data().field_verifiers?.forEach((fv) => {
                       data.push(fv);
                   });
                   setFvs(data);

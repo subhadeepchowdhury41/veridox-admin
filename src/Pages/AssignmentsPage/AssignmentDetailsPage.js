@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ClipLoader } from "react-spinners";
 import { database } from "../../Firebase/Firebase";
+import './AssignmentDetailsPage.css';
 
 const AssignmentDetailsPage = () => {
 
@@ -47,12 +48,20 @@ const AssignmentDetailsPage = () => {
     }, [id]);
 
     return !isLoading ? (<div>
-      Applicant Details
-      <hr style={{margin: '0.4em 0 2em 0'}}/>
+      <div style={{
+        fontSize: '19px',
+        fontWeight: 'bold',
+        fontFamily: 'Playfair Display, serif'
+      }}>Applicant Details</div>
+      <hr style={{margin: '0.4em 0 2em 0', border: '0.2px solid #ededed'}}/>
+
       <Grid container sx={{
-        marginBottom: '1em',
         borderRadius: '3px',
         border: '1px solid grey',
+        fontSize: '16px',
+        marginBottom: '1em',
+        fontWeight: 'bold',
+        color: '#606060',
         borderBottomColor: 'transparent',
         width: '100%',
       }}>
@@ -66,9 +75,39 @@ const AssignmentDetailsPage = () => {
             minWidth: '25%'}}>
             Name
           </div>
-          <div style={{width: '100%', justifyContent: 'center', display: 'flex', margin: '0.5em'}}>
+          <div className="data" style={{width: '100%', justifyContent: 'center', display: 'flex', margin: '0.5em'}}>
             {assignment.applicant_name}
           </div>
+          
+        </Grid>
+
+        <Grid item lg={6} style={{display: 'flex', width: '100%', borderBottom: '1px solid grey', }}>
+        <div style={{color: 'grey', height: '100%', backgroundColor: 'whitesmoke',
+            alignItems: 'center',
+            display: 'flex',
+            justifyContent: 'center',
+            minWidth: '25%'}}>
+            Phone
+          </div>
+          <div className="data" style={{justifyContent: 'center', display: 'flex', margin: '0.5em', width: '100%'}}>
+            {assignment.applicant_phone}
+          </div>
+        </Grid>
+
+        <Grid item lg={6} style={{display: 'flex', borderBottom: '1px solid grey',
+          width: '100%'
+        }}>
+          <div style={{color: 'grey', height: '100%', backgroundColor: 'whitesmoke',
+            alignItems: 'center',
+            display: 'flex',
+            justifyContent: 'center',
+            minWidth: '25%'}}>
+              Pincode
+          </div>
+          <div className="data"  style={{width: '100%', justifyContent: 'center', display: 'flex', margin: '0.5em'}}>
+            {assignment.applicant_pincode}
+          </div>
+          
         </Grid>
         <Grid item lg={6} style={{display: 'flex', borderBottom: '1px solid grey',
           width: '100%'
@@ -78,10 +117,10 @@ const AssignmentDetailsPage = () => {
             display: 'flex',
             justifyContent: 'center',
             minWidth: '25%'}}>
-            Address
+              Post Office
           </div>
-          <div style={{width: '100%', justifyContent: 'center', display: 'flex', margin: '0.5em'}}>
-            {assignment.coapplicant_address}
+          <div className="data"  style={{width: '100%', justifyContent: 'center', display: 'flex', margin: '0.5em'}}>
+            {assignment.applicant_post_office}
           </div>
           
         </Grid>
@@ -93,31 +132,42 @@ const AssignmentDetailsPage = () => {
             display: 'flex',
             justifyContent: 'center',
             minWidth: '25%'}}>
-            Address
+            District/City
           </div>
-          <div style={{display: 'flex', justifyContent: 'center', margin: '0.5em', width: '100%'}}>
-            {assignment.address}
+          <div className="data" style={{display: 'flex', justifyContent: 'center', margin: '0.5em', width: '100%'}}>
+            {assignment.applicant_city}
           </div>
         </Grid>
-        
-        <Grid item lg={6} style={{display: 'flex', width: '100%', borderBottom: '1px solid grey', }}>
-        <div style={{color: 'grey', height: '100%', backgroundColor: 'whitesmoke',
+
+        <Grid item lg={6} md={12} style={{display: 'flex', borderBottom: '1px solid grey',
+          width: '100%'
+        }}>
+          <div style={{color: 'grey', backgroundColor: 'whitesmoke',
             alignItems: 'center',
             display: 'flex',
             justifyContent: 'center',
             minWidth: '25%'}}>
-            Phone
+            State
           </div>
-          <div style={{justifyContent: 'center', display: 'flex', margin: '0.5em', width: '100%'}}>
-            {assignment.applicant_phone}
+          <div className="data" style={{display: 'flex', justifyContent: 'center', margin: '0.5em', width: '100%'}}>
+            {assignment.applicant_state}
           </div>
         </Grid>
       </Grid>
-      Co-applicant Details
-      <hr style={{margin: '0.4em 0 2em 0'}}/>
+
+      <div style={{
+        fontSize: '19px',
+        fontWeight: 'bold',
+        fontFamily: 'Playfair Display, serif'
+      }}>Co-applicant Details</div>
+      <hr style={{margin: '0.4em 0 2em 0', border: '0.2px solid #ededed'}}/>
+
       <Grid container sx={{
         borderRadius: '3px',
         border: '1px solid grey',
+        fontSize: '16px',
+        fontWeight: 'bold',
+        color: '#606060',
         borderBottomColor: 'transparent',
         width: '100%',
       }}>
@@ -131,11 +181,25 @@ const AssignmentDetailsPage = () => {
             minWidth: '25%'}}>
             Name
           </div>
-          <div style={{width: '100%', justifyContent: 'center', display: 'flex', margin: '0.5em'}}>
+          <div className="data" style={{width: '100%', justifyContent: 'center', display: 'flex', margin: '0.5em'}}>
             {assignment.coapplicant_name}
           </div>
           
         </Grid>
+
+        <Grid item lg={6} style={{display: 'flex', width: '100%', borderBottom: '1px solid grey', }}>
+        <div style={{color: 'grey', height: '100%', backgroundColor: 'whitesmoke',
+            alignItems: 'center',
+            display: 'flex',
+            justifyContent: 'center',
+            minWidth: '25%'}}>
+            Phone
+          </div>
+          <div className="data" style={{justifyContent: 'center', display: 'flex', margin: '0.5em', width: '100%'}}>
+            {assignment.coapplicant_phone}
+          </div>
+        </Grid>
+
         <Grid item lg={6} style={{display: 'flex', borderBottom: '1px solid grey',
           width: '100%'
         }}>
@@ -144,10 +208,25 @@ const AssignmentDetailsPage = () => {
             display: 'flex',
             justifyContent: 'center',
             minWidth: '25%'}}>
-              Address
+              Pincode
           </div>
-          <div style={{width: '100%', justifyContent: 'center', display: 'flex', margin: '0.5em'}}>
-            {assignment.coapplicant_address}
+          <div className="data"  style={{width: '100%', justifyContent: 'center', display: 'flex', margin: '0.5em'}}>
+            {assignment.coapplicant_pincode}
+          </div>
+          
+        </Grid>
+        <Grid item lg={6} style={{display: 'flex', borderBottom: '1px solid grey',
+          width: '100%'
+        }}>
+          <div style={{color: 'grey', height: '100%', backgroundColor: 'whitesmoke',
+            alignItems: 'center',
+            display: 'flex',
+            justifyContent: 'center',
+            minWidth: '25%'}}>
+              Post Office
+          </div>
+          <div className="data"  style={{width: '100%', justifyContent: 'center', display: 'flex', margin: '0.5em'}}>
+            {assignment.coapplicant_post_office}
           </div>
           
         </Grid>
@@ -159,39 +238,46 @@ const AssignmentDetailsPage = () => {
             display: 'flex',
             justifyContent: 'center',
             minWidth: '25%'}}>
-            Address 
+            District/City
           </div>
-          <div style={{display: 'flex', justifyContent: 'center', margin: '0.5em', width: '100%'}}>
-            {assignment.address}
+          <div className="data" style={{display: 'flex', justifyContent: 'center', margin: '0.5em', width: '100%'}}>
+            {assignment.coapplicant_city}
           </div>
         </Grid>
-        
-        <Grid item lg={6} style={{display: 'flex', width: '100%', borderBottom: '1px solid grey', }}>
-        <div style={{color: 'grey', height: '100%', backgroundColor: 'whitesmoke',
+
+        <Grid item lg={6} md={12} style={{display: 'flex', borderBottom: '1px solid grey',
+          width: '100%'
+        }}>
+          <div style={{color: 'grey', backgroundColor: 'whitesmoke',
             alignItems: 'center',
             display: 'flex',
             justifyContent: 'center',
             minWidth: '25%'}}>
-            Phone
+            State
           </div>
-          <div style={{justifyContent: 'center', display: 'flex', margin: '0.5em', width: '100%'}}>
-            {assignment.coapplicant_phone}
+          <div className="data" style={{display: 'flex', justifyContent: 'center', margin: '0.5em', width: '100%'}}>
+            {assignment.coapplicant_state}
           </div>
         </Grid>
       </Grid>
       <Box>
         <Paper variant="outlined" sx={{margin: '1.3em 0', display: 'flex', justifyContent: 'space-between'}}>
-          <div style={{color: 'grey', height: '100%', backgroundColor: 'whitesmoke',
+          <div style={{height: '100%', backgroundColor: 'whitesmoke',
             padding: '0.7em 0',
             alignItems: 'center',
             display: 'flex',
+            fontSize: '16px',
+            fontWeight: 'bold',
+            color: '#707070',
             justifyContent: 'center',
             minWidth: '12.5%'
           }}>
             Field Verifier
           </div>
 
-          <div style={{justifyContent: 'center', display: 'flex', margin: '0.5em 0', width: '100%'}}>
+          <div style={{
+            fontFamily: 'Source Serif Pro, serif',
+            justifyContent: 'center', display: 'flex', margin: '0.5em 0', width: '100%'}}>
             {fv ?? "No Field Verifier Assigned"}
           </div>
           <div style={{justifyContent: 'space-evenly', display: 'flex',
@@ -203,16 +289,22 @@ const AssignmentDetailsPage = () => {
           </div>
         </Paper>
         <Paper variant="outlined" sx={{margin: '1.3em 0', display: 'flex'}}>
-          <div style={{color: 'grey', height: '100%', backgroundColor: 'whitesmoke',
+          <div style={{
+            height: '100%', backgroundColor: 'whitesmoke',
             padding: '0.7em 0',
             alignItems: 'center',
             display: 'flex',
+            fontSize: '16px',
+            fontWeight: 'bold',
+            color: '#707070',
             justifyContent: 'center',
             minWidth: '12.5%'
           }}>
             Form
           </div>
-          <div style={{justifyContent: 'center', display: 'flex', margin: '0.5em 0', width: '100%'}}>
+          <div style={{
+            fontFamily: 'Source Serif pro, serif',
+            justifyContent: 'center', display: 'flex', margin: '0.5em 0', width: '100%'}}>
             {form.data?.name === undefined || form.data?.name === null ? "No form Chosen" : form.data?.name}
           </div>
           <div style={{justifyContent: 'center', display: 'flex', margin: '0.5em 0', width: '15%'}}>

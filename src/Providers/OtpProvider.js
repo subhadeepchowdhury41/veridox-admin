@@ -38,6 +38,7 @@ export const OtpProvider = ({children}) => {
             setErrorMsg("");
             setLoading(false);
             onSuccess();
+            
         } catch (err) {
             setErrorMsg(err.code);
             setLoading(false);
