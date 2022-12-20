@@ -70,7 +70,6 @@ export const DraftAssignmentProvider = ({children}) => {
                showSuccess("Field Verifier chosen Successfully");
             }).catch(err => {
                 setGettingFv(false);
-                showError("No field Verifier Chosen");
             });
        }
     }
@@ -110,7 +109,6 @@ export const DraftAssignmentProvider = ({children}) => {
             console.log(form);
             return;
         }
-        console.log('valid');
         showDialog({
             title: 'Proceed to Asssign',
             message: 'Are you sure you want to assign this assignment?',
@@ -172,7 +170,6 @@ export const DraftAssignmentProvider = ({children}) => {
                     await getFv(snapshot.data().draft_assignment.assignment.assigned_to);
                     setAssignment(snapshot.data().draft_assignment.assignment ?? {});
                     setForm(snapshot.data().draft_assignment.form ?? {});
-                    
                 }
                 setIsLoading(false);
                 showSuccess("Loaded Draft Assignemnt");
@@ -184,11 +181,9 @@ export const DraftAssignmentProvider = ({children}) => {
     }
 
     useEffect(() => {
-        if (mounted === true && (user !== null && user !== undefined)) {
-            if (user.uid !== null && user.uid !== undefined) {
-                setIsLoading(true);
-                getAssignment(user.uid);
-            }
+        if (mounted === true && user.uid !== null && user.uid !== undefined) {
+            setIsLoading(true);
+            getAssignment(user.uid);
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user, mounted]);

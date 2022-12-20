@@ -1,6 +1,6 @@
 import { Add, Clear, Delete } from '@mui/icons-material';
 import { Box, Button, Grid, IconButton, MenuItem, Paper, TextField, Typography } from '@mui/material';
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useFormBuilderContext } from '../../Providers/FormBuilderProvider';
 import { useWidgetTypeContext } from '../../Providers/WidgetTypeProvider';
 import { EndDatePickerWidget, StartDatePickerWidget } from './DatePickerWidget';
@@ -13,7 +13,13 @@ const FieldItem = (props) => {
   const {index, id} = props;
   const {widgets} = useWidgetTypeContext();
   const {state, dispatch} = useFormBuilderContext();
+  const [cursorPos, setCursorPos] = useState();
 
+  useEffect(() => {
+  }, [cursorPos]);
+
+  const labelInputRef = useRef(null);
+  
     return (
         <Paper key={index}
           elevation={0} variant="outlined" sx={{
@@ -29,7 +35,7 @@ const FieldItem = (props) => {
             alignItems: "center"
           }}>
                           <Box sx={{
-                            width: '5%',
+                            width: '10%',
                             justifyContent: 'center',
                             height: '100%',
                             display: 'flex',
@@ -45,9 +51,13 @@ const FieldItem = (props) => {
                             width: '90%',
                         }}>
                             <Box sx={{width: '40%'}}>
-                                <TextField size='small' label="Label" value={state.pages[id].fields[index].label} onChange={(event) => {
+                                <TextField size='small' label="Label" value={state.pages[id].fields[index].label}
+                                inputRef={labelInputRef}
+                                onChange={(event) => {
                                   event.preventDefault();
-                                  dispatch({type: "changeLabel", payload: {page_id: id, field_id: index, label: event.target.value}});
+                                  setCursorPos(event.target.selectionStart);
+                                  dispatch({type: "changeLabel", payload: {
+                                    page_id: id, field_id: index, label: labelInputRef.current.value}});
                                 }}/>
                             </Box>
                             

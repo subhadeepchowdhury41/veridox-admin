@@ -23,20 +23,17 @@ const AddRequestItem = (props) => {
             field_verifiers: [...fvs, uid]
           }).then(async () => {
             await getDoc(doc(database, "field_verifier", uid)).then(async (snap) => {
-              if (snap.exists) {
-                await updateDoc(doc(database, "field_verifier", uid), data);
-              } else {
-                await setDoc(doc(database, "field_verifier", uid), data);
-              }
-              await updateDoc(doc(database, "add_requests", uid), {
-                status: 'accepted'
-              }).then(() => {
-                showSuccess("Successfully added Field Verifier");
+              await setDoc(doc(database, "field_verifier", uid), data).then(async () => {
+                await updateDoc(doc(database, "add_requests", uid), {
+                  status: 'accepted'
+                }).then(() => {
+                  showSuccess("Successfully added Field Verifier");
+                });
               });
             })
           });
         }).catch(err => {
-          showError();
+          showError(err);
         });
     }
 
@@ -103,13 +100,13 @@ const AddRequestItem = (props) => {
                margin: '0.1em',
                border: '0.5px solid red', marginRight: '0.5em'
                }} onClick={() => {
-                  deleteReq(props.id);
+                  deleteReq(props.uid);
                }}>
                 <ClearTwoTone/>
               </IconButton></Tooltip>
               <Tooltip title='Accept'>
               <IconButton onClick={() => {
-                addFv(props.id, props);
+                addFv(props.uid, props);
               }} sx={{
                 transform: 'scale(0.85)',
                 margin: '0.1em',

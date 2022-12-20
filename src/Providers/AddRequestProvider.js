@@ -18,7 +18,7 @@ export const AddRequestProvider = ({children}) => {
             (snapshot) => {
                 let data = [];
                 snapshot.docs.forEach((element) => {
-                    data.push({...element.data(), id: element.id});
+                    data.push({...element.data(), uid: element.id});
                 });
                 setAddReq(data);
             });

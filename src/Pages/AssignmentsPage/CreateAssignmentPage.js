@@ -16,9 +16,6 @@ const CreateAssignmentPage = () => {
 
     useEffect(() => {
       setMounted(true);
-      return () => {
-        setMounted(false);
-      }
     });
 
     return !isLoading ? (<div style={{

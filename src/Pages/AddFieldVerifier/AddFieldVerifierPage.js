@@ -12,7 +12,7 @@ const AddFieldVerifierPage = () => {
             Add Requests</Typography></div>
             
             <Divider style={{marginBottom: '1em'}}/>
-            {addReq.map((element, index) => (<AddRequestItem {...element} key={index}/>))}
+            {addReq.map((element, index) => (<AddRequestItem  {...element} key={index}/>))}
         </div>
     );
 }

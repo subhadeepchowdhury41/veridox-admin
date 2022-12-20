@@ -120,7 +120,6 @@ export const FormBuilderProvider = ({children}) => {
         }
     }
 
-
     const changeFormName = (payload) => {
         form.name = payload.name;
         notifyDatabase();
