@@ -1,4 +1,4 @@
-import { Info, InfoOutlined } from "@mui/icons-material";
+import { ArrowRightAltOutlined, InfoOutlined } from "@mui/icons-material";
 import { Avatar, Button, Grid } from "@mui/material";
 import { doc, getDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
@@ -76,10 +76,28 @@ const FieldVerifierCard = (props) => {
                 }} fontSize="small"/>
                 View</Button>
               <div style={{margin: '0.3em'}}></div>
-              {props.select === 1 ? <Button size="xsall" onClick={() => {
+              {props.select === 1 ? <Button size="small" onClick={() => {
                 getFv(props.uid);
                 navigate("/dashboard/assignment/create");
-              }} variant="contained">Choose</Button> : null}
+              }} variant="outlined" sx={{
+                color: 'white',
+                bgcolor: '#1260cc',
+                borderRadius: '17px',
+                fontSize: '10px',
+                fontWeight: 'bold',
+                padding: '0.5em 1.3em 0.5em 0.8em',
+                border: '1.3px solid #1260cc',
+                '&:hover': {
+                  border: '1.3px solid #1260cc',
+                  color: 'white',
+                  bgcolor: '#5D89C7'
+                }
+              }}>
+                <ArrowRightAltOutlined fontSize="small" sx={{
+                  transform: 'scale(0.8)',
+                  marginRight: '0.2em'
+                }}/>
+                Choose</Button> : null}
               </Grid>
         </Grid>
         <hr style={{margin: '0.3em 0.5em', border: '0.2px solid #ededed'}}/></div>
