@@ -1,5 +1,21 @@
 {
-  "hosting": {
+  "hosting": [{
+    "target": "formviewer",
+    "public": "build/web",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  },
+  {
+    "target": "agencymodule",
     "public": "build",
     "ignore": [
       "firebase.json",
@@ -13,4 +29,5 @@
       }
     ]
   }
+]
 }

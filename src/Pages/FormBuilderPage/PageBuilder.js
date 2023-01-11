@@ -5,10 +5,11 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useFormBuilderContext } from '../../Providers/FormBuilderProvider';
 import FieldItem from './FieldItem';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
+import { usePrompt } from '../../Utils/CustomHooks';
 
 const PageBuilder = (props) => {
   const {id} = useParams();
-  const {state, dispatch} = useFormBuilderContext();
+  const {state, dispatch, changed} = useFormBuilderContext();
   const navigate = useNavigate();
 
   const chooseHeight = (widget) => {
@@ -19,6 +20,9 @@ const PageBuilder = (props) => {
                 return '60px';
         }
     }
+
+    usePrompt("Changes will not be saved!\nAre you sure to leave?",
+    changed, ['/dashboard/formBuilder']);
 
     return (
         <div>

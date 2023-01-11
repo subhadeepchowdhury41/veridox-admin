@@ -63,7 +63,6 @@ const SignInPopUp = () => {
               size = "large"
               onHover = "#398139"
               onPress = { getOtp }/>
-            
         </div>
         </Paper>
       </PopUpBox>);

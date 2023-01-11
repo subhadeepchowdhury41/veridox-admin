@@ -10,7 +10,6 @@ import { useToastProvider } from "./ToastProvider";
 const DraftAssignmentContext = createContext();
 
 export const DraftAssignmentProvider = ({children}) => {
-
     const {user} = useAuthContext();
     const [isLoading, setIsLoading] = useState(false);
     const [isSavingDraft, setIsSavingDraft] = useState(false);
@@ -19,6 +18,7 @@ export const DraftAssignmentProvider = ({children}) => {
     const {showSuccess, showError, showWarning} = useToastProvider();
     const [mounted, setMounted] = useState(false);
     const [fvName, setFvName] = useState();
+    const [fvId, setFvId] = useState();
     const [form, setForm] = useState({});
     const [assignment, setAssignment, validate, errors] = useForm({
         applicant_name: [{
@@ -61,13 +61,13 @@ export const DraftAssignmentProvider = ({children}) => {
     const {showDialog, submitRef, cancelRef} = useAlertBoxContext();
 
     const getFv = async (uid) => {
-       if (uid !== undefined) {
+       if (uid !== null && uid !== undefined && uid !== '') {
             setGettingFv(true);
             await getDoc(doc(database, "field_verifier", uid)).then((snapshot) => {
                setAssignment({...assignment, assigned_to: uid});
                setFvName(snapshot.data().name);
+               setFvId(snapshot.data().id);
                setGettingFv(false);
-               showSuccess("Field Verifier chosen Successfully");
             }).catch(err => {
                 setGettingFv(false);
             });
@@ -99,6 +99,16 @@ export const DraftAssignmentProvider = ({children}) => {
         setForm({});
     }
 
+    const clearFv = () => {
+        if (assignment.assigned_to === undefined
+            || assignment.assigned_to === null) {
+                showError('No Field Verifier Chosen');
+                return;
+        }
+        setAssignment(prev => ({...prev, assigned_to: null}));
+        showSuccess('Field Verifier Removed');
+    }
+
     const saveAssignment = async () => {
         if (!validate()) {
             showError("Please fill all fields");
@@ -115,7 +125,7 @@ export const DraftAssignmentProvider = ({children}) => {
         });
         cancelRef.current.onclick = () => {
             showWarning('Assignment Submit Cancelled!');
-            cancelRef.current.oncick = () => {}
+            cancelRef.current.onclick = () => {}
         }
         submitRef.current.onclick = async () => {
             const date = new Date();
@@ -123,13 +133,19 @@ export const DraftAssignmentProvider = ({children}) => {
             let assId = generateAssignmentId();
             await setDoc(doc(database, "agency/" + user.uid, "assignments/" + assId), {
               assigned_to: assignment.assigned_to,
-              document_type: assignment.document_type
+              document_type: assignment.document_type,
+              status: 'assigned',
+              fvId: fvId
             }).then(async (snapshot) => {
                 await setDoc(doc(database, "assignments", assId), {
                     agency: user.uid,
                     ...assignment,
-                    assigned_at: `${date.getDate()}/${date.getMonth()}/${date.getFullYear()}`,
-                    status: "assigned"
+                    assigned_at: `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`,
+                    status: "assigned",
+                    history: [{
+                        status: 'assigned',
+                        date: `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`
+                    }]
                 }).then(async (snapshot) => {
                     await setDoc(doc(database, "assignments/" + assId, "form_data/data"),
                       {...form}).then(async (snapshot) => {
@@ -147,18 +163,18 @@ export const DraftAssignmentProvider = ({children}) => {
                             coapplicant_city: assignment.coapplicant_city,
                             coapplicant_state: assignment.coapplicant_state,
                             document_type: assignment.document_type,
-                            assigned_at: `${date.getDate()}/${date.getMonth()}/${date.getFullYear()}`,
+                            assigned_at: `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`,
                             status: "assigned"
                         }).then(snap => {
                             showSuccess("Assignemnt assigned to " + fvName);
-                        }).catch((err) => {
-                            showError();
-                        });
+                        })
                         submitRef.current.onclick = () => {}
                         setIsSaved(false);
                     });
                 });
-            });
+            }).catch((err) => {
+                showError();
+            });;
         }
     }
 
@@ -189,7 +205,7 @@ export const DraftAssignmentProvider = ({children}) => {
     }, [user, mounted]);
 
     return (<DraftAssignmentContext.Provider value={{isLoading, assignment, clearForm,
-        setAssignment, getFv, fvName, saveAssignment, gettingFv, isSaved, errors,
+        setAssignment, getFv, fvName, saveAssignment, gettingFv, isSaved, errors, clearFv,
           saveDraftAssignment, form, setForm, isSavingDraft, setMounted}}>
         {children}
     </DraftAssignmentContext.Provider>);

@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState} from "react";
+import { createContext, useContext, useState} from "react";
 import {useAsyncReducer, useLocalState} from "./../Utils/CustomHooks";
 import Form from "../Models/FormModel";
 import Field from "../Models/FieldModel";
@@ -20,10 +20,17 @@ export const FormBuilderProvider = ({children}) => {
     const [preview, setPreview] = useState(false);
     const {showSuccess, showError} = useToastProvider();
     let initialState = form.getState();
+    const [changed, setChanged] = useState(false);
+    const [loadingStatus, setLoadingStatus] = useState({
+        status: false
+    });
 
     const saveForm = async () => {
         if (formId === null || formId === undefined) {
-            console.log("Create")
+            setLoadingStatus({
+                status: true,
+                message: 'Creating..'
+            });
             await axios.post('https://veridocs.pythonanywhere.com/api/form/create', {
                 'name': state.name,
                 'data': state.pages,
@@ -33,7 +40,6 @@ export const FormBuilderProvider = ({children}) => {
                     "Content-type": "application/json",
                 }
             }).then(async res => {
-                console.log(res.data);
                 setFormId(res.data.id);
                 await setDoc(doc(database, "agency/" + user.uid, "forms/" + res.data.id), {
                     name: state.name,
@@ -46,33 +52,21 @@ export const FormBuilderProvider = ({children}) => {
             }).catch(err => {
                 console.log(err)
             });
+            setLoadingStatus({
+                status: false
+            });
         } else {
             updateForm();
         }
-        
+        setChanged(false);
         return form.getState();
     }
 
-    const alertUser = (e) => {
-        e.preventDefault();
-        e.returnValue = null
-    }
-
-    useEffect(() => {
-        window.removeEventListener('beforeunload', alertUser)
-        window.addEventListener('unload', () => {
-            alert('Why are you running?');
-        });
-        return () => {
-            window.removeEventListener('beforeunload', alertUser)
-            window.removeEventListener('unload', () => {
-                alert('Why are you running?');
-            });
-        }
-    })
-
     const updateForm = async () => {
-        console.log("Update");
+        setLoadingStatus({
+            status: true,
+            message: 'Updating.'
+        });
         await axios.put('https://veridocs.pythonanywhere.com/api/form/update/' + formId, {
                 'name': state.name,
                 'data': state.pages,
@@ -92,8 +86,11 @@ export const FormBuilderProvider = ({children}) => {
                 showError();
             });
         }).catch(err => {
-            console.log(err)
+            console.log(err);
         })
+        setLoadingStatus({
+            status: false
+        });
         return form.getState();
     }
 
@@ -111,6 +108,7 @@ export const FormBuilderProvider = ({children}) => {
     }
 
     const notifyDatabase = () => {
+        setChanged(true);
         sessionStorage.setItem("form", JSON.stringify(form.getState()));
         if (preview) {
            set(ref(realtimeDB, 'forms/' + user.uid), form.getState()).then(() => {
@@ -330,6 +328,16 @@ export const FormBuilderProvider = ({children}) => {
         return form.getState();
     }
 
+    const changeTableColumnWidget = (payload) => {
+        form.pages[payload.page_id].fields[payload.field_id].columns.forEach((column) => {
+            if (column.id === payload.column_id) {
+                column.widget = payload.widget;
+            }
+        });
+        notifyDatabase();
+        return form.getState();
+    }
+
     const addStartDate = (payload) => {
         form.pages[payload.page_id].fields[payload.field_id].start_date = payload.start_date;
         notifyDatabase();
@@ -400,6 +408,8 @@ export const FormBuilderProvider = ({children}) => {
                 return changeTableRowLabel(action.payload);
             case 'changeTableRowWidget':
                 return changeTableRowWidget(action.payload);
+            case 'changeTableColumnWidget':
+                return changeTableColumnWidget(action.payload);
             case 'addStartDate':
                 return addStartDate(action.payload);
             case 'addEndDate':
@@ -419,7 +429,7 @@ export const FormBuilderProvider = ({children}) => {
     const [state, dispatch] = useAsyncReducer(reducer, initialState);
 
     return (<FormBuilderContext.Provider value={{state, dispatch, preview, setPreview, setFormId,
-        saveForm, formId, mode, setMode }}>
+        saveForm, formId, mode, setMode, loadingStatus, changed }}>
         {children}
     </FormBuilderContext.Provider>);
 }

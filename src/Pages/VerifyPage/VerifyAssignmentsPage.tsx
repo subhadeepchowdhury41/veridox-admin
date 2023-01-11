@@ -1,34 +1,44 @@
+import { ReactJSXElement } from "@emotion/react/types/jsx-namespace";
 import { Button, Grid, Paper } from "@mui/material";
-import { collection, doc, getDoc, onSnapshot } from "firebase/firestore";
-import { useEffect, useState } from "react"
+import { collection, doc, DocumentData, getDoc, onSnapshot, query, where } from "firebase/firestore";
+import React from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { database } from "../../Firebase/Firebase";
 import { useAuthContext } from "../../Providers/AuthProvider";
 
-const AssignmentsPage = () => {
-    const navigate = useNavigate();
-    const [assignments, setAssignments] = useState([]);
+const VerifyAssignmentsPage: React.FunctionComponent = () => {
     const {user} = useAuthContext();
-    
+    const [mounted, setMounted] = useState(false);
+    const [submittedAss, setSubmittedAss] = useState<DocumentData>([]);
+
+    useEffect(() => {
+        setMounted(true);
+        return () => {
+            setMounted(false);
+        }
+    }, []);
+
     useEffect(() => {
         let unsubscribe = () => {};
-        if (user && user.uid !== undefined) {
-            unsubscribe = onSnapshot(collection(database,
-                "agency/" + user.uid, "assignments"), snapshot => {
-                  let data = [];
-                  snapshot.docs.forEach((doc) => {
-                      data.push({...doc.data(), id: doc.id});
-                  });
-                  setAssignments(data);
+        if (user !== null && user.uid !== undefined) {
+            unsubscribe = onSnapshot(query(collection(database, 'agency/' + user.uid, 'assignments'),
+            where('status', '==', 'submitted')), snapshot => {
+                let ass : Array<DocumentData> = [];
+                snapshot.docs.forEach((doc) => {
+                    ass.push({ ...doc.data(), id: doc.id});
                 });
+                setSubmittedAss(ass);
+            });
         }
         return () => {
-            unsubscribe();
+            return unsubscribe();
         }
-    }, [user]);
-
-    return (<div>
-        <Paper elevation={0} sx={{
+    }, [mounted, user]);
+    const navigate = useNavigate();
+    return (
+        <div>
+            <Paper elevation={0} sx={{
                     width: "100%",
                     padding: '0.4em',
                     margin: '0.3em 0',
@@ -39,7 +49,7 @@ const AssignmentsPage = () => {
                     textAlign: 'center'
                 }}>
                     <Grid container>
-                        <Grid item md={2} sx={{
+                        <Grid item xs={12} sm={12} lg={4} md={4} sx={{
                             display: 'flex', justifyContent: 'center',
                             alignItems: 'center'
                         }}>
@@ -47,7 +57,7 @@ const AssignmentsPage = () => {
                                 ID
                             </div>
                         </Grid>
-                        <Grid item md={2} sx={{
+                        <Grid item xs={12} sm={12} lg={2} md={2} sx={{
                             display: 'flex', justifyContent: 'center',
                             alignItems: 'center'
                         }}>
@@ -56,7 +66,7 @@ const AssignmentsPage = () => {
                             </div>
                         </Grid>
 
-                        <Grid item md={4} sx={{
+                        <Grid item xs={12} sm={12} lg={4} md={4} sx={{
                             display: 'flex', justifyContent: 'center',
                             alignItems: 'center'
                         }}>
@@ -64,17 +74,8 @@ const AssignmentsPage = () => {
                                 Name
                             </div>
                         </Grid>
-
-                        <Grid item md={1} sx={{
-                            display: 'flex', justifyContent: 'center',
-                            alignItems: 'center'
-                        }}>
-                            <div style={{color: 'gray', fontWeight: 'bold'}}>
-                                Status
-                            </div>
-                        </Grid>
                         
-                        <Grid item md={3} sx={{
+                        <Grid item xs={12} sm={12} lg={2} md={2} sx={{
                             display: 'flex', justifyContent: 'center',
                             alignItems: 'center'
                         }}>
@@ -85,7 +86,7 @@ const AssignmentsPage = () => {
                     </Grid>
                 </Paper>
                 <hr style={{width: '93%', margin: '0 auto 0.15em auto', border: '0.6px solid #dedede'}}/>
-        {assignments.map((assignment) => {
+            {submittedAss.map((assignment) => {
             return (<div key={assignment.id}>
                 <Paper elevation={0} sx={{
                     width: "100%",
@@ -98,7 +99,7 @@ const AssignmentsPage = () => {
                     textAlign: 'center'
                 }}>
                     <Grid container>
-                        <Grid item md={2} sx={{
+                        <Grid item xs={12} sm={12} lg={4} md={4} sx={{
                             display: 'flex', justifyContent: 'center',
                             alignItems: 'center'
                         }}>
@@ -106,7 +107,7 @@ const AssignmentsPage = () => {
                                 {assignment.id}
                             </div>
                         </Grid>
-                        <Grid item md={2} sx={{
+                        <Grid item xs={12} sm={12} lg={2} md={2} sx={{
                             display: 'flex', justifyContent: 'center',
                             alignItems: 'center'
                         }}>
@@ -115,7 +116,7 @@ const AssignmentsPage = () => {
                             </div>
                         </Grid>
 
-                        <Grid item md={4} sx={{
+                        <Grid item xs={12} sm={12} lg={4} md={4} sx={{
                             display: 'flex', justifyContent: 'center',
                             alignItems: 'center'
                         }}>
@@ -123,24 +124,20 @@ const AssignmentsPage = () => {
                                 <FvName uid={assignment.assigned_to}/>
                             </div>
                         </Grid>
-
-                        <Grid item md={1} sx={{
-                            display: 'flex', justifyContent: 'center',
-                            alignItems: 'center'
-                        }}>
-                            <div style={{marginLeft: '1.7em', fontFamily: 'Source Serif Pro, serif'}}>
-                                {assignment.status}
-                            </div>
-                        </Grid>
-                        
-                        <Grid item md={3} sx={{
+                        <Grid item xs={12} sm={12} lg={2} md={2} sx={{
                             display: 'flex', justifyContent: 'center',
                             alignItems: 'center'
                         }}>
                             <Button size='small' variant="contained" onClick={() => {
-                                navigate('/dashboard/assignment/' + assignment.id);
+                                navigate('/dashboard/verify/result',
+                                    {state: {
+                                        id: assignment.id,
+                                        fv: assignment.assigned_to,
+                                        docType: assignment.document_type
+                                    }}
+                                );
                             }}>
-                                View
+                                Verify
                             </Button>
                         </Grid>
                     </Grid>
@@ -148,14 +145,20 @@ const AssignmentsPage = () => {
                 <hr style={{width: '93%', margin: '0 auto 0.15em auto', border: '0.6px solid #dedede'}}/>
             </div>)
         })}
-    </div>)
+        </div>
+    );
 }
 
-const FvName = (props) => {
-    const [name, setName] = useState();
+interface FvProps {
+    uid: string
+}
+
+const FvName: React.FunctionComponent<FvProps> = (props) : ReactJSXElement => {
+    const [name, setName] = useState<String>();
     const getFvName = async () => {
         const snapshot = await getDoc(doc(database, "field_verifier", props.uid));
-        setName(snapshot.data().name);
+        let data : DocumentData | undefined = snapshot.data();
+        setName(data?.name);
     }
     useEffect(() => {
         getFvName();
@@ -165,4 +168,4 @@ const FvName = (props) => {
     </div>)
 }
 
-export default AssignmentsPage;
+export default VerifyAssignmentsPage;

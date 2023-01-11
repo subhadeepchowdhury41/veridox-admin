@@ -1,4 +1,6 @@
-import { Box, Button, Grid, MenuItem, Paper, TextField } from "@mui/material";
+import { IndeterminateCheckBoxOutlined, SendRounded } from "@mui/icons-material";
+import { LoadingButton } from "@mui/lab";
+import { Box, Button, Grid, IconButton, MenuItem, Paper, TextField } from "@mui/material";
 import {  } from "@mui/system";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -6,12 +8,10 @@ import { ClipLoader } from "react-spinners";
 import { useDraftAssignmentContext } from "../../Providers/DraftAssignmentProvider";
 
 const CreateAssignmentPage = () => {
-
     let inputStyle = {style: {fontFamily: 'Source Serif Pro, serif'}};
-
     let types = ["Educational Loan", "Death Certificate", "Home Loan"];
     const {isLoading, assignment, setAssignment, setMounted, errors, isSavingDraft, gettingFv, isSaved,
-       form, fvName, saveAssignment, clearForm, saveDraftAssignment} = useDraftAssignmentContext();
+       form, fvName, saveAssignment, clearForm, saveDraftAssignment, clearFv} = useDraftAssignmentContext();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -48,7 +48,7 @@ const CreateAssignmentPage = () => {
             Name
           </div>
           <div style={{width: '100%', justifyContent: 'center', display: 'flex', margin: '0.5em'}}>
-            <TextField error={Boolean(errors.applicant_name ?? false)} helperText={
+            <TextField variant="filled" error={Boolean(errors.applicant_name ?? false)} helperText={
               errors?.applicant_name
             } InputLabelProps={inputStyle} InputProps={inputStyle} sx={{
             }} value={assignment.applicant_name ?? ""} label="Applicant Name" size="small" onChange={(val) => {
@@ -314,7 +314,7 @@ const CreateAssignmentPage = () => {
             {assignment.assigned_to ? fvName : "No Field Verifier Assigned"}
           </div>
           <div style={{justifyContent: 'space-evenly', display: 'flex',
-            margin: '0.5em 0', width: '15%',}}>
+            margin: '0.5em 0', width: '15%'}}>
             {!gettingFv ? <Button onClick={() => {
               navigate("/dashboard/fieldVerifierPage", {state: {mode: "select"}});
             }} variant="contained" size="small">Choose</Button> : <Button size='small' disabled>Choosing.</Button>}
@@ -322,8 +322,22 @@ const CreateAssignmentPage = () => {
           <div style={{justifyContent: 'space-evenly', display: 'flex',
             margin: '0.5em 0', width: '15%' }}>
             {assignment.assigned_to === null || assignment.assigned_to === undefined ? null
-              : <Button variant="contained" size="small">Details</Button>}
+              : <Button variant="outlined" size="small"
+              onClick={() => {
+                navigate('/dashboard/fieldVerifier/' + assignment.assigned_to, {
+                  state: {mode: 'view'}
+                });
+              }}
+              >Details</Button>}
           </div>
+          <div style={{justifyContent: 'center', display: 'flex', margin: '0.5em 0', width: '15%'}}>
+            <Button size="small" variant="contained" sx={{backgroundColor: 'red',
+              '&:hover': {
+                backgroundColor: 'red'
+              }
+            }} onClick={() => {
+              clearFv();
+            }}>Clear</Button></div>
         </Paper>
         <Paper variant="outlined" sx={{margin: '1.3em 0', display: 'flex'}}>
           <div style={{color: 'grey', height: '100%', backgroundColor: 'whitesmoke',
@@ -347,14 +361,14 @@ const CreateAssignmentPage = () => {
           <div style={{justifyContent: 'center', display: 'flex', margin: '0.5em 0', width: '15%'}}>
             {form.name !== null && form.name !== undefined ? <Button size="small" variant="outlined">Details</Button> : null}
           </div>
-          <div style={{justifyContent: 'center', display: 'flex', margin: '0.5em 0', width: '15%'}}>
-            <Button size="small" variant="contained" sx={{backgroundColor: 'red',
-              '&:hover': {
-                backgroundColor: 'red'
-              }
+          <div style={{justifyContent: 'center', display: 'flex', margin: '0.5em', width: '15%'}}>
+            <IconButton size="small" sx={{
+              color: 'red',
             }} onClick={() => {
               clearForm();
-            }}>Clear</Button>
+            }}>
+              <IndeterminateCheckBoxOutlined/>
+            </IconButton>
           </div>
 
         </Paper>
@@ -365,12 +379,15 @@ const CreateAssignmentPage = () => {
             {types.map(((type, index) => (<MenuItem key={index} sx={{fontFamily: 'Source Serif Pro, serif'}} value={type}>{type}</MenuItem>)))}
           </TextField>
         <div style={{width: '100%', display: "flex", justifyContent: "end"}}>
-          {!isSavingDraft ? <Button variant="contained" sx={{display: 'flex', margin: '0 0.8em'}} onClick={() => {
+          <LoadingButton disableElevation color='primary' loading={isSavingDraft}
+          variant="contained" sx={{display: 'flex', margin: '0 0.8em'}} onClick={() => {
             saveDraftAssignment();
-          }}>Save Draft</Button> : <Button disabled>Saving..</Button>}
-          {!isSaved ? <Button variant="contained" onClick={() => {
+          }}>Save Draft</LoadingButton>
+          <LoadingButton loadingIndicator='Saving' endIcon={<SendRounded/>}
+          color="success" disableElevation
+          loading={isSaved} variant="contained" onClick={() => {
             saveAssignment();
-          }}>Save</Button> : <Button disabled >Saving.</Button>}
+          }}>Assign</LoadingButton>
         </div>
       </Box>
     </div>) : <div style={{

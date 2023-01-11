@@ -1,20 +1,25 @@
 import { Add, Visibility, VisibilityOff } from '@mui/icons-material';
 import { Box, Button, IconButton, Paper, TextField, Tooltip } from '@mui/material';
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useFormBuilderContext } from '../../Providers/FormBuilderProvider';
 import PageItem from './PageItem/PageItem';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { useDraftAssignmentContext } from '../../Providers/DraftAssignmentProvider';
 import { useNavigate } from 'react-router-dom';
+import { usePrompt } from '../../Utils/CustomHooks';
 
 const FormBuilderPage = () => {
-
     const {setForm} = useDraftAssignmentContext();
     const navigate = useNavigate();
-
-    const {state, dispatch, preview, setPreview,
+    const formNameRef = useRef(null);
+    const [cursorPos, setCursorPos] = useState();
+    const {state, dispatch, preview, setPreview, loadingStatus, changed,
         setMode, setFormId, formId, mode} = useFormBuilderContext();
-    
+    useEffect(() => {}, [cursorPos]);
+
+    usePrompt("Changes will not be saved!\nAre you sure to leave?",
+    changed, ['/dashboard/pageBuilder']);
+
     return (
         <div>
             <div style={{
@@ -24,23 +29,27 @@ const FormBuilderPage = () => {
                 alignItems: 'center',
                 justifyContent: 'space-between'
             }}>
-                <Box sx={{width: '30%', display: 'inline'}}>
+                <Box sx={{width: '10%', display: 'inline'}}>
                     <IconButton>
                         <MoreVertIcon/>
                     </IconButton>
-                    <Button variant='contained' size='small'>
-                        Import
-                    </Button>
                 </Box>
-                <Box sx={{width: '30%'}}>
+                <div style={{display: 'inline'}}>
+                <div style={{
+                    margin: '0 0.3em',
+                    fontSize: '13px',
+                    fontWeight: 'bold',
+                    display: 'inline'
+                }}>ID</div>
+                <div style={{display: 'inline'}}> {formId ?? 'Empty'}</div></div>
+                <Box sx={{width: '30%', display: 'inline'}}>
                     
-                    <TextField id='formName' size='small' label="Form Name" sx={{margin: '0 0.3em'}} value={state.name} onChange={(event) => {
+                    <TextField id='formName' size='small' label="Form Name"
+                      sx={{margin: '0 0.3em'}} inputRef={formNameRef} value={state.name} onChange={(event) => {
+                        setCursorPos(event.target.selectionStart);
                         dispatch({type: 'changeFormName', payload: {name: event.target.value}});
                     }}/>
-                    <div>{formId ?? 'Empty'}</div>
                 </Box>
-                
-
                 <Box sx={{width: '26%', display: 'inline-flex', }}>
                     <Tooltip title={preview ? 'Hide Preview' : 'Show Preview'}>
                         <IconButton onClick={() => {
@@ -49,8 +58,8 @@ const FormBuilderPage = () => {
                            {preview ? <VisibilityOff/> : <Visibility/> }
                         </IconButton>
                     </Tooltip>
-
-                    {mode === 'select' ? (
+                    {loadingStatus.status ? <div><Button>{loadingStatus.message}</Button></div>
+                    : <div>{mode === 'select' ? (
                         <Tooltip title='Choose Form'>
                         <Button size='small' variant='contained' sx={{
                             margin: '0.4em'
@@ -95,7 +104,7 @@ const FormBuilderPage = () => {
                             Update
                         </Button>
                     </Tooltip>
-                    ) : null}
+                    ) : null}</div>}
                 </Box>
             </div>
 
@@ -113,12 +122,11 @@ const FormBuilderPage = () => {
                     width: '16em',
                     height: '9em',
                     '&:hover': {
-                            backgroundColor: 'whitesmoke'
-                        }}}>
+                        backgroundColor: 'whitesmoke'
+                    }}}>
                         
                     <div style={{
-                        
-                        display: 'flex',
+                    display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
                         height: '100%'

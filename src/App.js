@@ -21,12 +21,19 @@ import CreateAssignmentPage from './Pages/AssignmentsPage/CreateAssignmentPage';
 import { DraftAssignmentProvider } from './Providers/DraftAssignmentProvider';
 import FieldVerifierDetailsPage from './Pages/FieldVerifierPage/FieldVerifierDetailPage';
 import { useAuthContext } from './Providers/AuthProvider';
+import ResultPage from './Pages/AssignmentsPage/ResultPage';
+import { createBrowserHistory } from 'history';
+import VerifyAssignmentsPage from './Pages/VerifyPage/VerifyAssignmentsPage.tsx';
+import VerifyAssignment from './Pages/VerifyPage/VerifyAssignment.tsx';
+import ApprovedAssignments from './Pages/ApprovedAssignments/ApprovedAssignments.tsx';
+import { ProfileProvider } from './Providers/ProfileProvider';
+
+const history = createBrowserHistory();
 
 const App = () => {
-
   const {user} = useAuthContext();
-
   return (
+    <ProfileProvider>
       <FieldVerifiersProvider>
         <AddRequestProvider>
           <FormsProvider>
@@ -34,7 +41,7 @@ const App = () => {
             <WidgetTypeProvider>
               <DraftAssignmentProvider>
               <div className="App">
-                  <Router>
+                  <Router history={history}>
                     <Routes>
                       <Route exact path="/" element={user !== null &&
                         Object.entries(user).length !== 0 ? <Dashboard/> : <HomePage/>}/>
@@ -52,7 +59,13 @@ const App = () => {
                           </Route>
                           <Route path="assignment">
                             <Route path=":id" element={<AssignmentDetailsPage/>}/>
+                            <Route path="response" element={<ResultPage/>}/>
                             <Route path="create" element={<CreateAssignmentPage/>}/>
+                            <Route path="verify" element={<VerifyAssignmentsPage/>}/>
+                            <Route path="approve" element={<ApprovedAssignments/>}/>
+                          </Route>
+                          <Route path="verify">
+                            <Route path="result" element={<VerifyAssignment/>}/>
                           </Route>
                           <Route path="assignments" element={<AssignmentsPage/>}/>
                           <Route path="chooseTemplate" element={<ChooseTemplatePage/>}/>
@@ -69,7 +82,8 @@ const App = () => {
            </FormBuilderProvider>
           </FormsProvider>
          </AddRequestProvider>
-      </FieldVerifiersProvider>)
+      </FieldVerifiersProvider>
+      </ProfileProvider>)
 }
 
 export default App;

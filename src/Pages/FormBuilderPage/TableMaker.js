@@ -23,6 +23,7 @@ const TableMaker = (props) => {
                         return (<div key={index} style={{margin: '0.7em 0',
                          width: '100%', display: 'inline-flex', justifyContent: 'space-between'}}>
                             <TextField size="small" defaultValue={state.pages[props.page_id].fields[props.field_id].rows[index].label ?? ''}
+                                label={`Row Item ${index + 1}`}
                                 onChange={(value) => {
                                     dispatch({type: 'changeTableRowLabel', payload: {
                                         page_id: props.page_id, field_id: props.field_id,
@@ -54,7 +55,7 @@ const TableMaker = (props) => {
                     <Button variant="outlined" size="small" sx={{margin: '0.7em 0'}}
                       onClick={() => {
                         dispatch({type: 'changeTableRows', payload: {page_id: props.page_id, 
-                        field_id: props.field_id, label: "Row Item"}});
+                        field_id: props.field_id, label: ""}});
                       }}>
                         Add Row
                     </Button>
@@ -69,10 +70,11 @@ const TableMaker = (props) => {
                     <Typography>
                         Columns
                     </Typography>
-                    {state.pages[props.page_id].fields[props.field_id].columns?.map((row, index) => {
+                    {state.pages[props.page_id].fields[props.field_id].columns?.map((column, index) => {
                         return (<div key={index} style={{margin: '0.7em 0', 
                           width: '100%', display: 'inline-flex', justifyContent: 'space-between'}}>
                             <TextField size="small" defaultValue={state.pages[props.page_id].fields[props.field_id].columns[index].label ?? ''}
+                            label={`Column Item ${index+1}`}
                             onChange={(value) => {
                                 dispatch({type: 'changeTableColumnLabel', payload: {
                                     page_id: props.page_id, field_id: props.field_id,
@@ -82,6 +84,17 @@ const TableMaker = (props) => {
                             }} sx={{
                                 width: '60%'
                             }}/>
+                            <Select value={state.pages[props.page_id].fields[props.field_id].columns[index].widget ?? ''}
+                            onChange={(value) => {
+                                dispatch({type: 'changeTableColumnWidget', payload: {page_id: props.page_id,
+                                field_id: props.field_id, column_id: index, widget: value.target.value}});
+                            }} size="small" sx={{marginLeft: '0.3em'}}>
+                              {tableWidgets.map((widget, index) => {
+                                return (<MenuItem value={widget} key={index}>
+                                  {widget}
+                                </MenuItem>)
+                              })}
+                            </Select>
                             <IconButton sx={{transform: 'scale(0.7)'}} onClick={() => {
                                 dispatch({type: 'deleteTableColumn', payload: {page_id: props.page_id,
                                     field_id: props.field_id, column_id: index
@@ -94,7 +107,7 @@ const TableMaker = (props) => {
                     <Button variant="outlined" size="small" sx={{margin: '0.7em 0'}}
                       onClick={() => {
                         dispatch({type: 'changeTableColumns', payload: {page_id: props.page_id, 
-                        field_id: props.field_id, label: "Column Item"}});
+                        field_id: props.field_id, label: ""}});
                       }}>Add Column</Button>
                 </Box>
 

@@ -6,9 +6,7 @@ export const useForm = (form) => {
         let data = {};
         Object.entries(form).forEach((entry) => {
             data[entry[0]] = "";
-            // console.log(entry[0]);
         });
-        console.log('---', data);
         return data;
     });
     const [errors, setErrors] = useState(() => {

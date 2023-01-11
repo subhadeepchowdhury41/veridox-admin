@@ -1,10 +1,11 @@
 import { Warning } from '@mui/icons-material';
 import { Button, Fade, Paper, Zoom } from '@mui/material';
-import React, { forwardRef, useRef } from 'react';
+import React, { forwardRef } from 'react';
 import { useAlertBoxContext } from '../../Providers/AlertBoxProvider';
 import './AlertBox.css';
 
-const AlertBox = forwardRef(({title, message, submitRef, cancelRef}) => {
+const AlertBox = forwardRef(({title, message, submitRef,
+    cancelRef, submitLabel}) => {
 
     const {show, setShow} = useAlertBoxContext();
 
@@ -43,7 +44,7 @@ const AlertBox = forwardRef(({title, message, submitRef, cancelRef}) => {
                     flexGrow: '1',
                 }}>
                     <Button ref={cancelRef}>Cancel</Button>
-                    <Button ref={submitRef}>Submit</Button></div>
+                    <Button ref={submitRef}>{submitLabel ?? 'Submit'}</Button></div>
             </Paper></Zoom>
         </div></Fade>
     );

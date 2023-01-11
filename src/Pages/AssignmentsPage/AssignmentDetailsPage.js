@@ -1,4 +1,4 @@
-import { Box, Button, Grid, Paper } from "@mui/material";
+import { Box, Button, Grid, Paper, Step, StepContent, StepLabel, Stepper, Typography } from "@mui/material";
 import {  } from "@mui/system";
 import { doc, getDoc, onSnapshot } from "firebase/firestore";
 import { useEffect, useState } from "react";
@@ -11,24 +11,21 @@ const AssignmentDetailsPage = () => {
 
     const [assignment, setAssignment] = useState({});
     const [isLoading, setIsLoading] = useState(true);
-
+    const [historySummary, setHistorySummary] = useState([]);
+    const [history, setHistory] = useState([]);
     const [form, setForm] = useState({});
     const [fv, setFv] = useState("");
-
     const getForm = async () => {
       const snapshot1 = await getDoc(doc(database, "assignments/" + id, "form_data/data"));
       const snapshot2 = await getDoc(doc(database, "assignments/" + id, "form_data/result"));
       setForm({data: snapshot1.data(), response: snapshot2.data() ?? {}});
     }
-
     const getFv = async (fvId) => {
       const snapshot = await getDoc(doc(database, "field_verifier", fvId));
       setFv(snapshot.data().name);
     }
-
     const {id} = useParams();
     const navigate = useNavigate();
-
     useEffect(() => {
         setIsLoading(true);
         const unsubscribe = onSnapshot(doc(database, "assignments", id),
@@ -37,10 +34,15 @@ const AssignmentDetailsPage = () => {
             setAssignment({...snapshot.data(), id: snapshot.id});
             getFv(snapshot.data().assigned_to);
             getForm();
+            setHistory(snapshot.data().history);
+            if (snapshot.data()?.history?.length > 3) {
+              setHistorySummary(snapshot.data().history.slice(- 4, -1))
+            } else {
+              setHistorySummary(snapshot.data().history);
+            }
             setIsLoading(false);
           }
         )
-        
         return () => {
             unsubscribe();
         }
@@ -48,13 +50,28 @@ const AssignmentDetailsPage = () => {
     }, [id]);
 
     return !isLoading ? (<div>
+      <div style={{display: 'flex',
+          width: '100%'
+        }}>
+          <div className="data" style={{width: '100%', justifyContent: 'center', display: 'flex', margin: '2em 1em'}}>
+            <Stepper activeStep={assignment?.history?.length}>
+              {historySummary.map((event, index) => {
+                return <Step key={index} >
+                  <StepLabel>{event.status}
+                    <Typography fontFamily="Roboto Slab" fontSize="12px">
+                      {event.date}
+                    </Typography>
+                  </StepLabel>
+                </Step>
+              })}
+            </Stepper>
+          </div></div>
       <div style={{
         fontSize: '19px',
         fontWeight: 'bold',
         fontFamily: 'Playfair Display, serif'
       }}>Applicant Details</div>
       <hr style={{margin: '0.4em 0 2em 0', border: '0.2px solid #ededed'}}/>
-
       <Grid container sx={{
         borderRadius: '3px',
         border: '1px solid grey',
@@ -78,7 +95,6 @@ const AssignmentDetailsPage = () => {
           <div className="data" style={{width: '100%', justifyContent: 'center', display: 'flex', margin: '0.5em'}}>
             {assignment.applicant_name}
           </div>
-          
         </Grid>
 
         <Grid item lg={6} style={{display: 'flex', width: '100%', borderBottom: '1px solid grey', }}>
@@ -278,13 +294,16 @@ const AssignmentDetailsPage = () => {
           <div style={{
             fontFamily: 'Source Serif Pro, serif',
             justifyContent: 'center', display: 'flex', margin: '0.5em 0', width: '100%'}}>
-            {fv ?? "No Field Verifier Assigned"}
+              {fv ?? "No Field Verifier Assigned"}
           </div>
           <div style={{justifyContent: 'space-evenly', display: 'flex',
             margin: '0.5em 0', width: '15%' }}>
-            {assignment.assigned_to === null || assignment.assigned_to === undefined ? null
+            {assignment.assigned_to === null || assignment.assigned_to === undefined
+              || assignment.assigned_to === "" ? null
               : <Button variant="contained" size="small" onClick={() => {
-                navigate('/dashboard/fieldVerifier/' + assignment.assigned_to);
+                navigate('/dashboard/fieldVerifier/' + assignment.assigned_to, {
+                  state: {mode: 'view'}
+                });
               }}>Details</Button>}
           </div>
         </Paper>
@@ -308,7 +327,15 @@ const AssignmentDetailsPage = () => {
             {form.data?.name === undefined || form.data?.name === null ? "No form Chosen" : form.data?.name}
           </div>
           <div style={{justifyContent: 'center', display: 'flex', margin: '0.5em 0', width: '15%'}}>
-            {form.data?.name !== null && form.data?.name !== undefined ? <Button size="small" variant="contained">Details</Button> : null}
+            {form.data?.name !== null && form.data?.name !== undefined ? <Button size="small"
+            onClick={() => {
+              navigate('/dashboard/assignment/response/', {
+                state: {
+                  id: id
+                }
+              });
+            }}
+             variant="contained">Details</Button> : null}
           </div>
 
         </Paper>

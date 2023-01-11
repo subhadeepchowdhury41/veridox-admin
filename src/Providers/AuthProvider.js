@@ -7,17 +7,15 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({children}) => {
 
-    const {showSuccess} = useToastProvider();
+    const {showSuccess, showError} = useToastProvider();
     const [user, setUser] = useState({});
 
-    const logOut = (onSuccess) => {
-        try {
-            authentication.signOut();
-            onSuccess();
+    const logOut = async () => {
+        await authentication.signOut().then(() => {
             showSuccess("Logged out Successfully");
-        } catch (err) {
-            alert('There was some problem logging out');
-        }
+        }).catch(err => {
+            showError('There was some problem logging out');
+        });
     }
 
     useEffect(() => {

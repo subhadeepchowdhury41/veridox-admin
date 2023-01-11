@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { styled, useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
@@ -9,16 +9,19 @@ import List from '@mui/material/List';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
-import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import ListItem from '@mui/material/ListItem';
-import { Collapse } from '@mui/material';
-import { ExpandLess, ExpandMore, Logout } from '@mui/icons-material';
+import { Avatar, ListSubheader } from '@mui/material';
+import { AddCircleOutline, AddCircleRounded, ArchiveOutlined, ArchiveRounded, Assignment, AssignmentOutlined, AssignmentTurnedInOutlined, AssignmentTurnedInRounded, DashboardOutlined, DashboardRounded, DescriptionOutlined, DescriptionRounded, GroupsOutlined, GroupsRounded, Logout, NoteAddOutlined, NoteAddRounded, PersonAddOutlined, PersonAddRounded, PersonRounded, Settings } from '@mui/icons-material';
 import ListItemText from '@mui/material/ListItemText';
 import {useAuthContext} from '../../Providers/AuthProvider';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useFormBuilderContext } from '../../Providers/FormBuilderProvider';
+import { useProfileContext } from '../../Providers/ProfileProvider';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBars } from '@fortawesome/free-solid-svg-icons';
+import { CustomMenu, CustomMenuItem, CustomMenuIcon } from '../../Elements/CustomMenu';
+import { CustomListItem } from '../../Elements/CustomList';
 
 const drawerWidth = 240;
 
@@ -44,7 +47,8 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== 'open',
 })(({ theme, open }) => ({
-  height: '50px',
+  backgroundColor: 'white',
+  height: '60px',
   justifyContent: 'center',
   transition: theme.transitions.create(['margin', 'width'], {
     easing: theme.transitions.easing.sharp,
@@ -64,61 +68,119 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   padding: theme.spacing(0, 1),
-  // necessary for content to be below app bar
-  // ...theme.mixins.toolbar,
-  height: '50px',
+  height: '59px',
   justifyContent: 'flex-end',
 }));
 
 const Dashboard = () => {
-  const {setMode, setFormId} = useFormBuilderContext();
-
+  const { setMode, setFormId } = useFormBuilderContext();
+  const {profile } = useProfileContext();
   const theme = useTheme();
   const { logOut } = useAuthContext();
-
+  const [profileAnchor, setProfileAnchor] = React.useState();
   const [open, setOpen] = React.useState(false);
-  const [openDocs1, setOpenDocs1] = React.useState(false);
-  const [openDocs2, setOpenDocs2] = React.useState(false);
-  const [openDocs3, setOpenDocs3] = React.useState(false);
-
-  const handleDrawerOpen = () => {
-    setOpen(true);
+  const [profileMenu, setProfileMenu] = React.useState(false);
+  const toggleDrawer = () => {
+    setOpen(prev => !prev);
   };
-
   const navigate = useNavigate();
-
-  const handleDrawerClose = () => {
-    setOpen(false);
-  };
-
+  const handleProfileMenuClose = () => {
+    setProfileMenu(false);
+  }
+  const location = useLocation();
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
-      <AppBar position="fixed" open={open} >
+      <AppBar elevation={1} variant="outlined" position="fixed" open={open} >
         <Toolbar style={{
           justifyContent: "space-between"}}>
-          <IconButton color="inherit" aria-label="open drawer" onClick={handleDrawerOpen} edge="start" sx={{ mr: 2, ...(open && { display: 'none' })}}>
-            <MenuIcon />
+          <IconButton sx={{
+            borderRadius: '3px',
+            padding: '0.5em'
+          }} color="inherit" aria-label="open drawer" onClick={toggleDrawer}
+          edge="start">
+            <FontAwesomeIcon color='black' icon={faBars}/>
           </IconButton>
-          <Typography variant="h6" noWrap component="div" sx={{fontWeight: "400"}}>
-            VeriDocs
-          </Typography>
-          <IconButton style={{color: "white"}} onClick={() => {
-            logOut(
-              () => {
-                navigate("/");
-              }
-            );
-          }}>
-            <Logout/>
-          </IconButton>
+          <img src={"/assets/logo/veridocs-logo.png"} style={{
+            height: '50px'
+          }} alt="logo"/>
+          <div>
+            <IconButton onClick={(event) => {
+              setProfileAnchor(event.target);
+              setProfileMenu(prev => !prev);
+            }} sx={{
+              height: '2em',
+              width: '2em'
+            }}>
+              <Avatar sx={{bgcolor: '#1260cc', cursor: 'pointer',
+                height: '2em',
+                width: '2em'
+              }}>
+                {String(profile.agency_name)
+                .at(0).toUpperCase()}
+              </Avatar>
+            </IconButton>
+          <CustomMenu elevation={3}
+          anchorEl={profileAnchor} open={profileMenu} onClose={handleProfileMenuClose}
+          onClick={handleProfileMenuClose}>
+              <Box
+              p={2.2}
+              sx={{
+                display: 'flex',
+                alignItems: 'center'
+              }}
+              >
+                <Avatar sx={{
+                  height: '53px',
+                  width: '53px',
+                  backgroundColor: '#1260cc'
+                }}>
+                  {String(profile.agency_name)
+                .at(0).toUpperCase()}</Avatar>
+                <Typography pl={2} fontFamily='Playfair'
+                fontWeight='bold' fontSize='19px'
+                >
+                  {profile?.agency_name}
+                  <Typography fontWeight='thin'
+                   color='gray' fontSize='13px'
+                   noWrap sx={{
+                    width: '200px',
+                    textOverflow:'ellipsis'}}>
+                    subhadeepchowdhury41@gmail.comjsjshj
+                  </Typography>
+                </Typography>
+              </Box>
+              <Divider />
+            <CustomMenuItem>
+              <CustomMenuIcon>
+                <PersonRounded sx={{
+                  color: 'black'
+                }}/>
+              </CustomMenuIcon>
+              View Profile
+            </CustomMenuItem>
+            <CustomMenuItem>
+            <CustomMenuIcon>
+              <Settings/>
+            </CustomMenuIcon>
+              Settings
+            </CustomMenuItem>
+            <CustomMenuItem onClick={async () => {
+              await logOut();
+              navigate('/');
+            }}>
+            <CustomMenuIcon>
+              <Logout/>
+            </CustomMenuIcon>
+             Log Out
+            </CustomMenuItem>
+          </CustomMenu>
+          </div>
         </Toolbar>
-        
       </AppBar>
       <Drawer
         sx={{
           width: drawerWidth,
-          flexShrink: 0,
           '& .MuiDrawer-paper': {
             width: drawerWidth,
             boxSizing: 'border-box',
@@ -127,109 +189,94 @@ const Dashboard = () => {
         variant="persistent"
         anchor="left"
         open={open}>
-        <DrawerHeader style={{alignItems: "center",
-        justifyContent: "space-between"
-    }}>
+        <DrawerHeader sx={{
+          alignItems: "center",
+          justifyContent: "space-between"
+        }}>
            <div style={{width: "20px"}}></div>
             <h3 style={{display: "inline", fontWeight: "500"}}>Main Menu</h3>
-          <IconButton onClick={handleDrawerClose}>
-                {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+          <IconButton onClick={toggleDrawer}>
+            {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
           </IconButton>
         </DrawerHeader>
-        <Divider />
-        <List>
-            <ListItem button onClick={() => {
+        <Divider/>
+        <List sx={{margin: '0 0.4em'}}>
+            <CustomListItem primary="Summary" highlightIcon={
+              <DashboardRounded fontSize='small' sx={{color: '#1260cc'}}/>
+            } normalIcon={
+              <DashboardOutlined fontSize='small' sx={{color:'#1260cc'}}/>
+            } highlight={location.pathname.includes('summary')} button onClick={() => {
               navigate("/dashboard/summary");
-            }}>
-              <ListItemText primary="Summary" />
-            </ListItem>
-
-            <ListItem button onClick={() => {
+            }}/>
+            <CustomListItem button highlight={location.pathname.includes('forms')}
+            highlightIcon={
+              <DescriptionRounded sx={{color:'green'}} fontSize='small'/>
+            } normalIcon={
+              <DescriptionOutlined sx={{color:'green'}} fontSize='small'/>
+            } primary="Forms" onClick={() => {
               navigate("/dashboard/forms", {state: {mode: 'create'}});
-            }}>
-              <ListItemText primary="Forms" />
-            </ListItem>
-
-            <ListItem button onClick={() => {
+            }}/>
+            <CustomListItem button highlight={location.pathname.includes('assignments')}
+            onClick={() => {
               navigate("/dashboard/assignments");
-            }}>
-              <ListItemText primary="Assignments" />
-            </ListItem>
-
-            <ListItem button onClick={() => {
+            }} primary="Assignments"
+            highlightIcon={
+              <Assignment fontSize='small' sx={{color: '#c9283d'}}/>
+            }
+            normalIcon={
+              <AssignmentOutlined sx={{color:'#c9283d'}} fontSize='small'/>
+            }/>
+            <CustomListItem highlight={location.pathname.includes('formBuilder')}
+            button onClick={() => {
               setFormId(null);
               setMode('create');
               navigate("/dashboard/formBuilderPage", {state: {mode: 'create'}});
-            }}>
-              <ListItemText primary="Form Builder" />
-            </ListItem>
-            <ListItem button onClick={() => {
-              setOpenDocs1(!openDocs1);
-            }}>
-              <ListItemText primary="Documents" />
-                {openDocs1 ? <ExpandLess /> : <ExpandMore />}
-            </ListItem>
-            <Collapse in={openDocs1} timeout="auto" unmountOnExit>
-              <List component="div" disablePadding>
-                <ListItem button sx={{ pl: 6 }} onClick={() => {
+            }} primary="Form Builder"
+            normalIcon={<NoteAddOutlined fontSize='small' sx={{color:'orange'}}/>}
+            highlightIcon={<NoteAddRounded fontSize='small' sx={{color:'orange'}}/>}
+            />
+            <ListSubheader color='black'>Documents</ListSubheader>
+              <CustomListItem button  primary="Assign"
+                normalIcon={<AddCircleOutline fontSize='small' sx={{color: '#00a9a2'}}/>}
+                highlightIcon={<AddCircleRounded fontSize='small' sx={{color: '#00a9a2'}}/>}
+                highlight={location.pathname.includes('assignment/create')}
+                onClick={() => {
                   navigate("/dashboard/assignment/create")
                 }}>
                   <ListItemText primary="Assign" />
-                </ListItem>
-                <ListItem button sx={{ pl: 6 }}>
-                  <ListItemText primary="Verify" />
-                </ListItem>
-                <ListItem button sx={{ pl: 6 }}>
-                  <ListItemText primary="Verification Type" />
-                </ListItem>
-                <ListItem button sx={{ pl: 6 }}>
-                  <ListItemText primary="Proof of Delivery" />
-                </ListItem>
-                <ListItem button sx={{ pl: 6 }}>
-                  <ListItemText primary="Status" />
-                </ListItem>
+                </CustomListItem>
+                <CustomListItem button
+                highlight={location.pathname.includes('assignment/verify')}
+                normalIcon={<AssignmentTurnedInOutlined fontSize='small' sx={{color: '#01ab02'}}
+                 primary='Verify'/>}
+                highlightIcon={<AssignmentTurnedInRounded sx={{color: '#01ab02'}} fontSize='small'
+                 primary='Verify'/>}
+                primary="Verify" onClick={() => {
+                  navigate('/dashboard/assignment/verify');
+                }}/>
+                <CustomListItem primary="Archive" button
+                highlight={location.pathname.includes('assignment/approve')}
+                normalIcon={<ArchiveOutlined fontSize='small' sx={{color: '#1e2e50'}}/>}
+                highlightIcon={<ArchiveRounded fontSize='small' sx={{color: '#1e2e50'}}/>}
+                onClick={() => {
+                  navigate('/dashboard/assignment/approve');
+                }}/>
+                <ListSubheader>Field Verifiers</ListSubheader>
+                <CustomListItem highlight={location.pathname.includes('fieldVerifierPage')}
+                normalIcon={<GroupsOutlined fontSize='small'
+                 sx={{color: '#ff5e64'}}/>}
+                highlightIcon={<GroupsRounded sx={{color: '#ff5e64'}} fontSize='small'/>}
+                 button primary="List" onClick={() => {
+                  navigate("/dashboard/fieldVerifierPage", {state: {mode: "view"}});
+                }}/>
+                <CustomListItem button primary="Add" highlight={location.pathname
+                .includes('addFieldVerifierPage')} normalIcon={<PersonAddOutlined fontSize='small'
+                 sx={{color: '#32cf06'}}/>}
+                highlightIcon={<PersonAddRounded sx={{color: '#32cf06'}} fontSize='small'/>}
+                onClick={() => {
+                  navigate("/dashboard/addFieldVerifierPage");
+                }}/>
               </List>
-            </Collapse>
-            <ListItem button onClick={() => {
-              setOpenDocs2(!openDocs2);
-            }}>
-  
-              <ListItemText primary="Field Verifiers" />
-                {openDocs2 ? <ExpandLess /> : <ExpandMore />}
-            </ListItem>
-            <Collapse in={openDocs2} timeout="auto" unmountOnExit>
-              <List component="div" disablePadding>
-                <ListItem button sx={{ pl: 6 }}>
-                  <ListItemText primary="List" onClick={() => {
-                    navigate("/dashboard/fieldVerifierPage", {state: {mode: "view"}});
-                  }}/>
-                </ListItem>
-                <ListItem button sx={{ pl: 6 }}>
-                  <ListItemText primary="Add" onClick={() => {
-                    navigate("/dashboard/addFieldVerifierPage");
-                  }}/>
-                </ListItem>
-              </List>
-
-            </Collapse>
-            <ListItem button onClick={() => {
-              setOpenDocs3(!openDocs3);
-            }}>
-      
-              <ListItemText primary="Agencies" />
-                {openDocs3 ? <ExpandLess /> : <ExpandMore />}
-            </ListItem>
-            <Collapse in={openDocs3} timeout="auto" unmountOnExit>
-              <List component="div" disablePadding>
-                <ListItem button sx={{ pl: 6 }}>
-                  <ListItemText primary="List" />
-                </ListItem>
-                <ListItem button sx={{ pl: 6 }}>
-                  <ListItemText primary="Add" />
-                </ListItem>
-              </List>
-            </Collapse>
-        </List>
       </Drawer>
       <Main open={open}>
         <div style={{

@@ -20,7 +20,6 @@ const FieldVerifierDetailsPage = () => {
 
     const getFVDetails = async () => {
         setIsLoading(true);
-        console.log(mode);
         if (mode === 'add') {
           await getDoc(doc(database, 'agency/' + user.uid, 'add_requests/' + id)).then(async snapshot => {
             setFv({...snapshot.data()});
@@ -87,14 +86,14 @@ const FieldVerifierDetailsPage = () => {
             display: 'flex',
             justifyContent: 'center',
             minWidth: '25%'}}>
-            UID
+            ID
           </div>
           <div style={{justifyContent: 'center', display: 'flex',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             fontFamily: 'Source Serif Pro, serif',
             margin: '0.5em', width: '100%'}}>
-            {id}
+            {fv.id}
           </div>
         </Grid>
         <Grid item lg={6} style={{display: 'flex', borderBottom: '1px solid grey',
@@ -146,7 +145,10 @@ const FieldVerifierDetailsPage = () => {
             margin: '0 auto'
           }}>
             {pan !== '' ?
-              <FileWrapper url={pan} name="Pan Card"/> :
+              <FileWrapper url={pan} name="Pan Card">
+                <iframe src={pan} title='g' style={{}}>
+                </iframe>
+              </FileWrapper> :
               <div>
                 No Pan Card Added by Field Verifier
               </div>}

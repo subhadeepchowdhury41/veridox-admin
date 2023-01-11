@@ -2,46 +2,42 @@ import React from 'react';
 import { useFieldVerifiersContext } from '../../Providers/FieldVerifiersProvider';
 import FieldVerifierCard from '../../Elements/FieldVerifierCard/FieldVerifierCard';
 import { useLocation } from 'react-router-dom';
-import { Box } from '@mui/material';
+import { Grid } from '@mui/material';
 import './FieldVerifierPage.css';
 
 
 const FieldVerifierPage = () => {
-    
   const {fvs} = useFieldVerifiersContext();
   const {state} = useLocation();
-
   const {mode} = state;
 
   return (
-      <div>
-        <div style={{
-                height: '47px',
-                width: '100%',
-                display: 'inline-flex',
-                alignItems: 'center',
-                fontSize: '14px',
-                color: '#404040',
-                fontWeight: 'bold',
-                justifyContent: 'center',
+      <div style={{
+        width: "100%",
+      }}>
+        <Grid container style={{
+              margin: '0.4em 0em',
+              fontSize: '14px',
+              color: '#404040',
+              fontWeight: 'bold'
             }}>
-              <Box className="OverflowTextContainer" sx={{width: "30%"}}>
+              <Grid item xs={1} sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                
+              </Grid>
+              <Grid item xs={2} sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                 Identifier
-              </Box>
-
-              <Box className="OverflowTextContainer" sx={{width: "30%"}}>
+              </Grid>
+              <Grid item xs={3} sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                 Name
-              </Box>
-              
-              <Box className="OverflowTextContainer" sx={{width: "20%"}}>
-                Phone Number
-              </Box>
-              
-              Actions
-            
-        </div>
+              </Grid>
+              <Grid item xs={3} sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                Phone
+              </Grid>
+              <Grid item xs={3} sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                Actions
+              </Grid>
+        </Grid>
         <hr style={{width: '93%', margin: '0 auto 0.15em auto', border: '0.6px solid #dedede'}}/>
-
         {fvs.map((element, index) => (
           <div key={index}>
             <FieldVerifierCard
