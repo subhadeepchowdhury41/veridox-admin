@@ -27,6 +27,8 @@ export const DraftAssignmentProvider = ({children}) => {
             name: 'Aadhar Card'
         }, {
             name: 'Pan Card'
+        }, {
+            name: 'Death Certificate'
         }]
     });
     const [assignment, setAssignment, validate, errors] = useForm({
