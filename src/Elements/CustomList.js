@@ -11,8 +11,7 @@ export const StyledListItem = styled(((props) => <ListItem {...props}>
   }} primary={props.primary}/>
 </ListItem>), {
   shouldForwardProp: (prop) => prop !== 'highlight'
-}
-)(({theme, highlight}) => ({
+})(({theme, highlight}) => ({
   backgroundColor: highlight ? '#f7f7f7' : 'white',
   borderRadius: '5px',
   height: '40px',
@@ -28,7 +27,7 @@ export const CustomListItem = ({onClick,
         { highlight ? highlightIcon : normalIcon }
       </ListItemIcon>
       <ListItemText primaryTypographyProps={{
-        fontFamily: 'Roboto, sans-serif',
+        fontFamily: 'Source Sans Pro, sans-serif',
         fontSize: '14px',
         fontWeight: highlight ? 'bold' : 'normal'
       }} primary={primary}/>

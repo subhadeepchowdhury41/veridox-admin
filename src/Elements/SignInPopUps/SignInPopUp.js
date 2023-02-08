@@ -1,17 +1,14 @@
 import React, { useState } from 'react';
 import PopUpBox from '../PopUpBox/PopUpBox';
 import { Paper  } from '@mui/material';
-import CustomTextField from '../CustomTextField/CustomTextField';
+import {CustomTextField} from '../CustomTextField/CustomTextField';
 import SolidButton from '../SolidButton/SolidButton';
 import { useOtpContext } from '../../Providers/OtpProvider';
 import AlertBox from '../AlertBox/AlertBox';
 
 const SignInPopUp = () => {
-
     const  { phoneNo, id, setPhoneNo, errorMsg, loading, setId, getOtp } = useOtpContext();
-    
     const [helperPhone, setHelperPhone] = useState("");
-
     const isValidPhoneNumber = (number) => {
         var str = "Enter a valid phone number";
         var nullStr = "";
@@ -21,16 +18,14 @@ const SignInPopUp = () => {
             setHelperPhone(nullStr);
         }
     }
-
     const handlePhone = (value) => {
         isValidPhoneNumber(value.target.value);
         setPhoneNo(value.target.value);
     }
-
     return (
       <PopUpBox >
         <Paper variant = "outlined"
-        sx = {{ width: "98%", height: "480px" }}>
+        sx = {{width: "98%", height: "480px"}}>
         <div style = {{
                 width: '100%',
                 textAlign: 'center',

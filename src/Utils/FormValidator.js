@@ -46,6 +46,7 @@ export const useForm = (form) => {
             }
         });
         setErrors(newErr);
+        console.log(newErr);
         return Object.entries(newErr).length === 0;
     }
 

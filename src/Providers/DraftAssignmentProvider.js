@@ -20,24 +20,16 @@ export const DraftAssignmentProvider = ({children}) => {
     const [fvName, setFvName] = useState();
     const [fvId, setFvId] = useState();
     const [form, setForm] = useState({});
+    const [persons, setPersons] = useState([]);
+    const [template, setTemplate] = useState({
+        persons: ["Applicant", "Co-Applicant", "Guarenter"],
+        files: [{
+            name: 'Aadhar Card'
+        }, {
+            name: 'Pan Card'
+        }]
+    });
     const [assignment, setAssignment, validate, errors] = useForm({
-        applicant_name: [{
-            type: 'length',
-            length: 3
-        }, 'required'],
-        applicant_phone: ['required', {
-            type: 'pattern',
-            msg: 'Enter a valid phone number',
-            regex: /^(?:(?:\+|0{0,2})91(\s*[-]\s*)?|[0]?)?[789]\d{9}$/,
-        }],
-        applicant_post_office: ['required'],
-        applicant_city: ['required'],
-        applicant_pincode: ['required', {
-            type: 'pattern',
-            regex: /^[1-9][0-9]{5}$/,
-            msg: 'This is not a valid pincode'
-        }],
-        applicant_state: ['required'],
         coapplicant_name: ['required', {
             type: 'length',
             length: 3
@@ -197,16 +189,17 @@ export const DraftAssignmentProvider = ({children}) => {
     }
 
     useEffect(() => {
-        if (mounted === true && user.uid !== null && user.uid !== undefined) {
+        if (mounted === true && user !== null && user.uid !== null && user.uid !== undefined) {
             setIsLoading(true);
             getAssignment(user.uid);
+            setPersons(template.persons);
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user, mounted]);
 
-    return (<DraftAssignmentContext.Provider value={{isLoading, assignment, clearForm,
+    return (<DraftAssignmentContext.Provider value={{template, isLoading, assignment, clearForm,
         setAssignment, getFv, fvName, saveAssignment, gettingFv, isSaved, errors, clearFv,
-          saveDraftAssignment, form, setForm, isSavingDraft, setMounted}}>
+          saveDraftAssignment, form, setForm, isSavingDraft, setMounted, setPersons}}>
         {children}
     </DraftAssignmentContext.Provider>);
 }
