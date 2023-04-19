@@ -11,7 +11,7 @@ import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import { Avatar, ListSubheader } from '@mui/material';
+import { Avatar, ListSubheader, MenuItem, TextField } from '@mui/material';
 import { AddCircleOutline, AddCircleRounded, ArchiveOutlined, ArchiveRounded, Assignment, AssignmentOutlined, AssignmentTurnedInOutlined, AssignmentTurnedInRounded, DashboardOutlined, DashboardRounded, DescriptionOutlined, DescriptionRounded, GroupsOutlined, GroupsRounded, Logout, NoteAddOutlined, NoteAddRounded, PersonAddOutlined, PersonAddRounded, PersonRounded, Settings } from '@mui/icons-material';
 import ListItemText from '@mui/material/ListItemText';
 import {useAuthContext} from '../../Providers/AuthProvider';
@@ -22,6 +22,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { CustomMenu, CustomMenuItem, CustomMenuIcon } from '../../Elements/CustomMenu';
 import { CustomListItem } from '../../Elements/CustomList';
+import { documentTypes, useDraftAssignmentContext } from '../../Providers/DraftAssignmentProvider';
 
 const drawerWidth = 240;
 
@@ -80,6 +81,7 @@ const Dashboard = () => {
   const [profileAnchor, setProfileAnchor] = React.useState();
   const [open, setOpen] = React.useState(false);
   const [profileMenu, setProfileMenu] = React.useState(false);
+  const { setTemplate, setAssignment } = useDraftAssignmentContext();
   const toggleDrawer = () => {
     setOpen(prev => !prev);
   };
@@ -103,7 +105,21 @@ const Dashboard = () => {
           </IconButton>
           <img src={"/assets/logo/veridocs-logo.png"} style={{
             height: '50px'
-          }} alt="logo"/>
+          }} alt="logo" />
+          {  String(location.pathname).includes('/dashboard/assignment/create') ? <div>
+            <TextField select size='small' sx={{
+              border: 'none',
+                minWidth: '140px'
+            }} onChange={(event) => {
+              setTemplate(documentTypes[event.target.value].template);
+              setAssignment(prev => ({...prev, document_type: documentTypes[event.target.value].name}));
+            }}>
+              {documentTypes.map((type, index) =>
+                <MenuItem key={index} value={index}>
+                { type.name }
+              </MenuItem>)}
+            </TextField>
+          </div> : null}
           <div>
             <IconButton onClick={(event) => {
               setProfileAnchor(event.target);

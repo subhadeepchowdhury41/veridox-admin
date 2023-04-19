@@ -44,6 +44,7 @@ export const personValidation = {
         regex: /^(?:(?:\+|0{0,2})91(\s*[-]\s*)?|[0]?)?[789]\d{9}$/,
     }],
     address1: ['required'],
+    address2: [],
     city: ['required'],
     pincode: ['required', {
         type: 'pattern',

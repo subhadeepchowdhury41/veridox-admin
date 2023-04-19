@@ -1,8 +1,8 @@
-import { Delete, IndeterminateCheckBoxOutlined, Info, InfoOutlined, Key, KeyboardTab, SendRounded } from "@mui/icons-material";
+import { Delete, Info, KeyboardTab } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
-import { Box, Button, Grid, IconButton, MenuItem, Paper, TextField, Tooltip } from "@mui/material";
+import { Grid, IconButton, Paper, Tooltip } from "@mui/material";
 import {  } from "@mui/system";
-import { useEffect, useRef, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ClipLoader } from "react-spinners";
 import { useDraftAssignmentContext } from "../../Providers/DraftAssignmentProvider";
@@ -10,27 +10,22 @@ import DnDFileCard from "./DnDFilecCard";
 import PersonDetailsForm from "./PersonDetailsForm";
 
 const CreateAssignmentPage = () => {
-    let types = ["Educational Loan", "Death Certificate", "Home Loan"];
-    const {isLoading, assignment, setAssignment, setMounted, errors, isSavingDraft, gettingFv, isSaved,
+    const {isLoading, assignment, setMounted, personsRef, isSavingDraft, filesRef, isSaved,
         form, fvName, saveAssignment, clearForm, saveDraftAssignment, clearFv, template
       } = useDraftAssignmentContext();
     const navigate = useNavigate();
     useEffect(() => {
       setMounted(true);
     });
-    const personsRef = useRef([]);
-    const filesRef = useRef([]);
     return !isLoading ? (<div style={{
     }}><Grid container>
       {template.persons.map((person, index) =>
       <PersonDetailsForm key={index} 
       ref={fe => personsRef.current[index] = fe} person={person}/>)}
       </Grid>
-      {/* <Button onClick={() => {
-        personsRef.current[0].isValid();
-      }}>Validate</Button> */}
       {template.files.map((file, index) =>
-        <DnDFileCard key={index} name={file.name}/>
+        <DnDFileCard key={index} name={file.name}
+          ref={fe => filesRef.current[index] = fe} />
       )}
       <Paper variant='outlined' sx={{
         margin: '2em 0.5em 1em 0.5em',
@@ -125,6 +120,29 @@ const CreateAssignmentPage = () => {
           </IconButton>
           </Tooltip>
         </div>
+      </Paper>
+      <Paper variant='outlined' sx={{
+        margin: '2em 0.5em 1em 0.5em',
+        height: '70px',
+        display: 'flex',
+        justifyContent: 'end',
+        alignItems: 'center'
+      }}>
+        <LoadingButton loading={isSavingDraft} variant="outlined" sx={{
+            borderRadius: '23px'
+        }} disableElevation onClick={() => saveDraftAssignment()}>
+          Save Draft
+        </LoadingButton>
+        <LoadingButton loading={ isSaved } variant="contained" sx={{
+          m: '1em',
+          borderRadius: '23px',
+            bgcolor: '#4dc3c8',
+            '&:hover': {
+                bgcolor: '#349ca0'
+            }
+        }} disableElevation onClick={() => saveAssignment()}>
+          Save
+        </LoadingButton>
       </Paper>
     </div>) : <div style={{
       display: 'flex',

@@ -87,6 +87,7 @@ const ApprovedAssignments: React.FunctionComponent = () => {
             {submittedAss.map((assignment) => {
             return (<div key={assignment.id}>
                     <ApprovedAssignmentDetails
+                    
                       id={assignment.id}
                       assigned_to={assignment.assigned_to}
                       document_type={assignment.document_type}

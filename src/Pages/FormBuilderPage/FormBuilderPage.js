@@ -16,7 +16,6 @@ const FormBuilderPage = () => {
     const {state, dispatch, preview, setPreview, loadingStatus, changed,
         setMode, setFormId, formId, mode} = useFormBuilderContext();
     useEffect(() => {}, [cursorPos]);
-
     usePrompt("Changes will not be saved!\nAre you sure to leave?",
     changed, ['/dashboard/pageBuilder']);
 

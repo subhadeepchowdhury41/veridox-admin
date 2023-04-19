@@ -16,7 +16,8 @@ export type Handle = {
 
 const UploadProgressBar = React.forwardRef<Handle, Props>((props, ref) : JSX.Element => {
     const {showError, showSuccess} = useToastProvider();
-    const [status, setStatus] = useState<number>(0);
+  const [status, setStatus] = useState<number>(0);
+  const [sRef, setSRef] = useState<string>();
     const {user} = useAuthContext();
     const deleteFile = async () => {
       const storageRef = strgRef(storage, user.uid + '/' + props.file.name);
@@ -25,7 +26,8 @@ const UploadProgressBar = React.forwardRef<Handle, Props>((props, ref) : JSX.Ele
     useImperativeHandle(ref, () => ({
       deleteFile: async () => {
         await deleteFile();
-      }
+      },
+      getRef: () => sRef
     }));
     React.useEffect(() => {
         const storageRef = strgRef(storage, user.uid + '/' + props.file.name);
@@ -39,6 +41,7 @@ const UploadProgressBar = React.forwardRef<Handle, Props>((props, ref) : JSX.Ele
             showError("Error uplaoding file");
           },
           () => {
+            setSRef(storageRef.fullPath);
             showSuccess("Succesfully uploaded " + props.file.name);
           }
         );

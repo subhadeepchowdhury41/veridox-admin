@@ -1,118 +1,123 @@
-import { ReactJSXElement } from "@emotion/react/types/jsx-namespace";
-import { Button, Grid, Paper } from "@mui/material";
-import { collection, doc, DocumentData, getDoc, onSnapshot, query, where } from "firebase/firestore";
-import React from "react";
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Accordion, AccordionSummary, AccordionDetails, Button, Grid, TextField, Dialog, DialogContent, DialogTitle, DialogActions } from "@mui/material";
+import {ExpandMore, DateRangeRounded} from '@mui/icons-material';
+import React, { FC, useEffect, useState } from "react";
+import { doc, DocumentData, getDoc, updateDoc } from "firebase/firestore";
 import { database } from "../../Firebase/Firebase";
+import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../../Providers/AuthProvider";
+import { useToastProvider } from "../../Providers/ToastProvider";
+import PrintScreen from "../Printer/print";
+import ReactDOM from "react-dom";
 
-const VerifyAssignmentsPage: React.FunctionComponent = () => {
-    const {user} = useAuthContext();
-    const [mounted, setMounted] = useState(false);
-    const [submittedAss, setSubmittedAss] = useState<DocumentData>([]);
+interface ApprovedElementProps {
+    id: string,
+    document_type: string,
+    assigned_to: string,
+}
 
-    useEffect(() => {
-        setMounted(true);
-        return () => {
-            setMounted(false);
-        }
-    }, []);
-
-    useEffect(() => {
-        let unsubscribe = () => {};
-        if (user !== null && user.uid !== undefined) {
-            unsubscribe = onSnapshot(query(collection(database, 'agency/' + user.uid, 'assignments'),
-            where('status', '==', 'submitted')), snapshot => {
-                let ass : Array<DocumentData> = [];
-                snapshot.docs.forEach((doc) => {
-                    ass.push({ ...doc.data(), id: doc.id});
-                });
-                setSubmittedAss(ass);
-            });
-        }
-        return () => {
-            return unsubscribe();
-        }
-    }, [mounted, user]);
+const ApprovedElement : FC<ApprovedElementProps> = (props) : JSX.Element => {
     const navigate = useNavigate();
+    const [details, setDetails] = useState<any>();
+    const getDetails = async () => {
+        await getDoc(doc(database, 'assignments', props.id))
+        .then(snapshot => {
+            setDetails(snapshot.data());
+        });
+    }
+    const {user} = useAuthContext();
+    const [open, setOpen] = useState<boolean>(false);
+    const [expanded, setExpanded] = useState<boolean>(false);
+    const [dialogType, setDialogType] = useState<number>();
+    const [remarks, setRemarks] = useState<string>('');
+    const {showSuccess, showError} = useToastProvider();
+    const handleClose = () => {
+        setOpen(false);
+    }
+    useEffect(() => {
+        getDetails();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+    const handleClick = async () => {
+        setOpen(false);
+            await updateDoc(doc(database, 'agency/' + user.uid + '/assignments', props.id), {
+                "status": dialogType === 0 ? "reassigned" : "archived"
+            }).then(async () => {
+                await getDoc(doc(database, 'assignments', props.id)).then(async snapshot => {
+                    let history = snapshot.data()?.history as Array<DocumentData>;
+                    let date = new Date();
+                    history.push({
+                        status: dialogType === 0 ? "reassigned" : "archived",
+                        date: `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`
+                    });
+                    await updateDoc(doc(database, 'assignments', props.id), {
+                        history: history,
+                        remarks: dialogType === 0 ? remarks : "",
+                        status: dialogType === 0 ? "reassigned" : "archived"
+                    }).then(async () => {
+                        await updateDoc(doc(database, 'field_verifier/' + props.assigned_to
+                        + '/assignments', props.id), {
+                            status: dialogType === 0 ? "reassigned" : "archived"
+                        }).then(() => {
+                            showSuccess(dialogType === 0 ?
+                                "Assignment Reassigned" : "Assignment Archived");
+                        });
+                    });
+                });
+            }).catch(err => {
+                showError();
+            });
+            console.log(user);
+            
+    }
     return (
         <div>
-            <Paper elevation={0} sx={{
-                    width: "100%",
-                    padding: '0.4em',
-                    margin: '0.3em 0',
-                    fontSize: '14px',
-                    display: 'inline-flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    textAlign: 'center'
-                }}>
-                    <Grid container>
-                        <Grid item xs={12} sm={12} lg={4} md={4} sx={{
-                            display: 'flex', justifyContent: 'center',
-                            alignItems: 'center'
-                        }}>
-                            <div style={{color: 'gray', fontWeight: 'bold'}}>
-                                ID
-                            </div>
-                        </Grid>
-                        <Grid item xs={12} sm={12} lg={2} md={2} sx={{
-                            display: 'flex', justifyContent: 'center',
-                            alignItems: 'center'
-                        }}>
-                            <div style={{color: 'gray', fontWeight: 'bold'}}>
-                                Type
-                            </div>
-                        </Grid>
-
-                        <Grid item xs={12} sm={12} lg={4} md={4} sx={{
-                            display: 'flex', justifyContent: 'center',
-                            alignItems: 'center'
-                        }}>
-                            <div style={{color: 'gray', fontWeight: 'bold'}}>
-                                Name
-                            </div>
-                        </Grid>
-                        
-                        <Grid item xs={12} sm={12} lg={2} md={2} sx={{
-                            display: 'flex', justifyContent: 'center',
-                            alignItems: 'center'
-                        }}>
-                            <div style={{color: 'gray', fontWeight: 'bold'}}>
-                                Action
-                            </div>
-                        </Grid>
-                    </Grid>
-                </Paper>
-                <hr style={{width: '93%', margin: '0 auto 0.15em auto', border: '0.6px solid #dedede'}}/>
-            {submittedAss.map((assignment) => {
-            return (<div key={assignment.id}>
-                <Paper elevation={0} sx={{
-                    width: "100%",
-                    padding: '0.4em',
-                    margin: '0.3em 0',
-                    fontSize: '14px',
-                    display: 'inline-flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    textAlign: 'center'
-                }}>
-                    <Grid container>
-                        <Grid item xs={12} sm={12} lg={4} md={4} sx={{
-                            display: 'flex', justifyContent: 'center',
-                            alignItems: 'center'
-                        }}>
-                            <div style={{marginLeft: '1.7em', fontFamily: 'Source Serif Pro, serif'}}>
-                                {assignment.id}
-                            </div>
+            <Dialog open={open} onClose={handleClose}>
+            <DialogTitle>
+                {dialogType === 0 ? 'Are you sure to Re-assign?' : 'Are you sure to Archieve?'}
+            </DialogTitle>
+            <DialogContent>
+                {dialogType === 0 ? 'Give some instruction to Field Verifier about what went wrong'
+                  : 'This assignment will be archieved. You can still find it in Vault'}
+                  <div style={{height: '20px'}}/>
+                {dialogType === 0 ? <TextField size="small" variant='filled' multiline
+                    onChange={(e) => {
+                        setRemarks(e.target.value);
+                    }} label='Remarks' sx={{width: '300px'}} value={remarks}/> : null}
+            </DialogContent>
+            <DialogActions>
+                <Button color="error" onClick={handleClose}>Cancel</Button>
+                <Button color="success" onClick={handleClick}>
+                    {dialogType === 0 ? "Reassign" : "Archive"}</Button>
+            </DialogActions>
+        </Dialog>
+    <Accordion expanded={expanded} elevation={0} onChange={(e, val) => {
+        e.preventDefault();
+        setExpanded(val);
+    }}>
+        <AccordionSummary expandIcon={<ExpandMore/>} sx={{
+            width: "100%",
+            margin: '0.1em 0',
+            fontSize: '14px',
+            display: 'inline-flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            textAlign: 'center'
+        }}>
+        <Grid container>
+            <Grid item xs={12} sm={12} lg={4} md={4} sx={{
+                display: 'flex', justifyContent: 'center',
+                alignItems: 'center'
+            }}>
+                <div style={{marginLeft: '1.7em', fontFamily: 'Source Serif Pro, serif'}}>
+                    {props.id}
+                </div>
                         </Grid>
                         <Grid item xs={12} sm={12} lg={2} md={2} sx={{
                             display: 'flex', justifyContent: 'center',
                             alignItems: 'center'
                         }}>
                             <div style={{marginLeft: '1.7em', fontFamily: 'Source Serif Pro, serif'}}>
-                                {assignment.document_type}
+                                {props.document_type}
                             </div>
                         </Grid>
 
@@ -121,39 +126,73 @@ const VerifyAssignmentsPage: React.FunctionComponent = () => {
                             alignItems: 'center'
                         }}>
                             <div style={{marginLeft: '1.7em', fontFamily: 'Source Serif Pro, serif'}}>
-                                <FvName uid={assignment.assigned_to}/>
+                                <FvName uid={props.assigned_to}/>
                             </div>
                         </Grid>
                         <Grid item xs={12} sm={12} lg={2} md={2} sx={{
                             display: 'flex', justifyContent: 'center',
                             alignItems: 'center'
                         }}>
+                            <Button size='small' variant='contained' onClick={async () => {
+                                await getDoc(doc(database, "assignments/"+props.id, "form_data/data")).then((form) => {
+                                    
+                                    console.log("data",form.data());
+
+                                    
+                                   ReactDOM.render( <PrintScreen data={form.data().data} title={form.data().name} />, document.getElementById('root'));
+                                   
+                                });
+                            }}>Print</Button>
+                            <div style={{margin: '0 0.4em', display: 'inline'}}/>
                             <Button size='small' variant="contained" onClick={() => {
-                                navigate('/dashboard/verify/result',
-                                    {state: {
-                                        id: assignment.id,
-                                        fv: assignment.assigned_to,
-                                        docType: assignment.document_type
-                                    }}
-                                );
+                                setDialogType(1);
+                                setOpen(true);
                             }}>
-                                Verify
+                                Archive
                             </Button>
                         </Grid>
                     </Grid>
-                </Paper>
-                <hr style={{width: '93%', margin: '0 auto 0.15em auto', border: '0.6px solid #dedede'}}/>
-            </div>)
-        })}
-        </div>
-    );
+        </AccordionSummary>
+        <AccordionDetails>
+            <Grid container direction='row'>
+                <Grid item sx={{display: 'flex', flexDirection: 'column',
+                justifyContent: 'center', alignItems: 'center', fontSize: '14px',}} sm={3}>
+                    <div>
+                        <DateRangeRounded/>
+                    </div>
+                    <div>
+                        {details?.assigned_at}
+                    </div>
+                </Grid>
+                <Grid item sx={{display: 'flex',
+                justifyContent: 'center', alignItems: 'center'}} sm={5}>
+                    <div style={{margin: '0 1em', display: 'inline'}}/>
+                </Grid>
+                <Grid item sx={{display: 'flex',
+                justifyContent: 'center', alignItems: 'center'}} sm={4}>
+                    <Button size='small' variant="outlined" onClick={() => {
+                        navigate('/dashboard/assignment/' + props.id);
+                    }}>Assignment</Button>
+                    <div style={{margin: '0 0.4em', display: 'inline'}}/>
+                    <Button size='small' variant="outlined" onClick={() => {
+                        navigate('/dashboard/assignment/response',
+                        {state: {
+                            id: props.id
+                        }});
+                    }}>Result</Button>
+                </Grid>
+            </Grid>
+        </AccordionDetails>
+    </Accordion>
+    </div>);
 }
+
 
 interface FvProps {
     uid: string
 }
 
-const FvName: React.FunctionComponent<FvProps> = (props) : ReactJSXElement => {
+const FvName: React.FunctionComponent<FvProps> = (props) : JSX.Element => {
     const [name, setName] = useState<String>();
     const getFvName = async () => {
         const snapshot = await getDoc(doc(database, "field_verifier", props.uid));
@@ -168,4 +207,4 @@ const FvName: React.FunctionComponent<FvProps> = (props) : ReactJSXElement => {
     </div>)
 }
 
-export default VerifyAssignmentsPage;
+export default ApprovedElement;

@@ -1,9 +1,8 @@
 import styled from '@emotion/styled';
 import { PersonRounded } from '@mui/icons-material';
 import { Grid, Paper, TextField, Typography } from '@mui/material';
-import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
+import React, { forwardRef, useImperativeHandle } from 'react';
 import { personValidation } from '../../Models/PersonDetails';
-import { useDraftAssignmentContext } from '../../Providers/DraftAssignmentProvider';
 import { useForm } from '../../Utils/FormValidator';
 
 const StyledTextField = styled(({label, sIcon, value, onChange, error}) =>
@@ -25,21 +24,13 @@ const StyledTextField = styled(({label, sIcon, value, onChange, error}) =>
 })
 
 const PersonDetailsForm = forwardRef((props, ref) => {
-    const {setPersons} = useDraftAssignmentContext();
     const [data, setData, validate, errors] = useForm(personValidation);
     useImperativeHandle(ref, () => ({
         isValid: () => {
             return validate();
-        }
+        },
+        getData: () => data
     }));
-    useEffect(() => {
-        setPersons(prev => {
-            prev[data.label] = data;
-            prev[data.error] = errors;
-            return prev;
-        });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [data]);
     return (<Grid item xs={12} p='0.5em' md={6}><Paper variant='outlined'
     sx={{
         p: '1em 2em 2em 2em',

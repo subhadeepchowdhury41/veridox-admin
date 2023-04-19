@@ -67,7 +67,13 @@ const FieldItem = (props) => {
                               }} value={state.pages[id].fields[index].widget ?? ""}
                                 onChange={(event) => {
                                   event.preventDefault();
-                                  dispatch({type: 'changeWidget', payload: {page_id: id, field_id: index, widget: event.target.value}})
+                                  dispatch({
+                                    type: 'changeWidget',
+                                    payload: {
+                                      page_id: id,
+                                      field_id: index, widget: event.target.value
+                                    }
+                                  })
                                 }}>
                                 {widgets.map((widget, index) => (
                                   <MenuItem key={index} value={widget.name}>
