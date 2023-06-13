@@ -10,14 +10,12 @@ const ApprovedAssignments: React.FunctionComponent = () => {
     const {user} = useAuthContext();
     const [mounted, setMounted] = useState(false);
     const [submittedAss, setSubmittedAss] = useState<DocumentData>([]);
-
     useEffect(() => {
         setMounted(true);
         return () => {
             setMounted(false);
         }
     }, []);
-
     useEffect(() => {
         let unsubscribe = () => {};
         if (user !== null && user.uid !== undefined) {
@@ -87,7 +85,6 @@ const ApprovedAssignments: React.FunctionComponent = () => {
             {submittedAss.map((assignment) => {
             return (<div key={assignment.id}>
                     <ApprovedAssignmentDetails
-                    
                       id={assignment.id}
                       assigned_to={assignment.assigned_to}
                       document_type={assignment.document_type}

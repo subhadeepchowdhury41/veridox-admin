@@ -56,7 +56,7 @@ const FormItem = (props) => {
             height: '9em'
         }}>
             <div style={{display: 'block'}}>
-              Page {parseInt(props.page.id) + 1}
+              {props.page.name ?? `Page ${parseInt(props.page.id) + 1}`}            
             </div>
             <div>
                 <Tooltip title="Delete Page" arrow>

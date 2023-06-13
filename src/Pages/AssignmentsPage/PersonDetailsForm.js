@@ -4,24 +4,8 @@ import { Grid, Paper, TextField, Typography } from '@mui/material';
 import React, { forwardRef, useImperativeHandle } from 'react';
 import { personValidation } from '../../Models/PersonDetails';
 import { useForm } from '../../Utils/FormValidator';
+import { StyledTextField } from '../../Elements/CustomTextField/CustomTextField';
 
-const StyledTextField = styled(({label, sIcon, value, onChange, error}) =>
-  <TextField label={label} error={Boolean(error ?? false)} helperText={error}
-  size='small' fullWidth value={value}
-  onChange={onChange}
-  InputProps={{
-    sx: {
-        borderRadius: '23px',
-    }
-  }}
-  InputLabelProps={{
-      sx: {
-          fontFamily: 'Roboto, serif',
-          fontSize: '14px'
-      }
-  }}
-  margin='normal'/>)({
-})
 
 const PersonDetailsForm = forwardRef((props, ref) => {
     const [data, setData, validate, errors] = useForm(personValidation);
@@ -37,7 +21,6 @@ const PersonDetailsForm = forwardRef((props, ref) => {
         minWidth: '300px',
         margin: '0 auto'
     }}>
-        
         <Typography fontFamily='Playfair Display, serif' fontSize='23px' sx={{display: 'flex', alignItems: 'end'}}
         fontWeight={'regular'}><PersonRounded sx={{
             color: '#4dc3c8',
