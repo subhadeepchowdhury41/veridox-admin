@@ -130,7 +130,6 @@ const ApprovedElement : FC<ApprovedElementProps> = (props) : JSX.Element => {
                             alignItems: 'center'
                         }}>
                             <Button size='small' variant='contained' onClick={() => {
-                                
                                 setDialogType(0);
                                 setOpen(true);
                             }}>Reassign</Button>

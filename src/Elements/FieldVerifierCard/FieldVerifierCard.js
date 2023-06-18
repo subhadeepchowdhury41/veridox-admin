@@ -181,7 +181,7 @@ const FieldVerifierCard = (props) => {
           ) : null}
         </Grid>
       </Grid>
-      <hr style={{ margin: "0.3em 0.5em", border: "0.2px solid #ededed" }} />
+      {props.showBB ? <hr style={{ margin: "0.3em 0.5em", border: "0.2px solid #ededed" }} />: null}
     </div>
   );
 };

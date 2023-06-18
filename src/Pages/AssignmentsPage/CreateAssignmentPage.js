@@ -1,14 +1,31 @@
-import { Delete, Info, KeyboardTab } from "@mui/icons-material";
+import { Close, Delete, Info, KeyboardTab } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
-import { Avatar, Chip, Grid, IconButton, Paper, Tooltip } from "@mui/material";
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import {
+  AppBar,
+  Avatar,
+  Chip,
+  Dialog,
+  Grid,
+  IconButton,
+  Paper,
+  Slide,
+  Toolbar,
+  Tooltip,
+  Typography,
+} from "@mui/material";
+import React, { useEffect, useState } from "react";
 import { ClipLoader } from "react-spinners";
 import { useDraftAssignmentContext } from "../../Providers/DraftAssignmentProvider";
 import DnDFileCard from "./DnDFilecCard";
 import { useFieldVerifiersContext } from "../../Providers/FieldVerifiersProvider";
 import PersonDetailsForm from "./PersonDetailsForm";
 import FieldVerifierCard from "../../Elements/FieldVerifierCard/FieldVerifierCard";
+import { useFormsContext } from "../../Providers/FormsProvider";
+import FormItem from "../Forms/FormItem";
+
+const Transition = React.forwardRef((props, ref) => {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
 const CreateAssignmentPage = () => {
   const { fvs } = useFieldVerifiersContext();
@@ -29,12 +46,115 @@ const CreateAssignmentPage = () => {
     clearFv,
     template,
   } = useDraftAssignmentContext();
-  const navigate = useNavigate();
+  const [dialogType, setDialogType] = useState(0);
+  const [open, setOpen] = useState(false);
+  // const navigate = useNavigate();
+  const { forms } = useFormsContext();
   useEffect(() => {
     setMounted(true);
   });
   return !isLoading ? (
     <div style={{}}>
+      <Dialog
+        open={open}
+        fullScreen
+        TransitionComponent={Transition}
+        onClose={() => setOpen(false)}
+      >
+        {dialogType === 0 ? (
+          <div>
+            <AppBar
+              elevation={0}
+              sx={{ position: "relative", bgcolor: "#4dc3c8" }}
+            >
+              <Toolbar>
+                <IconButton
+                  edge="start"
+                  color="inherit"
+                  onClick={() => setOpen(false)}
+                >
+                  <Close />
+                </IconButton>
+                <Typography
+                  sx={{ ml: 2, flex: 1 }}
+                  variant="h6"
+                  component="div"
+                >
+                  Choose Form
+                </Typography>
+              </Toolbar>
+            </AppBar>
+            <div
+              style={{
+                marginTop: "2em",
+                height: "30px",
+                fontWeight: "bold",
+                fontSize: "12px",
+                width: "100%",
+                display: "inline-flex",
+                cursor: "pointer",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Grid container>
+                <Grid
+                  item
+                  xs={4}
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    color: "#404040",
+                  }}
+                >
+                  Form ID
+                </Grid>
+                <Grid
+                  item
+                  xs={4}
+                  sx={{
+                    display: "flex",
+                    justifyContent: "start",
+                    color: "#404040",
+                  }}
+                >
+                  Form Name
+                </Grid>
+                <Grid
+                  item
+                  xs={4}
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    color: "#404040",
+                  }}
+                >
+                  Action
+                </Grid>
+              </Grid>
+            </div>
+            <hr
+              style={{
+                width: "93%",
+                margin: "0 auto",
+                border: "0.6px solid #dedede",
+              }}
+            />
+            {forms.map((form, index) => (
+              <FormItem
+                setOpen={setOpen}
+                key={index}
+                id={form.id}
+                name={form.name}
+                form={form}
+                mode="select"
+              />
+            ))}
+          </div>
+        ) : (
+          <div></div>
+        )}
+      </Dialog>
       <Grid container>
         {template.persons.map((person, index) => (
           <PersonDetailsForm
@@ -98,9 +218,7 @@ const CreateAssignmentPage = () => {
                 mr: "1em",
               }}
               onClick={() => {
-                navigate("/dashboard/forms", {
-                  state: { mode: "select" },
-                });
+                setOpen(true);
               }}
             >
               <KeyboardTab fontSize="small" sx={{}} />
@@ -143,7 +261,7 @@ const CreateAssignmentPage = () => {
         </div>
         <div style={{ marginTop: "60px", width: "100%", overflow: "auto" }}>
           {fvs.map((fv, index) => (
-            <FieldVerifierCard key={index} uid={fv} select={1} />
+            <FieldVerifierCard key={index} showBB={ Boolean(fvs.length - 1 !== index)} uid={fv} select={1} />
           ))}
         </div>
       </Paper>
@@ -153,15 +271,24 @@ const CreateAssignmentPage = () => {
             key={index}
             sx={{ m: "0.3em" }}
             label={
-              <div style={{display: 'flex', alignItems: 'center',justifyContent: 'start'}}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "start",
+                }}
+              >
                 {fv.pfp === null || fv.pfp === undefined || fv.pfp === "" ? (
-                  <Avatar sx={{transform: 'scale(0.5)'}}>
+                  <Avatar sx={{ transform: "scale(0.5)" }}>
                     {String(fv.name).substring(0, 1).toUpperCase()}
                   </Avatar>
                 ) : (
-                  <Avatar sx={{transform: 'scale(0.65) translateX(-55%)'}} src={fv.pfp} />
+                  <Avatar
+                    sx={{ transform: "scale(0.65) translateX(-55%)" }}
+                    src={fv.pfp}
+                  />
                 )}
-                { fv.name}
+                {fv.name}
               </div>
             }
             onDelete={() => {

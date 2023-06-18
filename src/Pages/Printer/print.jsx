@@ -1,10 +1,7 @@
 import React, { useEffect,useState } from 'react';
 import FormBuilder from './formBuilder';
-import { Box, Button, Grid, Paper, Step, StepContent, StepLabel, Stepper, Typography } from "@mui/material";
 import {  } from "@mui/system";
 import { doc, getDoc, onSnapshot } from "firebase/firestore";
-import { useNavigate, useParams } from "react-router-dom";
-import { ClipLoader } from "react-spinners";
 import { database } from "../../Firebase/Firebase";
 
 const PrintScreen = (props) => {
@@ -30,17 +27,11 @@ const PrintScreen = (props) => {
 
 
   useEffect(() => {
-
     setData(props.data)
     console.log("props",props.data);
-
-  
   }, []);
   useEffect(() => {
     const timer = setTimeout(async () => {
-      
-  
-
     const printable = document.getElementById('printablediv').innerHTML;
     const originalContents = document.body.innerHTML;
     document.body.innerHTML = printable;
@@ -72,13 +63,6 @@ const PrintScreen = (props) => {
     printWindow.print();
     await sleep(1000);
     printWindow.close();
- 
-    
-
-    
- 
-    
-
     // document.body.innerHTML = originalContents;
     // window.location.href="/dashboard/assignment/approve"
     }, 2000);
@@ -163,26 +147,7 @@ const PrintScreen = (props) => {
   return (
     <div key={i}>
       {page.fields.map((field, j) => (
-
-
-
-          
-            
-              
-
-
-
-
-        
         <FormBuilder field={field.widget} data={field} key={j} options={field.options} />
-        
-
-        
-
-
-
-
-        
       ))}
     </div>
   )
@@ -201,7 +166,6 @@ const PrintScreen = (props) => {
  <div style={{width:"100%",height:"5vh", border:"1px solid black", backgroundColor:"#C0C0C0" }}>
   <h3 style={{backgroundColor:"#002060",color:"white"}} >Disclaimer: </h3>
 </div>
-
     </div>
   );
 };
