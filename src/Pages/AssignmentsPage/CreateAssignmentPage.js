@@ -31,7 +31,6 @@ const CreateAssignmentPage = () => {
   const { fvs } = useFieldVerifiersContext();
   const {
     isLoading,
-    assignment,
     fvList,
     setFvList,
     setMounted,
@@ -43,7 +42,6 @@ const CreateAssignmentPage = () => {
     saveAssignment,
     clearForm,
     saveDraftAssignment,
-    clearFv,
     template,
   } = useDraftAssignmentContext();
   const [dialogType, setDialogType] = useState(0);
@@ -155,22 +153,6 @@ const CreateAssignmentPage = () => {
           <div></div>
         )}
       </Dialog>
-      <Grid container>
-        {template.persons.map((person, index) => (
-          <PersonDetailsForm
-            key={index}
-            ref={(fe) => (personsRef.current[index] = fe)}
-            person={person}
-          />
-        ))}
-      </Grid>
-      {template.files.map((file, index) => (
-        <DnDFileCard
-          key={index}
-          name={file.name}
-          ref={(fe) => (filesRef.current[index] = fe)}
-        />
-      ))}
       <Paper
         variant="outlined"
         sx={{
@@ -261,7 +243,12 @@ const CreateAssignmentPage = () => {
         </div>
         <div style={{ marginTop: "60px", width: "100%", overflow: "auto" }}>
           {fvs.map((fv, index) => (
-            <FieldVerifierCard key={index} showBB={ Boolean(fvs.length - 1 !== index)} uid={fv} select={1} />
+            <FieldVerifierCard
+              key={index}
+              showBB={Boolean(fvs.length - 1 !== index)}
+              uid={fv}
+              select={1}
+            />
           ))}
         </div>
       </Paper>
@@ -297,6 +284,23 @@ const CreateAssignmentPage = () => {
           />
         ))}
       </div>
+      <Grid container>
+        {template.persons.map((person, index) => (
+          <PersonDetailsForm
+            key={index}
+            ref={(fe) => (personsRef.current[index] = fe)}
+            person={person}
+          />
+        ))}
+      </Grid>
+      {template.files.map((file, index) => (
+        <DnDFileCard
+          key={index}
+          name={file.name}
+          ref={(fe) => (filesRef.current[index] = fe)}
+        />
+      ))}
+
       <Paper
         variant="outlined"
         sx={{
