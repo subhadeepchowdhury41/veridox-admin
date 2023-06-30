@@ -28,9 +28,15 @@ const PageBuilder = (props) => {
 
   return (
     <div>
-      <StyledTextField label="Page Name" border={true} onChange={(event) => {
-        dispatch({type: 'changePageName', payload: {value: event.target.value, page_id: id}});
-      }}
+      <StyledTextField
+        label="Page Name"
+        border={true}
+        onChange={(event) => {
+          dispatch({
+            type: "changePageName",
+            payload: { value: event.target.value, page_id: id },
+          });
+        }}
         value={state.pages[parseInt(id)].name ?? `Page ${parseInt(id) + 1}`}
       />
 

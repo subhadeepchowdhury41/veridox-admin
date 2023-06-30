@@ -28,6 +28,7 @@ import VerifyAssignment from "./Pages/VerifyPage/VerifyAssignment.tsx";
 import ApprovedAssignments from "./Pages/ApprovedAssignments/ApprovedAssignments.tsx";
 import { ProfileProvider } from "./Providers/ProfileProvider";
 import ProfilePage from "./Pages/Profile/Profile";
+import PrintScreen from "./Pages/Printer/Print";
 
 const history = createBrowserHistory();
 
@@ -101,10 +102,18 @@ const App = () => {
                               path="verify"
                               element={<VerifyAssignmentsPage />}
                             />
-                            <Route
-                              path="approve"
-                              element={<ApprovedAssignments />}
-                            />
+                            <Route path="result">
+                              <Route
+                                path=""
+                                element={<ApprovedAssignments />}
+                              />
+                            </Route>
+                            <Route path="print">
+                              <Route
+                                path=":id"
+                                element={<PrintScreen />}
+                              />
+                            </Route>
                           </Route>
                           <Route path="verify">
                             <Route

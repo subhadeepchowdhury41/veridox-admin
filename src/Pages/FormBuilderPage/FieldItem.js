@@ -18,6 +18,7 @@ import RequiredCheckBox from "./RequiredCheckBox";
 import TableMaker from "./TableMaker";
 import WordCounter from "./WordCounter";
 import { StyledTextField } from "../../Elements/CustomTextField/CustomTextField";
+import DefaultFilePicker from "./DefaultFilePicker";
 
 const FieldItem = (props) => {
   const { index, id } = props;
@@ -27,7 +28,7 @@ const FieldItem = (props) => {
   const [valueCursorPos, setValueCursorPos] = useState();
   const [commentCursorPos, setCommentCursorPos] = useState();
 
-  useEffect(() => { }, [cursorPos, valueCursorPos, commentCursorPos]);
+  useEffect(() => {}, [cursorPos, valueCursorPos, commentCursorPos]);
 
   const labelInputRef = useRef(null);
   const valueInputRef = useRef(null);
@@ -70,7 +71,7 @@ const FieldItem = (props) => {
           style={{
             display: "flex",
             justifyContent: "center",
-            gap:'20px',
+            gap: "20px",
             alignItems: "center",
           }}
         >
@@ -171,24 +172,33 @@ const FieldItem = (props) => {
             />
           </div>
           <div style={{ margin: "0 1em 0 0" }}>
-            <StyledTextField
-              size="small"
-              ref={valueInputRef}
-              label="Value"
-              value={state.pages[id].fields[index].value}
-              onChange={(event) => {
-                event.preventDefault();
-                setValueCursorPos(event.target.selectionStart);
-                dispatch({
-                  type: "changeValue",
-                  payload: {
-                    page_id: id,
-                    field_id: index,
-                    value: valueInputRef.target.value,
-                  },
-                });
-              }}
-            />
+            {["text", "text-input"].includes(
+              state.pages[id].fields[index].widget
+            ) ? (
+              <StyledTextField
+                size="small"
+                ref={valueInputRef}
+                label="Value"
+                value={state.pages[id].fields[index].value}
+                onChange={(event) => {
+                  event.preventDefault();
+                  setValueCursorPos(event.target.selectionStart);
+                  dispatch({
+                    type: "changeValue",
+                    payload: {
+                      page_id: id,
+                      field_id: index,
+                      value: valueInputRef.current.value,
+                    },
+                  });
+                }}
+              />
+            ) : null}
+            {["file", "image"].includes(
+              state.pages[id].fields[index].widget
+            ) ? (
+              <DefaultFilePicker id={id} index={index} />
+            ) : null}
           </div>
           <Box>
             {state.pages[id].fields[index].widget === "date-time" ? (
@@ -211,20 +221,12 @@ const FieldItem = (props) => {
                 </Grid>
               </div>
             ) : null}
-
-            <div style={{ display: "inline", width: "20%" }}>
-              {state.pages[id].fields[index].widget === "text-input" ? (
-                <Box sx={{ width: "20%" }}>
-                  <WordCounter page_id={id} field_id={index} />
-                </Box>
-              ) : null}
-            </div>
-
             <div style={{ display: "inline" }}>
               {state.pages[id].fields[index].widget === "text-input" ? (
-                <Box sx={{ width: "20%" }}>
+                <div style={{ width: "100%", display: "flex" }}>
+                  <WordCounter page_id={id} field_id={index} />
                   <MultiLined page_id={id} field_id={index} />
-                </Box>
+                </div>
               ) : null}
             </div>
           </Box>
@@ -429,7 +431,6 @@ const FieldItem = (props) => {
       <div
         style={{
           margin: "0 1em 1em 1em",
-          // backgroundColor: "#4dc3c8",
           height: "40px",
           display: "flex",
           alignItems: "center",

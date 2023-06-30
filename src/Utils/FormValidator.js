@@ -1,9 +1,10 @@
 import { useState } from "react"
 
 
-export const useForm = (form) => {
+export const useForm = (form, init) => {
     const [state, setState] = useState(() => {
         let data = {};
+        console.log(init);
         Object.entries(form).forEach((entry) => {
             data[entry[0]] = "";
         });

@@ -117,7 +117,6 @@ export const FormBuilderProvider = ({ children }) => {
   };
 
   const loadForm = (template) => {
-    console.log(template);
     if (template.id !== null && template.id !== undefined) {
       setFormId(template.id);
     }
@@ -163,7 +162,7 @@ export const FormBuilderProvider = ({ children }) => {
   };
 
   const addField = (payload) => {
-    let field = new Field("label", "widget");
+    let field = new Field("label", "text-input");
     form.pages[payload.page_id].fields.push(field);
     form.pages[payload.page_id].fields.forEach(
       (field, index) => (field.id = index)

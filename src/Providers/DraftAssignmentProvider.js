@@ -1,4 +1,4 @@
-import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { database } from "../Firebase/Firebase";
 import { generateAssignmentId } from "../Utils/AssignmentIdGenerator";
@@ -40,7 +40,6 @@ export const DraftAssignmentProvider = ({ children }) => {
   const { user } = useAuthContext();
   const [isLoading, setIsLoading] = useState(false);
   const [isSavingDraft, setIsSavingDraft] = useState(false);
-  // const [gettingFv, setGettingFv] = useState(false);
   const [fvList, setFvList] = useState([]);
   const [isSaved, setIsSaved] = useState(false);
   const { showSuccess, showError, showWarning } = useToastProvider();
@@ -61,25 +60,40 @@ export const DraftAssignmentProvider = ({ children }) => {
   const filesRef = useRef([]);
   const [assignment, setAssignment] = useState({
     assigned_to: "",
-    document_type: "",
+    stage: 'configure'
   });
   const { showDialog, submitRef, cancelRef } = useAlertBoxContext();
-
   const saveDraftAssignment = async () => {
     setIsSavingDraft(true);
-    await updateDoc(doc(database, "agency", user.uid), {
-      draft_assignment: {
-        assignment: assignment,
-        form: form,
-      },
-    })
-      .then((snapshot) => {
-        showSuccess("Draft Assignement Saved");
-        setIsSavingDraft(false);
-      })
-      .catch((err) => {
-        showError();
-      });
+    // await updateDoc(doc(database, "agency", user.uid), {
+    //   draft_assignment: {
+    //     assignment: assignment,
+    //     form: form,
+    //   },
+    // })
+    //   .then((snapshot) => {
+    //     showSuccess("Draft Assignement Saved");
+    //     setIsSavingDraft(false);
+    //   })
+    //   .catch((err) => {
+    //     showError();
+    //   });
+
+    let updatedAssignment = {
+      ...assignment,
+      persons: template.persons.map((person, index) => ({
+        name: person,
+        details: personsRef.current[index].getData(),
+      })),
+    };
+    setAssignment(updatedAssignment);
+    window.localStorage.setItem(
+      "draft_assignment",
+      JSON.stringify(updatedAssignment)
+    );
+    window.localStorage.setItem("draft_fvs", JSON.stringify(fvList));
+    window.localStorage.setItem("draft_form", JSON.stringify(form));
+    setIsSavingDraft(false);
   };
 
   const clearForm = () => {
@@ -145,121 +159,109 @@ export const DraftAssignmentProvider = ({ children }) => {
     submitRef.current.onclick = async () => {
       const date = new Date();
       setIsSaved(true);
-      fvList
-        .forEach(async (fv) => {
-          let assId = generateAssignmentId();
-          await setDoc(
-            doc(database, "agency/" + user.uid, "assignments/" + assId),
-            {
-              assigned_to: fv.name,
-              document_type: assignment.document_type,
+      fvList.forEach(async (fv) => {
+        var assId = generateAssignmentId();
+        await setDoc(
+          doc(database, "agency/" + user.uid, "assignments/" + assId),
+          {
+            assigned_to: fv.name,
+            document_type: assignment.document_type,
+            status: "assigned",
+            fvId: fv.uid,
+          }
+        )
+          .then(async (snapshot) => {
+            await setDoc(doc(database, "assignments", assId), {
+              agency: user.uid,
+              persons: template.persons.map((person, index) => ({
+                person: person,
+                details: personsRef.current[index].getData(),
+              })),
+              files: template.files.map((file, index) => ({
+                name: file.name,
+                ref: filesRef.current[index].getData(),
+              })),
+              assigned_to: fv.uid,
+              assigned_at: `${date.getDate()}/${
+                date.getMonth() + 1
+              }/${date.getFullYear()}`,
               status: "assigned",
-              fvId: fv.uid,
-            }
-          )
-            .then(async (snapshot) => {
-              await setDoc(doc(database, "assignments", assId), {
-                agency: user.uid,
-                persons: template.persons.map((person, index) => ({
-                  person: person,
-                  details: personsRef.current[index].getData(),
-                })),
-                files: template.files.map((file, index) => ({
-                  name: file.name,
-                  ref: filesRef.current[index].getData(),
-                })),
-                assigned_to: fv.uid,
-                assigned_at: `${date.getDate()}/${
-                  date.getMonth() + 1
-                }/${date.getFullYear()}`,
-                status: "assigned",
-                history: [
-                  {
-                    status: "assigned",
-                    date: `${date.getDate()}/${
-                      date.getMonth() + 1
-                    }/${date.getFullYear()}`,
-                  },
-                ],
-              })
-                .then(async (snapshot) => {
-                  await setDoc(
-                    doc(database, "assignments/" + assId, "form_data/data"),
-                    { ...form }
-                  )
-                    .then(async (snapshot) => {
-                      await setDoc(
-                        doc(
-                          database,
-                          "field_verifier/" + fv.uid,
-                          "assignments/" + assId
-                        ),
-                        {
-                          agency: user.uid,
-                          applicant_name:
-                            personsRef.current[0].getData()["fName"],
-                          applicant_phone:
-                            personsRef.current[0].getData()["phone"],
-                          applicant_city:
-                            personsRef.current[0].getData()["city"],
-                          applicant_state:
-                            personsRef.current[0].getData()["state"],
-                          applicant_pincode:
-                            personsRef.current[0].getData()["pincode"],
-                          document_type: assignment.document_type,
-                          assigned_at: `${date.getDate()}/${
-                            date.getMonth() + 1
-                          }/${date.getFullYear()}`,
-                          status: "assigned",
-                        }
-                      ).then((snap) => {
-                        showSuccess("Assignemnt assigned to " + fv.name);
-                      });
-                      submitRef.current.onclick = () => {};
-                      setIsSaved(false);
-                    })
-                    .catch((err) => {
-                      showError(err);
-                      setIsSaved(false);
-                    });
-                })
-                .catch((err) => {
-                  showError(err);
-                  setIsSaved(false);
-                });
+              history: [
+                {
+                  status: "assigned",
+                  date: `${date.getDate()}/${
+                    date.getMonth() + 1
+                  }/${date.getFullYear()}`,
+                },
+              ],
             })
-            .catch((err) => {
-              showError(err);
-              setIsSaved(false);
-            });
-        })
-        .catch((err) => {
-          showError(err);
-          setIsSaved(false);
-        });
+              .then(async (snapshot) => {
+                await setDoc(
+                  doc(database, "assignments/" + assId, "form_data/data"),
+                  { ...form }
+                )
+                  .then(async (snapshot) => {
+                    await setDoc(
+                      doc(
+                        database,
+                        "field_verifier/" + fv.uid,
+                        "assignments/" + assId
+                      ),
+                      {
+                        agency: user.uid,
+                        applicant_name:
+                          personsRef.current[0].getData()["fName"],
+                        applicant_phone:
+                          personsRef.current[0].getData()["phone"],
+                        applicant_city: personsRef.current[0].getData()["city"],
+                        applicant_state:
+                          personsRef.current[0].getData()["state"],
+                        applicant_pincode:
+                          personsRef.current[0].getData()["pincode"],
+                        document_type: assignment.document_type,
+                        assigned_at: `${date.getDate()}/${
+                          date.getMonth() + 1
+                        }/${date.getFullYear()}`,
+                        status: "assigned",
+                      }
+                    )
+                      .then((snap) => {
+                        showSuccess("Assignemnt assigned to " + fv.name);
+                      })
+                      .catch((err) => {
+                        showError(err);
+                        setIsSaved(false);
+                      });
+                    submitRef.current.onclick = () => {};
+                    setIsSaved(false);
+                  })
+                  .catch((err) => {
+                    showError(err);
+                    setIsSaved(false);
+                  });
+              })
+              .catch((err) => {
+                showError(err);
+                setIsSaved(false);
+              });
+          })
+          .catch((err) => {
+            showError(err);
+            setIsSaved(false);
+          });
+      });
     };
   };
 
-  // const getAssignment = async (uid) => {
-  //   if (user !== null && user !== undefined) {
-  //     await getDoc(doc(database, "agency", uid))
-  //       .then(async (snapshot) => {
-  //         if (snapshot.data() !== undefined) {
-  //           await getFv(
-  //             snapshot.data().draft_assignment.assignment.assigned_to
-  //           );
-  //           setAssignment(snapshot.data().draft_assignment.assignment ?? {});
-  //           setForm(snapshot.data().draft_assignment.form ?? {});
-  //         }
-  //         setIsLoading(false);
-  //         showSuccess("Loaded Draft Assignemnt");
-  //       })
-  //       .catch((err) => {
-  //         showSuccess("Empty Draft Assignment Loaded");
-  //         setIsLoading(false);
-  //       });
-  //   }
-  // };
+  const getAssignment = () => {
+    let prev = window.localStorage.getItem("draft_assignment");
+    let prevFvs = window.localStorage.getItem("draft_fvs");
+    let prevForm = window.localStorage.getItem("draft_form");
+    setAssignment(JSON.parse(prev) ?? { document_type: "" });
+    setFvList(JSON.parse(prevFvs) ?? []);
+    setForm(JSON.parse(prevForm) ?? {});
+    setIsLoading(false);
+  };
 
   useEffect(() => {
     if (
@@ -268,8 +270,8 @@ export const DraftAssignmentProvider = ({ children }) => {
       user.uid !== null &&
       user.uid !== undefined
     ) {
-      // setIsLoading(true);
-      // getAssignment(user.uid);
+      setIsLoading(true);
+      getAssignment();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, mounted]);
