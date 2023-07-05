@@ -5,8 +5,11 @@ import { doc, getDoc } from "firebase/firestore";
 import { database } from "../../Firebase/Firebase";
 import { useProfileContext } from "../../Providers/ProfileProvider";
 import { useNavigate, useParams } from "react-router-dom";
+import { getUrl } from "../../Utils/StorageMethods";
 
 const PrintScreen = () => {
+  let [formMapped, setFormMapped] = useState([]);
+  let [applicantSelfie, setApplicantSelfie] = useState();
   const [assignment, setAssignment] = useState();
   const [fv, setFv] = useState();
   const [form, setForm] = useState();
@@ -15,6 +18,9 @@ const PrintScreen = () => {
   const { profile } = useProfileContext();
   const agency = profile;
   const navigate = useNavigate();
+
+
+
   const getDetails = async () => {
     await getDoc(doc(database, "assignments/" + id, "form_data/data")).then(
       async (formData) => {
@@ -23,7 +29,6 @@ const PrintScreen = () => {
         ).then(async (formResponse) => {
           await getDoc(doc(database, "assignments", id)).then(
             async (assignment) => {
-              console.log(assignment.data());
               var fv = await getDoc(
                 doc(database, "field_verifier", assignment.data()?.assigned_to)
               );
@@ -31,15 +36,74 @@ const PrintScreen = () => {
               setForm(formData.data());
               setResponse(formResponse.data());
               setFv(fv.data());
-              console.log(assignment.data(), formData.data(), formResponse.data(), fv.data());
+              console.log("assignment", assignment.data());
+              console.log("formData", formData.data());
+              console.log("formResponse", formResponse.data());
+              console.log("fv", fv.data());
+              await mapFormDataToResponse(formData.data(), formResponse.data());
             }
           );
         });
       }
     );
   };
+
+  const mapFormDataToResponse = async (formData, formResponse) => {
+    setFormMapped([]);
+    for (let i = 0; i < formData.data.length; i++) {
+      let obj = {};
+      obj[formData.data[i].name] = [];
+      formMapped.push(obj);
+    }
+
+    for (let key in formResponse) {
+      const array = key.split(',');
+      let obj = {};
+      let label = formData.data[array[0]].fields[array[1]].label;
+
+      if (array.length == 4) {
+      }
+
+      if (String(label.trim()) == "Applicant Selfie") {
+        let pfpUrl = String(formResponse[key]);
+        if (pfpUrl !== undefined && pfpUrl !== null && pfpUrl !== "") {
+          await getUrl(pfpUrl).then(async (url) => {
+            setApplicantSelfie(url);
+            obj[label] = url;
+          });
+        }
+      } else {
+        obj[label] = formResponse[key];
+      }
+
+      formMapped[array[0]][Object.keys(formMapped[array[0]])].push(obj);
+    }
+    setFormMapped(formMapped);
+    console.log(formMapped);
+  }
+
+  const handleSort = (item) => {
+    let returnValue;
+    let label = Object.keys(item)[0]
+
+    if (label == "Applicant Selfie ") {
+      returnValue = (<><img src={item[Object.keys(item)[0]]} style={{ width: "200px" }} /></>);
+      return returnValue;
+    }
+
+    if (item[Object.keys(item)[0]].hasOwnProperty('id')) {
+      returnValue = String(item[Object.keys(item)[0]].value);
+      return returnValue;
+    }
+
+    returnValue = String(item[Object.keys(item)[0]]);
+    return returnValue;
+  }
+
+
   useEffect(() => {
     getDetails();
+    mapFormDataToResponse();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return fv && form && assignment ? (
@@ -81,125 +145,136 @@ const PrintScreen = () => {
           }}
         />
       </div>
+
       <div id="printablediv">
         <h1 style={{ backgroundColor: "#C00000", color: "white" }}>
           {assignment.document_type}
         </h1>
-        <div style={{ display: "flex", justifyContent: "space-evenly" }}>
+
+        <div style={{}}>
+          <div>
+
+            {formMapped.map((item, index) => (
+              <div>
+                <div style={{ border: "1px solid black" }}>
+                  <h3 key={index} style={{ backgroundColor: "#002060", color: "white", padding: "3px 10px", borderBottom: "1px solid black", fontWeight: "800" }}>
+                    {Object.keys(item)[0]}
+                  </h3>
+                  <div style={{}}>
+                    {Object.values(item)[0].map((item2) => (
+                      <div style={{ borderBottom: "1px solid black", width: "100%", display: "flex" }}>
+                        <div style={{ width: "35%", padding: "3px 10px", display: "inline-block", fontWeight: "800" }}>
+                          {Object.keys(item2)[0]}
+                        </div>
+                        <div onClick={() => handleSort(item2)} style={{ width: "65%", padding: "3px 10px", borderLeft: "1px solid black", display: "inline-block" }}>
+                          {handleSort(item2)}
+
+                          {/* {Object.values(item2)[0].map((item3) => (
+                            <div style={{ borderBottom: "1px solid black", width: "100%", display: "flex" }}>
+                              <div style={{ width: "35%", padding: "3px 10px", display: "inline-block", fontWeight: "800" }}>
+                                {Object.keys(item3)[0]}
+                              </div>
+                              <div onClick={() => handleSort(item3)} style={{ width: "65%", padding: "3px 10px", borderLeft: "1px solid black", display: "inline-block" }}>
+                                {handleSort(item3)}
+                                &nbsp;
+                              </div>
+                            </div>
+                          ))} */}
+                          &nbsp;
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <br></br>
+                <br></br>
+                <br></br>
+
+              </div>
+            ))}
+
+
+
+          </div>
+        </div>
+
+        <br></br>
+
+        {/* <div style={{}}>
           <div
-            style={{ width: "50%", height: "20vh", border: "1px solid black" }}
+            style={{ border: "1px solid black" }}
           >
-            <h3 style={{ backgroundColor: "#002060", color: "white" }}>
+            <h3 style={{ backgroundColor: "#002060", color: "white", padding: "3px 10px", borderBottom: "1px solid black", fontWeight: "800" }}>
               Customer Details
             </h3>
-            <h4>
-              Applicant name : {assignment.persons[0].details.fName}{" "}
-              {assignment.persons[0].details.lName}
-            </h4>
-            <h4>Applicant Phone : {assignment.persons[0].details.phone}</h4>
-            <h4>
-              Applicant Address : {assignment.persons[0].details.address1}
-            </h4>
-          </div>
-          <div
-            style={{ width: "50%", height: "20vh", border: "1px solid black" }}
-          >
-            <h3 style={{ backgroundColor: "#002060", color: "white" }}>
-              Agency Details
-            </h3>
-            <h4>Agency name : {agency.agency_name}</h4>
-            {/* <h4>Agency Detail : {" "}{agency.detail}</h4> */}
-            {/* <h4>Agency Address : {" "}{agency.address}</h4> */}
-            <h4>Field Verifier : {fv.name}</h4>
-            {/* {props.agency.field_verifiers.map((fv) => (
-            <h4>Field Verifier: {fv}</h4>
-          ))} */}
-          </div>
-        </div>
-        <div
-          style={{ width: "100%", height: "5vh", border: "1px solid black" }}
-        >
-          <h3 style={{ backgroundColor: "#002060", color: "white" }}>
-            Verification Type
-          </h3>
-          <div
-            style={{
-              width: "100%",
-              display: "flex",
-              justifyContent: "space-evenly",
-              flexDirection: "row",
-            }}
-          >
-            <h3>{form.name}</h3>
-          </div>
-        </div>
-        <div style={{ display: "flex", justifyContent: "space-evenly" }}>
-          <div
-            style={{ width: "50%", height: "20vh", border: "1px solid black" }}
-          >
-            <h3 style={{ backgroundColor: "#002060", color: "white" }}>
-              Claimant/insured Details
-            </h3>
-          </div>
-          <div
-            style={{ width: "50%", height: "20vh", border: "1px solid black" }}
-          >
-            <h3 style={{ backgroundColor: "#002060", color: "white" }}>
-              Policy Details
-            </h3>
-          </div>
-        </div>
-        {form.data.map((page, i) => {
-          return (
-            <div key={i}>
-              {page.fields.map((field, j) => (
-                <FormBuilder
-                  field={field.widget}
-                  data={field}
-                  response={response}
-                  key={j}
-                  options={field.options}
-                />
+            <div style={{}}>
+              {Object.keys(assignment.persons[0].details).map((key) => (
+                <div style={{ borderBottom: "1px solid black", width: "100%" }}>
+                  <div style={{ width: "35%", padding: "3px 10px", display: "inline-block", fontWeight: "800" }}>
+                    {key}
+                  </div>
+                  <div style={{ width: "65%", padding: "3px 10px", borderLeft: "1px solid black", display: "inline-block" }}>
+                    {assignment.persons[0].details[key]}
+                    &nbsp;
+                  </div>
+                </div>
               ))}
             </div>
-          );
-        })}
-        <div
-          style={{
-            width: "100%",
-            height: "5vh",
-            border: "1px solid black",
-            backgroundColor: "#C0C0C0",
-          }}
-        >
-          <h3 style={{ backgroundColor: "#002060", color: "white" }}>
-            Remarks:{" "}
-          </h3>
+
+          </div>
         </div>
-        <div
-          style={{ width: "100%", height: "5vh", border: "1px solid black" }}
-        >
-          <h3 style={{ backgroundColor: "#002060", color: "white" }}>
-            Proofs of Documents:{" "}
-          </h3>
+
+        <br></br> */}
+
+        {/* <div style={{}}>
+          <div
+            style={{ border: "1px solid black" }}
+          >
+            <h3 style={{ backgroundColor: "#002060", color: "white", padding: "3px 10px", borderBottom: "1px solid black", fontWeight: "800" }}>
+              Agency Details
+            </h3>
+            <div style={{}}>
+              {Object.keys(agency).map((key) => (
+                <div style={{ borderBottom: "1px solid black", width: "100%", display: "flex" }}>
+                  <div style={{ width: "35%", padding: "3px 10px", display: "inline-block", fontWeight: "800" }}>
+                    {key}
+                  </div>
+                  <div style={{ wordWrap: "break-word", width: "65%", padding: "3px 10px", borderLeft: "1px solid black", display: "inline-block" }}>
+                    {agency[key]}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+          </div>
         </div>
-        <div
-          style={{ width: "100%", height: "20vh", border: "1px solid black" }}
-        >
-          <h3 style={{ backgroundColor: "#002060", color: "white" }}>Footer</h3>
+
+        <br></br>
+
+        <div style={{}}>
+          <div
+            style={{ border: "1px solid black" }}
+          >
+            <h3 style={{ backgroundColor: "#002060", color: "white", padding: "3px 10px", borderBottom: "1px solid black", fontWeight: "800" }}>
+              Files list
+            </h3>
+            <div style={{}}>
+              {assignment.files.map((file) => (
+                <div style={{ borderBottom: "1px solid black", width: "100%" }}>
+                  <div style={{ padding: "3px 10px", display: "inline-block", fontWeight: "800" }}>
+                    {file.name}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+          </div>
         </div>
-        <div
-          style={{
-            width: "100%",
-            height: "5vh",
-            border: "1px solid black",
-            backgroundColor: "#C0C0C0",
-          }}
-        >
-          <h3 style={{ backgroundColor: "#002060", color: "white" }}>
-            Disclaimer:{" "}
-          </h3>
-        </div>
+
+        <br></br> */}
+
+
       </div>
     </div>
   ) : (
