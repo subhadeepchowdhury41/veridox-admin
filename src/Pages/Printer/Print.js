@@ -24,6 +24,8 @@ const PrintScreen = () => {
   const getDetails = async () => {
     await getDoc(doc(database, "assignments/" + id, "form_data/data")).then(
       async (formData) => {
+        console.log(formData.data())
+
         await getDoc(
           doc(database, "assignments/" + id, "form_data/response")
         ).then(async (formResponse) => {
@@ -50,39 +52,82 @@ const PrintScreen = () => {
 
   const mapFormDataToResponse = async (formData, formResponse) => {
     setFormMapped([]);
+
+    //Create skeleton ------------start------------
     for (let i = 0; i < formData.data.length; i++) {
       let obj = {};
       obj[formData.data[i].name] = [];
-      formMapped.push(obj);
-    }
 
+
+      for (let j = 0; j < formData.data[i].fields.length; j++) {
+        let obj2 = {};
+
+        if (formData.data[i].fields[j].label) {
+          obj2[formData.data[i].fields[j].label] = "";
+          obj[formData.data[i].name].push(obj2);
+        }
+
+        if (formData.data[i].fields[j].widget == "table") {
+          for (let k = 0; k < formData.data[i].fields[j].rows.length; k++) {
+            let obj3 = {};
+            let array5 = []
+
+            for (let m = 0; m < formData.data[i].fields[j].columns.length; m++) {
+              let obj4 = {};
+              obj4[formData.data[i].fields[j].columns[m].label] = "";
+              array5.push(obj4)
+            }
+
+
+            obj3[formData.data[i].fields[j].rows[k].label] = array5;
+
+
+            obj[formData.data[i].name].push(obj3);
+          }
+        }
+      }
+
+      formMapped.push(obj);
+      console.log(formMapped)
+    }
+    //Create skeleton ------------end------------
+
+
+    // Add data in skeleton------------start------------
     for (let key in formResponse) {
       const array = key.split(',');
+
       let obj = {};
-      let label = formData.data[array[0]].fields[array[1]].label;
+      if (array.length == 2) {
+        let leafLabel = Object.keys(Object.values(formMapped[array[0]])[0][array[1]])[0];
+
+        if (formResponse[key].hasOwnProperty('id')) {
+          Object.values(formMapped[array[0]])[0][array[1]][leafLabel] = formResponse[key].value;
+        } else {
+          Object.values(formMapped[array[0]])[0][array[1]][leafLabel] = formResponse[key];
+        }
+      }
 
       if (array.length == 4) {
-      }
+        let leafLabel = Object.keys(Object.values(Object.values(Object.values(formMapped[array[0]])[0])[array[1]])[0][array[3]])[0];
 
-      if (String(label.trim()) == "Applicant Selfie") {
-        let pfpUrl = String(formResponse[key]);
-        if (pfpUrl !== undefined && pfpUrl !== null && pfpUrl !== "") {
-          await getUrl(pfpUrl).then(async (url) => {
-            setApplicantSelfie(url);
-            obj[label] = url;
-          });
+        try {
+          (Object.values(Object.values(Object.values(formMapped[array[1]])[0])[Number(array[2]) + 1])[0][array[3]])[leafLabel] = formResponse[key];
         }
-      } else {
-        obj[label] = formResponse[key];
+        catch (err) {
+          console.log(err);
+        }
       }
-
-      formMapped[array[0]][Object.keys(formMapped[array[0]])].push(obj);
     }
+
+    // Add data in skeleton------------end------------
+
     setFormMapped(formMapped);
-    console.log(formMapped);
+    console.log(formMapped)
   }
 
-  const handleSort = (item) => {
+  const handleSort = (item, asas?) => {
+    console.log(item)
     let returnValue;
     let label = Object.keys(item)[0]
 
@@ -93,6 +138,11 @@ const PrintScreen = () => {
 
     if (item[Object.keys(item)[0]].hasOwnProperty('id')) {
       returnValue = String(item[Object.keys(item)[0]].value);
+      return returnValue;
+    }
+
+    if (Array.isArray(item[Object.keys(item)[0]]) && item[Object.keys(item)[0]].length) {
+      returnValue = (<></>);
       return returnValue;
     }
 
@@ -161,26 +211,29 @@ const PrintScreen = () => {
                     {Object.keys(item)[0]}
                   </h3>
                   <div style={{}}>
+
                     {Object.values(item)[0].map((item2) => (
                       <div style={{ borderBottom: "1px solid black", width: "100%", display: "flex" }}>
                         <div style={{ width: "35%", padding: "3px 10px", display: "inline-block", fontWeight: "800" }}>
                           {Object.keys(item2)[0]}
                         </div>
                         <div onClick={() => handleSort(item2)} style={{ width: "65%", padding: "3px 10px", borderLeft: "1px solid black", display: "inline-block" }}>
-                          {handleSort(item2)}
+                          {handleSort(item2, item)}
 
-                          {/* {Object.values(item2)[0].map((item3) => (
-                            <div style={{ borderBottom: "1px solid black", width: "100%", display: "flex" }}>
-                              <div style={{ width: "35%", padding: "3px 10px", display: "inline-block", fontWeight: "800" }}>
-                                {Object.keys(item3)[0]}
-                              </div>
-                              <div onClick={() => handleSort(item3)} style={{ width: "65%", padding: "3px 10px", borderLeft: "1px solid black", display: "inline-block" }}>
-                                {handleSort(item3)}
-                                &nbsp;
-                              </div>
+                          {Array.isArray(item2[Object.keys(item2)[0]]) && item2[Object.keys(item2)[0]].length &&
+                            <div>
+                              {Object.values(item2)[0].map((item3) => (
+                                <div style={{ borderBottom: "1px solid black", width: "100%", display: "flex" }}>
+                                  <div style={{ width: "35%", padding: "3px 10px", display: "inline-block", fontWeight: "800" }}>
+                                    {Object.keys(item3)[0]}
+                                  </div>
+                                  <div onClick={() => handleSort(item3)} style={{ width: "65%", padding: "3px 10px", borderLeft: "1px solid black", display: "inline-block" }}>
+                                    {handleSort(item3)}
+                                  </div>
+                                </div>
+                              ))}
                             </div>
-                          ))} */}
-                          &nbsp;
+                          }
                         </div>
                       </div>
                     ))}
