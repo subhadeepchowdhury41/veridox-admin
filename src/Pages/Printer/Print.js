@@ -51,79 +51,27 @@ const PrintScreen = () => {
   };
 
   const mapFormDataToResponse = async (formData, formResponse) => {
-    setFormMapped([]);
 
-    //Create skeleton ------------start------------
-    for (let i = 0; i < formData.data.length; i++) {
-      let obj = {};
-      obj[formData.data[i].name] = [];
-
-
-      for (let j = 0; j < formData.data[i].fields.length; j++) {
-        let obj2 = {};
-
-        if (formData.data[i].fields[j].label) {
-          obj2[formData.data[i].fields[j].label] = "";
-          obj[formData.data[i].name].push(obj2);
-        }
-
-        if (formData.data[i].fields[j].widget == "table") {
-          for (let k = 0; k < formData.data[i].fields[j].rows.length; k++) {
-            let obj3 = {};
-            let array5 = []
-
-            for (let m = 0; m < formData.data[i].fields[j].columns.length; m++) {
-              let obj4 = {};
-              obj4[formData.data[i].fields[j].columns[m].label] = "";
-              array5.push(obj4)
-            }
-
-
-            obj3[formData.data[i].fields[j].rows[k].label] = array5;
-
-
-            obj[formData.data[i].name].push(obj3);
-          }
-        }
-      }
-
-      formMapped.push(obj);
-      console.log(formMapped)
-    }
-    //Create skeleton ------------end------------
-
-
-    // Add data in skeleton------------start------------
     for (let key in formResponse) {
       const array = key.split(',');
 
-      let obj = {};
       if (array.length == 2) {
-        let leafLabel = Object.keys(Object.values(formMapped[array[0]])[0][array[1]])[0];
-
-        if (formResponse[key].hasOwnProperty('id')) {
-          Object.values(formMapped[array[0]])[0][array[1]][leafLabel] = formResponse[key].value;
-        } else {
-          Object.values(formMapped[array[0]])[0][array[1]][leafLabel] = formResponse[key];
-        }
+        ((formData.data[array[0]]).fields[array[1]])['value'] = formResponse[key]
       }
-
       if (array.length == 4) {
-        let leafLabel = Object.keys(Object.values(Object.values(Object.values(formMapped[array[0]])[0])[array[1]])[0][array[3]])[0];
+        let column = (((formData.data[array[0]]).fields[array[1]]).columns[array[3]]);
+        column['value'] = formResponse[key];
+        let row = (((formData.data[array[0]]).fields[array[1]]).rows[array[2]]);
 
-        try {
-          (Object.values(Object.values(Object.values(formMapped[array[1]])[0])[Number(array[2]) + 1])[0][array[3]])[leafLabel] = formResponse[key];
+        if (!row.columns) {
+          row['columns'] = []
         }
-        catch (err) {
-          console.log(err);
-        }
+        row.columns.push(column);
       }
     }
 
-    // Add data in skeleton------------end------------
-
-    setFormMapped(formMapped);
-    console.log(formMapped)
+    await setFormMapped(formData.data);
+    console.log(formData.data)
   }
 
   const handleSort = (item, asas?) => {
@@ -207,36 +155,56 @@ const PrintScreen = () => {
             {formMapped.map((item, index) => (
               <div>
                 <div style={{ border: "1px solid black" }}>
-                  <h3 key={index} style={{ backgroundColor: "#002060", color: "white", padding: "3px 10px", borderBottom: "1px solid black", fontWeight: "800" }}>
-                    {Object.keys(item)[0]}
+                  <h3 onClick={() => handleSort(item)} key={index} style={{ backgroundColor: "#002060", color: "white", padding: "3px 10px", borderBottom: "1px solid black", fontWeight: "800" }}>
+                    {item.name}
                   </h3>
                   <div style={{}}>
 
-                    {Object.values(item)[0].map((item2) => (
+                    {item.fields.map((item2) => (
                       <div style={{ borderBottom: "1px solid black", width: "100%", display: "flex" }}>
                         <div style={{ width: "35%", padding: "3px 10px", display: "inline-block", fontWeight: "800" }}>
-                          {Object.keys(item2)[0]}
+                          {item2.label}
                         </div>
-                        <div onClick={() => handleSort(item2)} style={{ width: "65%", padding: "3px 10px", borderLeft: "1px solid black", display: "inline-block" }}>
-                          {handleSort(item2, item)}
+                        <div onClick={() => handleSort(item2)} style={{ width: "65%", borderLeft: "1px solid black", display: "inline-block" }}>
+                          {item2.widget !== "table" && item2.widget !== "dropdown" &&
+                            <div style={{ padding: "3px 10px" }}>
+                              {item2.value}
+                            </div>
+                          }
 
-                          {Array.isArray(item2[Object.keys(item2)[0]]) && item2[Object.keys(item2)[0]].length &&
-                            <div>
-                              {Object.values(item2)[0].map((item3) => (
-                                <div style={{ borderBottom: "1px solid black", width: "100%", display: "flex" }}>
-                                  <div style={{ width: "35%", padding: "3px 10px", display: "inline-block", fontWeight: "800" }}>
-                                    {Object.keys(item3)[0]}
+                          {item2.widget == "dropdown" &&
+                            <div style={{ padding: "3px 10px" }}>
+                              {item2.value.value}
+                            </div>
+                          }
+
+                          {item2.widget == "table" &&
+                            <div >
+                              {item2.rows.map((item3) => (
+                                <div style={{ borderBottom: "1px solid black", width: "100%", }}>
+                                  <div style={{ backgroundColor: "#8d8d8d", color: "white", width: "100%", padding: "3px 10px", display: "inline-block", fontWeight: "800" }}>
+                                    {item3.label}
                                   </div>
-                                  <div onClick={() => handleSort(item3)} style={{ width: "65%", padding: "3px 10px", borderLeft: "1px solid black", display: "inline-block" }}>
-                                    {handleSort(item3)}
-                                  </div>
+                                  {item3.columns.map((item4) => (
+                                    <div style={{ borderBottom: "1px solid black", display: "flex" }}>
+                                      <div style={{ width: "35%", padding: "3px 10px", display: "inline-block", fontWeight: "800" }}>
+                                        {item4.label}
+                                      </div>
+                                      <div onClick={() => handleSort(item4)} style={{ width: "65%", padding: "3px 10px", borderLeft: "1px solid black", display: "inline-block" }}>
+                                        {item4.value}
+                                      </div>
+                                    </div>
+                                  ))}
                                 </div>
                               ))}
                             </div>
                           }
+
+
                         </div>
                       </div>
                     ))}
+
                   </div>
                 </div>
 
@@ -254,82 +222,8 @@ const PrintScreen = () => {
 
         <br></br>
 
-        {/* <div style={{}}>
-          <div
-            style={{ border: "1px solid black" }}
-          >
-            <h3 style={{ backgroundColor: "#002060", color: "white", padding: "3px 10px", borderBottom: "1px solid black", fontWeight: "800" }}>
-              Customer Details
-            </h3>
-            <div style={{}}>
-              {Object.keys(assignment.persons[0].details).map((key) => (
-                <div style={{ borderBottom: "1px solid black", width: "100%" }}>
-                  <div style={{ width: "35%", padding: "3px 10px", display: "inline-block", fontWeight: "800" }}>
-                    {key}
-                  </div>
-                  <div style={{ width: "65%", padding: "3px 10px", borderLeft: "1px solid black", display: "inline-block" }}>
-                    {assignment.persons[0].details[key]}
-                    &nbsp;
-                  </div>
-                </div>
-              ))}
-            </div>
-
-          </div>
-        </div>
-
-        <br></br> */}
-
-        {/* <div style={{}}>
-          <div
-            style={{ border: "1px solid black" }}
-          >
-            <h3 style={{ backgroundColor: "#002060", color: "white", padding: "3px 10px", borderBottom: "1px solid black", fontWeight: "800" }}>
-              Agency Details
-            </h3>
-            <div style={{}}>
-              {Object.keys(agency).map((key) => (
-                <div style={{ borderBottom: "1px solid black", width: "100%", display: "flex" }}>
-                  <div style={{ width: "35%", padding: "3px 10px", display: "inline-block", fontWeight: "800" }}>
-                    {key}
-                  </div>
-                  <div style={{ wordWrap: "break-word", width: "65%", padding: "3px 10px", borderLeft: "1px solid black", display: "inline-block" }}>
-                    {agency[key]}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-          </div>
-        </div>
-
-        <br></br>
-
-        <div style={{}}>
-          <div
-            style={{ border: "1px solid black" }}
-          >
-            <h3 style={{ backgroundColor: "#002060", color: "white", padding: "3px 10px", borderBottom: "1px solid black", fontWeight: "800" }}>
-              Files list
-            </h3>
-            <div style={{}}>
-              {assignment.files.map((file) => (
-                <div style={{ borderBottom: "1px solid black", width: "100%" }}>
-                  <div style={{ padding: "3px 10px", display: "inline-block", fontWeight: "800" }}>
-                    {file.name}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-          </div>
-        </div>
-
-        <br></br> */}
-
-
       </div>
-    </div>
+    </div >
   ) : (
     <div>Loading...</div>
   );
