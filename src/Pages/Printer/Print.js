@@ -42,7 +42,14 @@ const PrintScreen = () => {
               console.log("formData", formData.data());
               console.log("formResponse", formResponse.data());
               console.log("fv", fv.data());
-              await mapFormDataToResponse(formData.data(), formResponse.data());
+
+              //create form json
+              let formValues = await mapFormDataToResponse(formData.data(), formResponse.data());
+
+              //attach image urls
+              let imageData = await attachImageUrl(formValues);
+
+              await setFormMapped(imageData);
             }
           );
         });
@@ -51,7 +58,6 @@ const PrintScreen = () => {
   };
 
   const mapFormDataToResponse = async (formData, formResponse) => {
-
     for (let key in formResponse) {
       const array = key.split(',');
 
@@ -70,38 +76,45 @@ const PrintScreen = () => {
       }
     }
 
-    await setFormMapped(formData.data);
     console.log(formData.data)
+    return formData.data;
   }
 
   const handleSort = (item, asas?) => {
     console.log(item)
-    let returnValue;
-    let label = Object.keys(item)[0]
-
-    if (label == "Applicant Selfie ") {
-      returnValue = (<><img src={item[Object.keys(item)[0]]} style={{ width: "200px" }} /></>);
-      return returnValue;
-    }
-
-    if (item[Object.keys(item)[0]].hasOwnProperty('id')) {
-      returnValue = String(item[Object.keys(item)[0]].value);
-      return returnValue;
-    }
-
-    if (Array.isArray(item[Object.keys(item)[0]]) && item[Object.keys(item)[0]].length) {
-      returnValue = (<></>);
-      return returnValue;
-    }
-
-    returnValue = String(item[Object.keys(item)[0]]);
-    return returnValue;
   }
+
+  const attachImageUrl = async (data) => {
+    for (let i = 0; i < data.length; i++) {
+      for (let j = 0; j < data[i].fields.length; j++) {
+
+        if (data[i].fields[j].widget == "image") {
+          let [pfpUrl] = data[i].fields[j].value ? data[i].fields[j].value : null;
+          if (pfpUrl !== undefined && pfpUrl !== null && pfpUrl !== "") {
+            await getUrl(pfpUrl).then(async (url) => {
+              data[i].fields[j].value = url;
+            });
+          }
+        }
+
+        if (data[i].fields[j].widget == "signature") {
+          let pfpUrl = data[i].fields[j].value;
+          if (pfpUrl !== undefined && pfpUrl !== null && pfpUrl !== "") {
+            await getUrl(pfpUrl).then(async (url) => {
+              data[i].fields[j].value = url;
+            });
+          }
+        }
+      }
+    }
+    console.log(data);
+    return data;
+  }
+
 
 
   useEffect(() => {
     getDetails();
-    mapFormDataToResponse();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return fv && form && assignment ? (
@@ -115,15 +128,6 @@ const PrintScreen = () => {
             @media print {
               @page {
                 size: A4;
-                margin: 0;
-              }
-              body {
-                margin: 0;
-                padding: 0;
-                width: 210mm;
-                height: 297mm;
-                font-size: 12pt;
-                font-family: Arial, sans-serif;
               }
             }
           `;
@@ -133,13 +137,13 @@ const PrintScreen = () => {
             );
             printWindow.document.open();
             printWindow.document.write("<html><head><title></title>");
-            printWindow.document.write(`<style>${printStyle}</style>`);
+            // printWindow.document.write(`<style>${printStyle}</style>`);
             printWindow.document.write("</head><body>");
             printWindow.document.write(document.body.innerHTML);
             printWindow.document.write("</body></html>");
             printWindow.document.close();
             printWindow.print();
-            navigate('/dashboard/assignment/result');
+            // navigate('/dashboard/assignment/result');
           }}
         />
       </div>
@@ -155,9 +159,16 @@ const PrintScreen = () => {
             {formMapped.map((item, index) => (
               <div>
                 <div style={{ border: "1px solid black" }}>
-                  <h3 onClick={() => handleSort(item)} key={index} style={{ backgroundColor: "#002060", color: "white", padding: "3px 10px", borderBottom: "1px solid black", fontWeight: "800" }}>
+                  <div onClick={() => handleSort(item)} key={index}
+                    style={{
+                      backgroundColor: "#002060",
+                      color: "white", padding: "3px 10px",
+                      borderBottom: "1px solid black",
+                      fontWeight: "800",
+                      fontSize: "20px"
+                    }}>
                     {item.name}
-                  </h3>
+                  </div>
                   <div style={{}}>
 
                     {item.fields.map((item2) => (
@@ -167,6 +178,8 @@ const PrintScreen = () => {
                         </div>
                         <div onClick={() => handleSort(item2)} style={{ width: "65%", borderLeft: "1px solid black", display: "inline-block" }}>
                           {item2.widget !== "table" && item2.widget !== "dropdown" &&
+                            item2.widget !== "image" &&
+                            item2.widget !== "signature" &&
                             <div style={{ padding: "3px 10px" }}>
                               {item2.value}
                             </div>
@@ -178,19 +191,52 @@ const PrintScreen = () => {
                             </div>
                           }
 
+                          {item2.widget == "image" &&
+                            <div style={{ padding: "3px 10px", display: "flex", justifyContent: "center" }}>
+                              {/* {getImageUrl(item2.value)} */}
+
+                              <img style={{ height: "200px" }} src={item2.value}></img>
+                            </div>
+                          }
+
+                          {item2.widget == "signature" &&
+                            <div style={{ padding: "3px 10px", display: "flex", justifyContent: "center" }}>
+                              {/* {getImageUrl(item2.value)} */}
+
+                              <img style={{ height: "200px" }} src={item2.value}></img>
+                            </div>
+                          }
+
                           {item2.widget == "table" &&
                             <div >
                               {item2.rows.map((item3) => (
                                 <div style={{ borderBottom: "1px solid black", width: "100%", }}>
-                                  <div style={{ backgroundColor: "#8d8d8d", color: "white", width: "100%", padding: "3px 10px", display: "inline-block", fontWeight: "800" }}>
-                                    {item3.label}
+                                  <div style={{
+                                    backgroundColor: "#8d8d8d",
+                                    color: "white",
+                                    width: "100%",
+                                    display: "inline-block",
+                                    fontWeight: "800",
+                                    borderBottom: "1px solid black",
+                                  }}>
+                                    <div style={{
+                                      padding: "3px 10px"
+                                    }}>
+                                      {item3.label}
+                                    </div>
                                   </div>
                                   {item3.columns.map((item4) => (
                                     <div style={{ borderBottom: "1px solid black", display: "flex" }}>
                                       <div style={{ width: "35%", padding: "3px 10px", display: "inline-block", fontWeight: "800" }}>
                                         {item4.label}
                                       </div>
-                                      <div onClick={() => handleSort(item4)} style={{ width: "65%", padding: "3px 10px", borderLeft: "1px solid black", display: "inline-block" }}>
+                                      <div onClick={() => handleSort(item4)}
+                                        style={{
+                                          width: "65%",
+                                          padding: "3px 10px",
+                                          borderLeft: "1px solid black",
+                                          display: "inline-block"
+                                        }}>
                                         {item4.value}
                                       </div>
                                     </div>
