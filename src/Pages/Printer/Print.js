@@ -18,6 +18,8 @@ const PrintScreen = () => {
   const { profile } = useProfileContext();
   const agency = profile;
   const navigate = useNavigate();
+  const [isDataLoaded, setIsDataLoaded] = useState(false);
+
 
 
 
@@ -45,9 +47,10 @@ const PrintScreen = () => {
               let formValues = await mapFormDataToResponse(formData.data(), formResponse.data());
 
               //attach image urls
-              let imageData = await attachImageUrl(formValues);
+              let imageData = await converValueToURL(formValues);
 
               await setFormMapped(imageData);
+              setIsDataLoaded(true);
             }
           );
         });
@@ -82,49 +85,65 @@ const PrintScreen = () => {
     console.log(item)
   }
 
-  const attachImageUrl = async (data) => {
+  const converValueToURL = async (data) => {
     for (let i = 0; i < data.length; i++) {
       for (let j = 0; j < data[i].fields.length; j++) {
 
         if (data[i].fields[j].widget == "image") {
-          let [pfpUrl] = data[i].fields[j].value ? data[i].fields[j].value : null;
-          if (pfpUrl !== undefined && pfpUrl !== null && pfpUrl !== "") {
-            await getUrl(pfpUrl).then(async (url) => {
-              data[i].fields[j].value = url;
-            });
+          let pfpUrl;
+          if (data[i].fields[j].value && data[i].fields[j].value.length) {
+            [pfpUrl] = data[i].fields[j].value ? data[i].fields[j].value : null;
+            if (pfpUrl !== undefined && pfpUrl !== null && pfpUrl !== "") {
+              await getUrl(pfpUrl).then(async (url) => {
+                data[i].fields[j].value = url;
+              });
+            }
           }
         }
 
         if (data[i].fields[j].widget == "geotag_image") {
-          let [pfpUrl] = data[i].fields[j].value ? data[i].fields[j].value : null;
-          if (pfpUrl !== undefined && pfpUrl !== null && pfpUrl !== "") {
-            await getUrl(pfpUrl).then(async (url) => {
-              data[i].fields[j].value = url;
-            });
+          let pfpUrl;
+          if (data[i].fields[j].value && data[i].fields[j].value.length) {
+            [pfpUrl] = data[i].fields[j].value ? data[i].fields[j].value : null;
+            if (pfpUrl !== undefined && pfpUrl !== null && pfpUrl !== "") {
+              await getUrl(pfpUrl).then(async (url) => {
+                data[i].fields[j].value = url;
+              });
+            }
           }
         }
 
         if (data[i].fields[j].widget == "signature") {
-          let pfpUrl = data[i].fields[j].value;
-          if (pfpUrl !== undefined && pfpUrl !== null && pfpUrl !== "") {
-            await getUrl(pfpUrl).then(async (url) => {
-              data[i].fields[j].value = url;
-            });
+          let pfpUrl;
+          if (data[i].fields[j].value) {
+            pfpUrl = data[i].fields[j].value;
+            if (pfpUrl !== undefined && pfpUrl !== null && pfpUrl !== "") {
+              await getUrl(pfpUrl).then(async (url) => {
+                data[i].fields[j].value = url;
+              });
+            }
           }
         }
 
         if (data[i].fields[j].widget == "file") {
-          let [pfpUrl] = data[i].fields[j].value ? data[i].fields[j].value : null;
-          if (pfpUrl !== undefined && pfpUrl !== null && pfpUrl !== "") {
-            await getUrl(pfpUrl).then(async (url) => {
-              data[i].fields[j].value = url;
-            });
+          let pfpUrl;
+          if (data[i].fields[j].value && data[i].fields[j].value.length) {
+            [pfpUrl] = data[i].fields[j].value ? data[i].fields[j].value : null;
+
+            if (pfpUrl !== undefined && pfpUrl !== null && pfpUrl !== "") {
+              await getUrl(pfpUrl).then(async (url) => {
+                data[i].fields[j].value = url;
+              });
+            }
           }
         }
 
         if (data[i].fields[j].widget == "toggle-input") {
-          let toggleValue = data[i].fields[j].value ? "yes" : "No";
-          data[i].fields[j].value = toggleValue;
+          let toggleValue;
+          if (data[i].fields[j].value) {
+            toggleValue = data[i].fields[j].value ? "yes" : "No";
+            data[i].fields[j].value = toggleValue;
+          }
         }
 
       }
@@ -139,7 +158,7 @@ const PrintScreen = () => {
     getDetails();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  return fv && form && assignment ? (
+  return fv && form && assignment && isDataLoaded ? (
     <div>
       <div style={{ width: "100%", display: "flex", justifyContent: "end" }}>
         <Print
@@ -312,7 +331,7 @@ const PrintScreen = () => {
       </div>
     </div >
   ) : (
-    <div>Loading...</div>
+    <div style={{display: "flex", justifyContent: "center"}}><h3>Loading...</h3></div>
   );
 };
 
