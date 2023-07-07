@@ -24,8 +24,6 @@ const PrintScreen = () => {
   const getDetails = async () => {
     await getDoc(doc(database, "assignments/" + id, "form_data/data")).then(
       async (formData) => {
-        console.log(formData.data())
-
         await getDoc(
           doc(database, "assignments/" + id, "form_data/response")
         ).then(async (formResponse) => {
@@ -80,7 +78,7 @@ const PrintScreen = () => {
     return formData.data;
   }
 
-  const handleSort = (item, asas?) => {
+  const handleSort = (item, secondArg?) => {
     console.log(item)
   }
 
@@ -97,6 +95,15 @@ const PrintScreen = () => {
           }
         }
 
+        if (data[i].fields[j].widget == "geotag_image") {
+          let [pfpUrl] = data[i].fields[j].value ? data[i].fields[j].value : null;
+          if (pfpUrl !== undefined && pfpUrl !== null && pfpUrl !== "") {
+            await getUrl(pfpUrl).then(async (url) => {
+              data[i].fields[j].value = url;
+            });
+          }
+        }
+
         if (data[i].fields[j].widget == "signature") {
           let pfpUrl = data[i].fields[j].value;
           if (pfpUrl !== undefined && pfpUrl !== null && pfpUrl !== "") {
@@ -105,6 +112,21 @@ const PrintScreen = () => {
             });
           }
         }
+
+        if (data[i].fields[j].widget == "file") {
+          let [pfpUrl] = data[i].fields[j].value ? data[i].fields[j].value : null;
+          if (pfpUrl !== undefined && pfpUrl !== null && pfpUrl !== "") {
+            await getUrl(pfpUrl).then(async (url) => {
+              data[i].fields[j].value = url;
+            });
+          }
+        }
+
+        if (data[i].fields[j].widget == "toggle-input") {
+          let toggleValue = data[i].fields[j].value ? "yes" : "No";
+          data[i].fields[j].value = toggleValue;
+        }
+
       }
     }
     console.log(data);
@@ -177,9 +199,12 @@ const PrintScreen = () => {
                           {item2.label}
                         </div>
                         <div onClick={() => handleSort(item2)} style={{ width: "65%", borderLeft: "1px solid black", display: "inline-block" }}>
-                          {item2.widget !== "table" && item2.widget !== "dropdown" &&
+                          {item2.widget !== "table" &&
+                            item2.widget !== "dropdown" &&
                             item2.widget !== "image" &&
                             item2.widget !== "signature" &&
+                            item2.widget !== "geotag_image" &&
+                            item2.widget !== "file" &&
                             <div style={{ padding: "3px 10px" }}>
                               {item2.value}
                             </div>
@@ -192,7 +217,7 @@ const PrintScreen = () => {
                           }
 
                           {item2.widget == "image" &&
-                            <div style={{ padding: "3px 10px", display: "flex", justifyContent: "center" }}>
+                            <div style={{ padding: "3px 10px", display: "flex" }}>
                               {/* {getImageUrl(item2.value)} */}
 
                               <img style={{ height: "200px" }} src={item2.value}></img>
@@ -200,10 +225,26 @@ const PrintScreen = () => {
                           }
 
                           {item2.widget == "signature" &&
-                            <div style={{ padding: "3px 10px", display: "flex", justifyContent: "center" }}>
+                            <div style={{ padding: "3px 10px", display: "flex" }}>
                               {/* {getImageUrl(item2.value)} */}
 
                               <img style={{ height: "200px" }} src={item2.value}></img>
+                            </div>
+                          }
+
+                          {item2.widget == "geotag_image" &&
+                            <div style={{ padding: "3px 10px", display: "flex" }}>
+                              {/* {getImageUrl(item2.value)} */}
+
+                              <img style={{ height: "200px" }} src={item2.value}></img>
+                            </div>
+                          }
+
+                          {item2.widget == "file" &&
+                            <div style={{ padding: "3px 10px", display: "flex" }}>
+                              {/* {getImageUrl(item2.value)} */}
+
+                              <a href={item2.value} target="_blank">{item2.label}</a>
                             </div>
                           }
 
