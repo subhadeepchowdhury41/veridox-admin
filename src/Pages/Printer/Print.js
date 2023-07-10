@@ -196,7 +196,11 @@ const PrintScreen = () => {
 
         <div style={{}}>
           <div>
-
+            <div style={{
+              fontSize: "25px",
+              fontWeight: "800",
+              padding: "0 0 15px 0"
+            }}>{form.name}</div>
             {formMapped.map((item, index) => (
               <div>
                 <div style={{ border: "1px solid black" }}>
@@ -330,7 +334,7 @@ const PrintScreen = () => {
       </div>
     </div >
   ) : (
-    <div style={{display: "flex", justifyContent: "center"}}><h3>Loading...</h3></div>
+    <div style={{ display: "flex", justifyContent: "center" }}><h3>Loading...</h3></div>
   );
 };
 
