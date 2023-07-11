@@ -158,13 +158,14 @@ const PrintScreen = () => {
     getDetails();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+
   return fv && form && assignment && isDataLoaded ? (
     <div>
       <div style={{ width: "100%", display: "flex", justifyContent: "end" }}>
         <Print
           onClick={() => {
-            const printable = document.getElementById("printablediv").innerHTML;
-            document.body.innerHTML = printable;
+            let printable = document.getElementById("printablediv").innerHTML;
             const printStyle = `
             @media print {
               @page {
@@ -174,13 +175,14 @@ const PrintScreen = () => {
           `;
             const printWindow = window.open(
               "",
-              "_blank"
+              "_blank",
+              "height=1000,width=1200"
             );
             printWindow.document.open();
             printWindow.document.write("<html><head><title></title>");
-            // printWindow.document.write(`<style>${printStyle}</style>`);
+            printWindow.document.write(`<style>${printStyle}</style>`);
             printWindow.document.write("</head><body>");
-            printWindow.document.write(document.body.innerHTML);
+            printWindow.document.write(printable);
             printWindow.document.write("</body></html>");
             printWindow.document.close();
             printWindow.print();
