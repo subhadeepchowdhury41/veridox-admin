@@ -8,7 +8,7 @@ import { database } from "../../Firebase/Firebase";
 import { useAuthContext } from "../../Providers/AuthProvider";
 
 const VerifyAssignmentsPage: React.FunctionComponent = () => {
-    const {user} = useAuthContext();
+    const { user } = useAuthContext();
     const [mounted, setMounted] = useState(false);
     const [submittedAss, setSubmittedAss] = useState<DocumentData>([]);
 
@@ -20,16 +20,17 @@ const VerifyAssignmentsPage: React.FunctionComponent = () => {
     }, []);
 
     useEffect(() => {
-        let unsubscribe = () => {};
+        let unsubscribe = () => { };
         if (user !== null && user.uid !== undefined) {
             unsubscribe = onSnapshot(query(collection(database, 'agency/' + user.uid, 'assignments'),
-            where('status', '==', 'submitted')), snapshot => {
-                let ass : Array<DocumentData> = [];
-                snapshot.docs.forEach((doc) => {
-                    ass.push({ ...doc.data(), id: doc.id});
+                where('status', '==', 'submitted')), snapshot => {
+                    let ass: Array<DocumentData> = [];
+                    snapshot.docs.forEach((doc) => {
+                        ass.push({ ...doc.data(), id: doc.id });
+                    });
+                    console.log(ass)
+                    setSubmittedAss(ass);
                 });
-                setSubmittedAss(ass);
-            });
         }
         return () => {
             return unsubscribe();
@@ -39,112 +40,115 @@ const VerifyAssignmentsPage: React.FunctionComponent = () => {
     return (
         <div>
             <Paper elevation={0} sx={{
-                    width: "100%",
-                    padding: '0.4em',
-                    margin: '0.3em 0',
-                    fontSize: '14px',
-                    display: 'inline-flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    textAlign: 'center'
-                }}>
-                    <Grid container>
-                        <Grid item xs={12} sm={12} lg={4} md={4} sx={{
-                            display: 'flex', justifyContent: 'center',
-                            alignItems: 'center'
-                        }}>
-                            <div style={{color: 'gray', fontWeight: 'bold'}}>
-                                ID
-                            </div>
-                        </Grid>
-                        <Grid item xs={12} sm={12} lg={2} md={2} sx={{
-                            display: 'flex', justifyContent: 'center',
-                            alignItems: 'center'
-                        }}>
-                            <div style={{color: 'gray', fontWeight: 'bold'}}>
-                                Type
-                            </div>
-                        </Grid>
-
-                        <Grid item xs={12} sm={12} lg={4} md={4} sx={{
-                            display: 'flex', justifyContent: 'center',
-                            alignItems: 'center'
-                        }}>
-                            <div style={{color: 'gray', fontWeight: 'bold'}}>
-                                Name
-                            </div>
-                        </Grid>
-                        
-                        <Grid item xs={12} sm={12} lg={2} md={2} sx={{
-                            display: 'flex', justifyContent: 'center',
-                            alignItems: 'center'
-                        }}>
-                            <div style={{color: 'gray', fontWeight: 'bold'}}>
-                                Action
-                            </div>
-                        </Grid>
+                width: "100%",
+                padding: '0.4em',
+                margin: '0.3em 0',
+                fontSize: '14px',
+                display: 'inline-flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                textAlign: 'center'
+            }}>
+                <Grid container>
+                    <Grid item xs={12} sm={12} lg={4} md={4} sx={{
+                        display: 'flex', justifyContent: 'center',
+                        alignItems: 'center'
+                    }}>
+                        <div style={{ color: 'gray', fontWeight: 'bold' }}>
+                            ID
+                        </div>
                     </Grid>
-                </Paper>
-                <hr style={{width: '93%', margin: '0 auto 0.15em auto', border: '0.6px solid #dedede'}}/>
+                    <Grid item xs={12} sm={12} lg={2} md={2} sx={{
+                        display: 'flex', justifyContent: 'center',
+                        alignItems: 'center'
+                    }}>
+                        <div style={{ color: 'gray', fontWeight: 'bold' }}>
+                            Type
+                        </div>
+                    </Grid>
+
+                    <Grid item xs={12} sm={12} lg={4} md={4} sx={{
+                        display: 'flex', justifyContent: 'center',
+                        alignItems: 'center'
+                    }}>
+                        <div style={{ color: 'gray', fontWeight: 'bold' }}>
+                            Name
+                        </div>
+                    </Grid>
+
+                    <Grid item xs={12} sm={12} lg={2} md={2} sx={{
+                        display: 'flex', justifyContent: 'center',
+                        alignItems: 'center'
+                    }}>
+                        <div style={{ color: 'gray', fontWeight: 'bold' }}>
+                            Action
+                        </div>
+                    </Grid>
+                </Grid>
+            </Paper>
+            <hr style={{ width: '93%', margin: '0 auto 0.15em auto', border: '0.6px solid #dedede' }} />
             {submittedAss.map((assignment) => {
-            return (<div key={assignment.id}>
-                <Paper elevation={0} sx={{
-                    width: "100%",
-                    padding: '0.4em',
-                    margin: '0.3em 0',
-                    fontSize: '14px',
-                    display: 'inline-flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    textAlign: 'center'
-                }}>
-                    <Grid container>
-                        <Grid item xs={12} sm={12} lg={4} md={4} sx={{
-                            display: 'flex', justifyContent: 'center',
-                            alignItems: 'center'
-                        }}>
-                            <div style={{marginLeft: '1.7em', fontFamily: 'Source Serif Pro, serif'}}>
-                                {assignment.id}
-                            </div>
-                        </Grid>
-                        <Grid item xs={12} sm={12} lg={2} md={2} sx={{
-                            display: 'flex', justifyContent: 'center',
-                            alignItems: 'center'
-                        }}>
-                            <div style={{marginLeft: '1.7em', fontFamily: 'Source Serif Pro, serif'}}>
-                                {assignment.document_type}
-                            </div>
-                        </Grid>
-
-                        <Grid item xs={12} sm={12} lg={4} md={4} sx={{
-                            display: 'flex', justifyContent: 'center',
-                            alignItems: 'center'
-                        }}>
-                            <div style={{marginLeft: '1.7em', fontFamily: 'Source Serif Pro, serif'}}>
-                                <FvName uid={assignment.assigned_to}/>
-                            </div>
-                        </Grid>
-                        <Grid item xs={12} sm={12} lg={2} md={2} sx={{
-                            display: 'flex', justifyContent: 'center',
-                            alignItems: 'center'
-                        }}>
-                            <Button size='small' variant="contained" onClick={() => {
-                                navigate('/dashboard/verify/result',
-                                    {state: {
-                                        id: assignment.id,
-                                        fv: assignment.assigned_to,
-                                        docType: assignment.document_type
-                                    }}
-                                );
+                return (<div key={assignment.id}>
+                    <Paper elevation={0} sx={{
+                        width: "100%",
+                        padding: '0.4em',
+                        margin: '0.3em 0',
+                        fontSize: '14px',
+                        display: 'inline-flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        textAlign: 'center'
+                    }}>
+                        <Grid container>
+                            <Grid item xs={12} sm={12} lg={4} md={4} sx={{
+                                display: 'flex', justifyContent: 'center',
+                                alignItems: 'center'
                             }}>
-                                Verify
-                            </Button>
+                                <div style={{ marginLeft: '1.7em', fontFamily: 'Source Serif Pro, serif' }}>
+                                    {assignment.id}
+                                </div>
+                            </Grid>
+                            <Grid item xs={12} sm={12} lg={2} md={2} sx={{
+                                display: 'flex', justifyContent: 'center',
+                                alignItems: 'center'
+                            }}>
+                                <div style={{ marginLeft: '1.7em', fontFamily: 'Source Serif Pro, serif' }}>
+                                    {assignment.document_type}
+                                </div>
+                            </Grid>
+
+                            <Grid item xs={12} sm={12} lg={4} md={4} sx={{
+                                display: 'flex', justifyContent: 'center',
+                                alignItems: 'center'
+                            }}>
+                                <div style={{ fontFamily: 'Source Serif Pro, serif' }}>
+                                    {/* <FvName uid={assignment.assigned_to}/> */}
+                                    {assignment.assigned_to}
+                                </div>
+                            </Grid>
+                            <Grid item xs={12} sm={12} lg={2} md={2} sx={{
+                                display: 'flex', justifyContent: 'center',
+                                alignItems: 'center'
+                            }}>
+                                <Button size='small' variant="contained" onClick={() => {
+                                    navigate('/dashboard/verify/result',
+                                        {
+                                            state: {
+                                                id: assignment.id,
+                                                fv: assignment.assigned_to,
+                                                docType: assignment.document_type
+                                            }
+                                        }
+                                    );
+                                }}>
+                                    Verify
+                                </Button>
+                            </Grid>
                         </Grid>
-                    </Grid>
-                </Paper>
-                <hr style={{width: '93%', margin: '0 auto 0.15em auto', border: '0.6px solid #dedede'}}/>
-            </div>)
-        })}
+                    </Paper>
+                    <hr style={{ width: '93%', margin: '0 auto 0.15em auto', border: '0.6px solid #dedede' }} />
+                </div>)
+            })}
         </div>
     );
 }
@@ -153,11 +157,14 @@ interface FvProps {
     uid: string
 }
 
-const FvName: React.FunctionComponent<FvProps> = (props) : ReactJSXElement => {
+const FvName: React.FunctionComponent<FvProps> = (props): ReactJSXElement => {
     const [name, setName] = useState<String>();
     const getFvName = async () => {
+        console.log(props)
         const snapshot = await getDoc(doc(database, "field_verifier", props.uid));
-        let data : DocumentData | undefined = snapshot.data();
+        console.log(snapshot.data())
+
+        let data: DocumentData | undefined = snapshot.data();
         setName(data?.name);
     }
     useEffect(() => {
