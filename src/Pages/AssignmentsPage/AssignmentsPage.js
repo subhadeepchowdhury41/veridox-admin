@@ -1,154 +1,126 @@
 import { Button, Grid, Paper } from "@mui/material";
-import { collection, doc, getDoc, onSnapshot } from "firebase/firestore";
+import { collection, doc, getDoc, onSnapshot, query, where } from "firebase/firestore";
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom";
 import { database } from "../../Firebase/Firebase";
 import { useAuthContext } from "../../Providers/AuthProvider";
+import Box from '@mui/material/Box';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
 
 const AssignmentsPage = () => {
     const navigate = useNavigate();
     const [assignments, setAssignments] = useState([]);
-    const {user} = useAuthContext();
-    
-    useEffect(() => {
-        let unsubscribe = () => {};
+    const { user } = useAuthContext();
+    let unsubscribe = () => { };
+
+    let status1 = '';
+
+    const handleChange = async (e) => {
+        status1 = e.target.value;
+        unsubscribe();
+        getAssignments()
+    }
+
+    const getAssignments = () => {
+        let q;
+        if (status1) {
+            q = query(collection(database,
+                "agency/" + user.uid, "assignments"), where("status", "==", status1))
+        } else {
+            q = query(collection(database,
+                "agency/" + user.uid, "assignments"))
+        }
         if (user && user.uid !== undefined) {
-            unsubscribe = onSnapshot(collection(database,
-                "agency/" + user.uid, "assignments"), snapshot => {
-                  let data = [];
-                  snapshot.docs.forEach((doc) => {
-                      data.push({...doc.data(), id: doc.id});
-                  });
-                  setAssignments(data);
+            unsubscribe = onSnapshot(q, snapshot => {
+                let data = [];
+                snapshot.docs.forEach((doc) => {
+                    data.push({ ...doc.data(), id: doc.id });
                 });
+                setAssignments(data);
+            });
         }
-        return () => {
-            unsubscribe();
-        }
+    }
+
+
+    useEffect(() => {
+        getAssignments()
     }, [user]);
 
     return (<div>
-        <Paper elevation={0} sx={{
-                    width: "100%",
-                    padding: '0.4em',
-                    margin: '0.3em 0',
-                    fontSize: '14px',
-                    display: 'inline-flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    textAlign: 'center'
-                }}>
-                    <Grid container>
-                        <Grid item md={2} sx={{
-                            display: 'flex', justifyContent: 'center',
-                            alignItems: 'center'
-                        }}>
-                            <div style={{color: 'gray', fontWeight: 'bold'}}>
-                                ID
-                            </div>
-                        </Grid>
-                        <Grid item md={2} sx={{
-                            display: 'flex', justifyContent: 'center',
-                            alignItems: 'center'
-                        }}>
-                            <div style={{color: 'gray', fontWeight: 'bold'}}>
-                                Type
-                            </div>
-                        </Grid>
 
-                        <Grid item md={4} sx={{
-                            display: 'flex', justifyContent: 'center',
-                            alignItems: 'center'
-                        }}>
-                            <div style={{color: 'gray', fontWeight: 'bold'}}>
-                                Name
-                            </div>
-                        </Grid>
+        <Paper elevation={0}>
+            <div style={{ display: 'flex', justifyContent: "end", padding: "0 10px 20px 10px" }}>
+                <div style={{ display: "flex", alignItems: "center" }}>
+                    Filter By :
+                </div>
 
-                        <Grid item md={1} sx={{
-                            display: 'flex', justifyContent: 'center',
-                            alignItems: 'center'
-                        }}>
-                            <div style={{color: 'gray', fontWeight: 'bold'}}>
-                                Status
-                            </div>
-                        </Grid>
-                        
-                        <Grid item md={3} sx={{
-                            display: 'flex', justifyContent: 'center',
-                            alignItems: 'center'
-                        }}>
-                            <div style={{color: 'gray', fontWeight: 'bold'}}>
-                                Action
-                            </div>
-                        </Grid>
-                    </Grid>
-                </Paper>
-                <hr style={{width: '93%', margin: '0 auto 0.15em auto', border: '0.6px solid #dedede'}}/>
-        {assignments.map((assignment) => {
-            return (<div key={assignment.id}>
-                <Paper elevation={0} sx={{
-                    width: "100%",
-                    padding: '0.4em',
-                    margin: '0.3em 0',
-                    fontSize: '14px',
-                    display: 'inline-flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    textAlign: 'center'
-                }}>
-                    <Grid container>
-                        <Grid item md={2} sx={{
-                            display: 'flex', justifyContent: 'center',
-                            alignItems: 'center'
-                        }}>
-                            <div style={{marginLeft: '1.7em', fontFamily: 'Source Serif Pro, serif'}}>
-                                {assignment.id}
-                            </div>
-                        </Grid>
-                        <Grid item md={2} sx={{
-                            display: 'flex', justifyContent: 'center',
-                            alignItems: 'center'
-                        }}>
-                            <div style={{marginLeft: '1.7em', fontFamily: 'Source Serif Pro, serif'}}>
-                                {assignment.document_type}
-                            </div>
-                        </Grid>
+                <div>
+                    <FormControl sx={{ m: 1, minWidth: 160 }} size="small">
+                        <InputLabel id="demo-simple-select-label">Select status</InputLabel>
+                        <Select
+                            labelId="demo-simple-select-label"
+                            id="demo-simple-select"
+                            label="select tatus"
+                            onChange={handleChange}
+                        >
+                            <MenuItem value={''}>All</MenuItem>
+                            <MenuItem value={'assigned'}>Assigned</MenuItem>
+                            <MenuItem value={'in_progress'}>In Progress</MenuItem>
+                            <MenuItem value={'submitted'}>Submitted</MenuItem>
+                            <MenuItem value={'approved'}>Approved</MenuItem>
+                        </Select>
+                    </FormControl>
+                </div>
+            </div>
+        </Paper>
 
-                        <Grid item md={4} sx={{
-                            display: 'flex', justifyContent: 'center',
-                            alignItems: 'center'
-                        }}>
-                            <div style={{marginLeft: '1.7em', fontFamily: 'Source Serif Pro, serif'}}>
-                                <FvName uid={assignment.assigned_to}/>
-                            </div>
-                        </Grid>
 
-                        <Grid item md={1} sx={{
-                            display: 'flex', justifyContent: 'center',
-                            alignItems: 'center'
-                        }}>
-                            <div style={{marginLeft: '1.7em', fontFamily: 'Source Serif Pro, serif'}}>
-                                {assignment.status}
-                            </div>
-                        </Grid>
-                        
-                        <Grid item md={3} sx={{
-                            display: 'flex', justifyContent: 'center',
-                            alignItems: 'center'
-                        }}>
-                            <Button size='small' variant="contained" onClick={() => {
-                                navigate('/dashboard/assignment/' + assignment.id);
-                            }}>
-                                View
-                            </Button>
-                        </Grid>
-                    </Grid>
-                </Paper>
-                <hr style={{width: '93%', margin: '0 auto 0.15em auto', border: '0.6px solid #dedede'}}/>
-            </div>)
-        })}
-    </div>)
+        <TableContainer component={Paper} elevation={3}>
+            <Table aria-label="simple table">
+                <TableHead>
+                    <TableRow>
+                        <TableCell align="center" style={{ fontWeight: "800" }}>ID</TableCell>
+                        <TableCell align="center" style={{ fontWeight: "800" }}>Type</TableCell>
+                        <TableCell align="center" style={{ fontWeight: "800" }}>Name</TableCell>
+                        <TableCell align="center" style={{ fontWeight: "800" }}>Status</TableCell>
+                        <TableCell align="center" style={{ fontWeight: "800" }}>Action</TableCell>
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                    {assignments.map((assignment) => {
+                        return (
+                            <TableRow
+                                key={assignment.id}
+                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                            >
+                                <TableCell align="center" component="th" scope="row">
+                                    {assignment.id}
+                                </TableCell>
+                                <TableCell align="center"> {assignment.document_type}</TableCell>
+                                <TableCell align="center">  {assignment.assigned_to}</TableCell>
+                                <TableCell align="center"> {assignment.status}</TableCell>
+                                <TableCell align="center">
+                                    <Button size='small' variant="contained" onClick={() => {
+                                        navigate('/dashboard/assignment/' + assignment.id);
+                                    }}>View</Button>
+                                </TableCell>
+                            </TableRow>)
+                    })}
+                </TableBody>
+            </Table>
+        </TableContainer>
+
+    </div >)
+
 }
 
 const FvName = (props) => {
