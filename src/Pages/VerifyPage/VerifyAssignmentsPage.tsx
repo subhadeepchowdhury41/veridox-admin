@@ -71,7 +71,7 @@ const VerifyAssignmentsPage: React.FunctionComponent = () => {
                             alignItems: 'center'
                         }}>
                             <div style={{color: 'gray', fontWeight: 'bold'}}>
-                                Name
+                               Verifier Name
                             </div>
                         </Grid>
                         
@@ -121,7 +121,8 @@ const VerifyAssignmentsPage: React.FunctionComponent = () => {
                             alignItems: 'center'
                         }}>
                             <div style={{marginLeft: '1.7em', fontFamily: 'Source Serif Pro, serif'}}>
-                                <FvName uid={assignment.assigned_to}/>
+                                {assignment.assigned_to}
+                                {/* <FvName uid={assignment.assigned_to}/> */}
                             </div>
                         </Grid>
                         <Grid item xs={12} sm={12} lg={2} md={2} sx={{

@@ -122,7 +122,8 @@ const ApprovedElement: FC<ApprovedElementProps> = (props): JSX.Element => {
               alignItems: 'center'
             }}>
               <div style={{ marginLeft: '1.7em', fontFamily: 'Source Serif Pro, serif' }}>
-                <FvName uid={props.assigned_to} />
+                {props.assigned_to}
+                {/* <FvName uid={props.assigned_to} /> */}
               </div>
             </Grid>
             <Grid item xs={12} sm={12} lg={2} md={2} sx={{

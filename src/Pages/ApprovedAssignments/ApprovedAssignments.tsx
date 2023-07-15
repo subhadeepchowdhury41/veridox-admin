@@ -67,7 +67,7 @@ const ApprovedAssignments: React.FunctionComponent = () => {
                             alignItems: 'center'
                         }}>
                             <div style={{color: 'gray', fontWeight: 'bold'}}>
-                                Name
+                                Verifier  Name
                             </div>
                         </Grid>
                         
