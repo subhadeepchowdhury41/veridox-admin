@@ -49,7 +49,6 @@ const AssignmentsPage = () => {
         };
 
         if (timestamp) {
-            console.log(String(timestamp.toDate()).split(" "));
             let split = String(timestamp.toDate()).split(" ");
 
             // return split[2] + "/" + months[split[1]] + "/" + split[3] + " " + split[4];
@@ -64,7 +63,6 @@ const AssignmentsPage = () => {
 
     const getAssignments = () => {
         let q;
-        console.log(formType1, status1)
 
         if (formType1 && status1) {
             q = query(collection(
@@ -72,31 +70,32 @@ const AssignmentsPage = () => {
                 , "agency/" + user.uid, "assignments")
                 , where("document_type", "==", formType1)
                 , where("status", "==", status1)
-                , orderBy("assigned_to", "desc")
+                , orderBy("created_at", "desc")
             )
         } else if (formType1) {
             q = query(collection(database,
                 "agency/" + user.uid, "assignments")
                 , where("document_type", "==", formType1)
-                , orderBy("assigned_to", "desc")
+                , orderBy("created_at", "desc")
             )
         } else if (status1) {
             q = query(collection(database,
                 "agency/" + user.uid, "assignments")
                 , where("status", "==", status1)
-                , orderBy("assigned_to", "desc")
+                , orderBy("created_at", "desc")
             )
         } else {
             q = query(collection(database,
                 "agency/" + user.uid, "assignments")
-                , orderBy("assigned_to", "desc")
+                , orderBy("created_at", "desc")
             )
         }
 
 
         if (user && user.uid !== undefined) {
+            setAssignments([]);
+            let data = [];
             unsubscribe = onSnapshot(q, snapshot => {
-                let data = [];
                 snapshot.docs.forEach((doc) => {
                     data.push({ ...doc.data(), id: doc.id });
                 });
