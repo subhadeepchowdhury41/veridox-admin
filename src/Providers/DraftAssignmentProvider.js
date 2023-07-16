@@ -1,4 +1,4 @@
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc, serverTimestamp} from "firebase/firestore";
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { database } from "../Firebase/Firebase";
 import { generateAssignmentId } from "../Utils/AssignmentIdGenerator";
@@ -165,6 +165,7 @@ export const DraftAssignmentProvider = ({ children }) => {
           doc(database, "agency/" + user.uid, "assignments/" + assId),
           {
             assigned_to: fv.name,
+            created_at: serverTimestamp(),
             document_type: assignment.document_type,
             status: "assigned",
             fvId: fv.uid,
